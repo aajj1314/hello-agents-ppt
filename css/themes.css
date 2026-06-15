@@ -1,0 +1,46 @@
+/* ===== Theme Switcher ===== */
+.theme-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-lg);
+    transition: transform var(--transition-fast);
+    z-index: 1000;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .slide {
+    background: var(--bg-secondary);
+}
+
+[data-theme="dark"] pre {
+    background: #1E1E1E !important;
+}
+
+[data-theme="dark"] code {
+    color: #D4D4D4 !important;
+}
+
+[data-theme="dark"] .quiz-option {
+    background: var(--bg-tertiary);
+}
+
+[data-theme="dark"] .quiz-option:hover {
+    border-color: var(--primary);
+}
+
+[data-theme="dark"] .animation-controls {
+    background: var(--bg-tertiary);
+}

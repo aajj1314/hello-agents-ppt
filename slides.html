@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>幻灯片 - Hello-Agents</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/slides.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <div class="slide-player">
+        <header class="slide-header">
+            <a href="index.html" class="btn-back">← 返回</a>
+            <h2 class="chapter-title" id="chapterTitle">章节标题</h2>
+            <div class="slide-controls">
+                <span class="progress" id="slideProgress">1 / 10</span>
+                <button class="btn-settings" id="btnSettings">⚙️</button>
+            </div>
+        </header>
+        <main class="slide-stage" id="slideStage"></main>
+        <nav class="slide-nav">
+            <button class="btn-nav" id="btnPrev">← 上一页</button>
+            <div class="progress-bar" id="progressBar"></div>
+            <button class="btn-nav" id="btnNext">下一页 →</button>
+        </nav>
+        <aside class="slide-notes hidden" id="slideNotes"></aside>
+    </div>
+    <button class="theme-toggle" id="themeToggle">🌓</button>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/animations/ch1-agent-types.js"></script>
+    <script src="js/animations/ch4-react-loop.js"></script>
+    <script src="js/animations/ch7-framework.js"></script>
+    <script src="js/animations/ch8-memory.js"></script>
+    <script src="js/animations/ch10-protocol.js"></script>
+    <script src="js/animations/ch13-travel.js"></script>
+    <script src="js/slides.js"></script>
+    <script src="js/quiz.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggle = document.getElementById('themeToggle');
+            if (toggle) {
+                toggle.addEventListener('click', () => {
+                    const current = Storage.getTheme();
+                    Storage.setTheme(current === 'light' ? 'dark' : 'light');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

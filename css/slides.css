@@ -1,0 +1,592 @@
+/* ===== Slide Player - Neural Canvas ===== */
+/* Philosophy: Cognitive wayfinding through layered luminosity */
+
+.slide-player {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: var(--bg-secondary);
+}
+
+/* Header - Neural Signal Bar */
+.slide-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md) var(--space-xl);
+    border-bottom: 1px solid var(--border-light);
+    background: var(--bg-primary);
+    backdrop-filter: blur(10px);
+}
+
+.slide-header .btn-back {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.slide-header .btn-back:hover {
+    background: rgba(79, 70, 229, 0.1);
+}
+
+.slide-header .chapter-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+}
+
+.slide-header .slide-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.slide-header .progress {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+    background: var(--bg-secondary);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+}
+
+.slide-header .btn-settings {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: var(--space-xs);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.slide-header .btn-settings:hover {
+    background: var(--bg-secondary);
+    transform: rotate(30deg);
+}
+
+/* Stage - Content Theater */
+.slide-stage {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xl);
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+}
+
+/* Individual Slide - Cellular Forms */
+.slide {
+    width: 100%;
+    max-width: 960px;
+    height: 100%;
+    max-height: 640px;
+    background: var(--bg-primary);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-xl);
+    padding: var(--space-2xl);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    position: absolute;
+    opacity: 0;
+    transform: translateX(60px) scale(0.98);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid var(--border-light);
+}
+
+.slide.active {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    position: relative;
+}
+
+.slide.prev {
+    transform: translateX(-60px) scale(0.98);
+    opacity: 0;
+}
+
+/* Slide Types - Layered Luminosity */
+.slide-cover {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: linear-gradient(135deg, var(--bg-primary) 0%, rgba(79, 70, 229, 0.05) 100%);
+}
+
+.slide-cover .slide-icon {
+    font-size: 4rem;
+    margin-bottom: var(--space-lg);
+    display: inline-block;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.slide-cover h2 {
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: var(--space-sm);
+    letter-spacing: -0.02em;
+}
+
+.slide-cover .slide-subtitle {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+.slide-content h3 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: var(--space-lg);
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+    position: relative;
+    padding-bottom: var(--space-sm);
+}
+
+.slide-content h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+    border-radius: 2px;
+}
+
+.slide-content .content-body {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+}
+
+.slide-content .content-body p {
+    margin-bottom: var(--space-md);
+}
+
+.slide-code {
+    padding: 0;
+    overflow: hidden;
+    background: var(--bg-primary);
+    border-radius: var(--radius-2xl);
+}
+
+.slide-code h3 {
+    padding: var(--space-lg) var(--space-xl) 0;
+    font-size: 1.25rem;
+    margin-bottom: var(--space-md);
+}
+
+.slide-code pre {
+    flex: 1;
+    margin: 0;
+    border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
+    overflow: auto;
+    background: #1E1E1E !important;
+}
+
+.slide-code code {
+    font-size: 0.875rem;
+    line-height: 1.7;
+    font-family: var(--font-mono);
+}
+
+/* Navigation - Control Panel */
+.slide-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md) var(--space-xl);
+    border-top: 1px solid var(--border-light);
+    background: var(--bg-primary);
+    gap: var(--space-md);
+}
+
+.slide-nav .btn-nav {
+    padding: var(--space-sm) var(--space-lg);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+    font-weight: 500;
+}
+
+.slide-nav .btn-nav:hover:not(:disabled) {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    transform: translateY(-1px);
+}
+
+.slide-nav .btn-nav:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    border-color: var(--border-light);
+}
+
+.slide-nav .progress-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--bg-tertiary);
+    border-radius: 3px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+}
+
+.slide-nav .progress-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(79, 70, 229, 0.1) 50%, transparent 100%);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.slide-nav .progress-bar .fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+    border-radius: 3px;
+    transition: width var(--transition-normal);
+    position: relative;
+    z-index: 1;
+}
+
+/* Notes - Whispered Information */
+.slide-notes {
+    padding: var(--space-md) var(--space-xl);
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-light);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    max-height: 120px;
+    overflow-y: auto;
+    font-style: italic;
+}
+
+.slide-notes::before {
+    content: '💡 ';
+    font-style: normal;
+}
+
+.slide-notes.hidden {
+    display: none;
+}
+
+/* Animation Container - Neural Theater */
+.animation-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-xl);
+    padding: var(--space-lg);
+    border: 1px solid var(--border-light);
+}
+
+.animation-container canvas {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: var(--radius-md);
+}
+
+.animation-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-top: var(--space-lg);
+    padding: var(--space-md) var(--space-lg);
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-md);
+}
+
+.animation-controls button {
+    padding: var(--space-sm) var(--space-md);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all var(--transition-fast);
+    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+}
+
+.animation-controls button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+}
+
+.animation-controls button:active {
+    transform: translateY(0);
+}
+
+.animation-controls .speed-slider {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.animation-controls input[type="range"] {
+    -webkit-appearance: none;
+    width: 80px;
+    height: 4px;
+    background: var(--bg-tertiary);
+    border-radius: 2px;
+    outline: none;
+}
+
+.animation-controls input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(79, 70, 229, 0.4);
+}
+
+/* Quiz Styles - Cognitive Assessment */
+.quiz-container {
+    max-width: 700px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.quiz-container h3 {
+    font-size: 1.5rem;
+    margin-bottom: var(--space-xl);
+    text-align: center;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.quiz-progress {
+    text-align: center;
+    color: var(--text-muted);
+    margin-bottom: var(--space-lg);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.quiz-question {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: var(--space-lg);
+    line-height: 1.6;
+    color: var(--text-primary);
+    padding: var(--space-lg);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    border-left: 4px solid var(--primary);
+}
+
+.quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+}
+
+.quiz-option {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-md);
+    padding: var(--space-md) var(--space-lg);
+    background: var(--bg-secondary);
+    border: 2px solid transparent;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+}
+
+.quiz-option::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: transparent;
+    transition: background var(--transition-fast);
+}
+
+.quiz-option:hover {
+    border-color: var(--primary);
+    background: rgba(79, 70, 229, 0.05);
+    transform: translateX(4px);
+}
+
+.quiz-option:hover::before {
+    background: var(--primary);
+}
+
+.quiz-option.selected {
+    border-color: var(--primary);
+    background: rgba(79, 70, 229, 0.08);
+    box-shadow: var(--glow-primary);
+}
+
+.quiz-option.selected::before {
+    background: var(--primary);
+}
+
+.quiz-option.correct {
+    border-color: var(--success);
+    background: rgba(16, 185, 129, 0.08);
+    box-shadow: var(--glow-success);
+}
+
+.quiz-option.correct::before {
+    background: var(--success);
+}
+
+.quiz-option.wrong {
+    border-color: var(--danger);
+    background: rgba(239, 68, 68, 0.08);
+}
+
+.quiz-option.wrong::before {
+    background: var(--danger);
+}
+
+.quiz-option input {
+    margin-top: 2px;
+    accent-color: var(--primary);
+}
+
+.quiz-option .option-label {
+    font-weight: 700;
+    color: var(--primary);
+    min-width: 24px;
+    font-size: 1rem;
+}
+
+.quiz-option .option-text {
+    flex: 1;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.quiz-actions {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-md);
+}
+
+.quiz-explanation {
+    margin-top: var(--space-lg);
+    padding: var(--space-md) var(--space-lg);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    border-left: 4px solid var(--info);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+}
+
+.quiz-explanation.correct {
+    border-left-color: var(--success);
+    background: rgba(16, 185, 129, 0.08);
+}
+
+.quiz-explanation.wrong {
+    border-left-color: var(--danger);
+    background: rgba(239, 68, 68, 0.08);
+}
+
+.quiz-result {
+    text-align: center;
+    padding: var(--space-2xl);
+    background: linear-gradient(135deg, var(--bg-primary) 0%, rgba(79, 70, 229, 0.05) 100%);
+    border-radius: var(--radius-2xl);
+}
+
+.quiz-result .score {
+    font-size: 4.5rem;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: var(--space-sm);
+}
+
+.quiz-result .score-label {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-xl);
+    font-weight: 500;
+}
+
+/* Responsive - Adaptive Neural Grid */
+@media (max-width: 768px) {
+    .slide-header {
+        padding: var(--space-sm) var(--space-md);
+    }
+    .slide-header .chapter-title {
+        font-size: 0.875rem;
+    }
+    .slide-stage {
+        padding: var(--space-md);
+    }
+    .slide {
+        padding: var(--space-lg);
+        max-height: none;
+        border-radius: var(--radius-lg);
+    }
+    .slide-cover h2 {
+        font-size: 1.75rem;
+    }
+    .slide-nav {
+        padding: var(--space-sm) var(--space-md);
+    }
+    .slide-notes {
+        display: none;
+    }
+    .animation-controls {
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+    }
+    .quiz-result .score {
+        font-size: 3rem;
+    }
+}

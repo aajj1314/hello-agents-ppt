@@ -1,0 +1,237 @@
+{
+  "ch1": [
+    {
+      "id": "ch1-q1",
+      "type": "single",
+      "question": "以下哪个不是智能体的核心组件？",
+      "options": [
+        {"id": "A", "text": "感知（Perception）"},
+        {"id": "B", "text": "推理（Reasoning）"},
+        {"id": "C", "text": "数据库（Database）"},
+        {"id": "D", "text": "行动（Action）"}
+      ],
+      "answer": "C",
+      "explanation": "智能体的核心组件包括感知、推理、行动和学习，数据库不是必需的。"
+    },
+    {
+      "id": "ch1-q2",
+      "type": "single",
+      "question": "学习型智能体与其他类型智能体的主要区别是什么？",
+      "options": [
+        {"id": "A", "text": "它能感知环境"},
+        {"id": "B", "text": "它能从经验中改进性能"},
+        {"id": "C", "text": "它能执行行动"},
+        {"id": "D", "text": "它有明确的目标"}
+      ],
+      "answer": "B",
+      "explanation": "学习型智能体的关键特征是能够从过去的经验中学习并改进未来的决策。"
+    },
+    {
+      "id": "ch1-q3",
+      "type": "single",
+      "question": "基于效用的智能体与基于目标的智能体的主要区别是？",
+      "options": [
+        {"id": "A", "text": "基于效用的智能体更复杂"},
+        {"id": "B", "text": "基于目标的智能体不能感知环境"},
+        {"id": "C", "text": "基于效用的智能体能在多个目标间权衡"},
+        {"id": "D", "text": "基于目标的智能体不需要推理"}
+      ],
+      "answer": "C",
+      "explanation": "基于效用的智能体使用效用函数来评估不同状态的优劣，可以在多个冲突目标间做出权衡。"
+    },
+    {
+      "id": "ch1-q4",
+      "type": "judge",
+      "question": "所有智能体都必须具备学习能力。",
+      "answer": false,
+      "explanation": "不是所有智能体都需要学习能力。简单反射型智能体只需要基于当前感知做出反应，不需要学习。"
+    },
+    {
+      "id": "ch1-q5",
+      "type": "single",
+      "question": "智能体与传统程序的主要区别是什么？",
+      "options": [
+        {"id": "A", "text": "智能体运行速度更快"},
+        {"id": "B", "text": "智能体是持续运行的，能主动感知和行动"},
+        {"id": "C", "text": "智能体只能使用Python编写"},
+        {"id": "D", "text": "智能体不需要输入"}
+      ],
+      "answer": "B",
+      "explanation": "传统程序通常是输入→处理→输出的一次性流程，而智能体是持续运行的，能主动感知环境并采取行动。"
+    }
+  ],
+  "ch4": [
+    {
+      "id": "ch4-q1",
+      "type": "single",
+      "question": "ReAct 范式中，正确的循环顺序是？",
+      "options": [
+        {"id": "A", "text": "Action → Thought → Observation"},
+        {"id": "B", "text": "Thought → Action → Observation"},
+        {"id": "C", "text": "Observation → Thought → Action"},
+        {"id": "D", "text": "Thought → Observation → Action"}
+      ],
+      "answer": "B",
+      "explanation": "ReAct 的核心循环是：Thought（思考）→ Action（行动）→ Observation（观察）。"
+    },
+    {
+      "id": "ch4-q2",
+      "type": "single",
+      "question": "Plan-and-Solve 范式最适合什么类型的任务？",
+      "options": [
+        {"id": "A", "text": "需要实时响应的任务"},
+        {"id": "B", "text": "需要多步骤解决的复杂任务"},
+        {"id": "C", "text": "简单的问答任务"},
+        {"id": "D", "text": "图像识别任务"}
+      ],
+      "answer": "B",
+      "explanation": "Plan-and-Solve 先制定完整计划再执行，适合需要多步骤、结构化的复杂任务。"
+    },
+    {
+      "id": "ch4-q3",
+      "type": "single",
+      "question": "Reflection 范式的主要作用是什么？",
+      "options": [
+        {"id": "A", "text": "加快执行速度"},
+        {"id": "B", "text": "让智能体能够自我评估和修正"},
+        {"id": "C", "text": "减少内存使用"},
+        {"id": "D", "text": "简化代码结构"}
+      ],
+      "answer": "B",
+      "explanation": "Reflection 让智能体在执行后反思结果，识别问题并进行修正，从而优化输出质量。"
+    },
+    {
+      "id": "ch4-q4",
+      "type": "judge",
+      "question": "ReAct 范式中，Observation 是智能体对外部环境执行 Action 后获得的反馈。",
+      "answer": true,
+      "explanation": "Observation 是执行 Action 后从环境返回的结果，用于更新智能体的状态。"
+    },
+    {
+      "id": "ch4-q5",
+      "type": "single",
+      "question": "以下哪种情况最适合使用 ReAct 范式？",
+      "options": [
+        {"id": "A", "text": "计算大量数据的统计指标"},
+        {"id": "B", "text": "需要与外部工具动态交互的开放性问题"},
+        {"id": "C", "text": "格式化固定模板的文档"},
+        {"id": "D", "text": "批量处理图片"}
+      ],
+      "answer": "B",
+      "explanation": "ReAct 适合需要动态决策、与外部工具交互的开放性问题，能够边思考边行动。"
+    }
+  ],
+  "ch7": [
+    {
+      "id": "ch7-q1",
+      "type": "single",
+      "question": "构建自己的Agent框架的主要好处不包括？",
+      "options": [
+        {"id": "A", "text": "深入理解原理"},
+        {"id": "B", "text": "灵活定制功能"},
+        {"id": "C", "text": "自动获得商业支持"},
+        {"id": "D", "text": "学习设计模式"}
+      ],
+      "answer": "C",
+      "explanation": "自己构建框架主要是为了学习和定制，不意味着自动获得商业支持。"
+    },
+    {
+      "id": "ch7-q2",
+      "type": "single",
+      "question": "Agent框架中，负责管理外部工具调用的组件是？",
+      "options": [
+        {"id": "A", "text": "LLMClient"},
+        {"id": "B", "text": "ToolManager"},
+        {"id": "C", "text": "Memory"},
+        {"id": "D", "text": "Planner"}
+      ],
+      "answer": "B",
+      "explanation": "ToolManager 负责注册、管理和执行外部工具。"
+    },
+    {
+      "id": "ch7-q3",
+      "type": "judge",
+      "question": "Planner 组件负责将复杂任务分解为可执行的步骤。",
+      "answer": true,
+      "explanation": "Planner 是框架中的规划组件，负责任务分解和步骤编排。"
+    }
+  ],
+  "ch8": [
+    {
+      "id": "ch8-q1",
+      "type": "single",
+      "question": "短期记忆（STM）与长期记忆（LTM）的主要区别是？",
+      "options": [
+        {"id": "A", "text": "STM 容量更大"},
+        {"id": "B", "text": "LTM 保存时间更长，容量更大"},
+        {"id": "C", "text": "STM 只能存储数字"},
+        {"id": "D", "text": "LTM 不能检索"}
+      ],
+      "answer": "B",
+      "explanation": "短期记忆容量有限、保存时间短；长期记忆容量大、可持久保存。"
+    },
+    {
+      "id": "ch8-q2",
+      "type": "single",
+      "question": "RAG 的全称是什么？",
+      "options": [
+        {"id": "A", "text": "Random Access Generation"},
+        {"id": "B", "text": "Retrieval-Augmented Generation"},
+        {"id": "C", "text": "Recursive Agent Graph"},
+        {"id": "D", "text": "Real-time API Gateway"}
+      ],
+      "answer": "B",
+      "explanation": "RAG = Retrieval-Augmented Generation（检索增强生成）。"
+    },
+    {
+      "id": "ch8-q3",
+      "type": "judge",
+      "question": "向量数据库是 RAG 系统中用于存储和检索语义表示的关键组件。",
+      "answer": true,
+      "explanation": "向量数据库将文本转换为向量嵌入，支持基于语义的相似性检索。"
+    }
+  ],
+  "ch10": [
+    {
+      "id": "ch10-q1",
+      "type": "single",
+      "question": "MCP 协议中的三个核心角色是？",
+      "options": [
+        {"id": "A", "text": "Host、Client、Server"},
+        {"id": "B", "text": "Sender、Receiver、Router"},
+        {"id": "C", "text": "Master、Slave、Proxy"},
+        {"id": "D", "text": "Producer、Consumer、Broker"}
+      ],
+      "answer": "A",
+      "explanation": "MCP（Model Context Protocol）包含 Host、Client 和 Server 三个核心角色。"
+    },
+    {
+      "id": "ch10-q2",
+      "type": "single",
+      "question": "A2A 协议主要用于什么场景？",
+      "options": [
+        {"id": "A", "text": "数据库连接"},
+        {"id": "B", "text": "智能体之间的直接通信"},
+        {"id": "C", "text": "文件传输"},
+        {"id": "D", "text": "视频流处理"}
+      ],
+      "answer": "B",
+      "explanation": "A2A（Agent-to-Agent）协议专门用于智能体之间的通信和协作。"
+    },
+    {
+      "id": "ch10-q3",
+      "type": "judge",
+      "question": "通信协议只需要定义消息格式，不需要规定交互流程。",
+      "answer": false,
+      "explanation": "完整的通信协议不仅需要定义消息格式，还需要规定交互流程、错误处理等。"
+    }
+  ],
+  "ch13": [
+    {
+      "id": "ch13-q1",
+      "type": "single",
+      "question": "智能旅行助手项目中，负责制定行程规划的Agent是？",
+      "options": [
+        {"id": "A", "text": "BookingAgent"},
+        {"id": "B", "text": "PlannerAgent"},
+        {"id": "C", "text": "AdvisorAgent"},

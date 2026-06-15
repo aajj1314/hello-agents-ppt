@@ -1,0 +1,105 @@
+{
+  "chapters": [
+    {
+      "id": "ch1",
+      "title": "初识智能体",
+      "subtitle": "智能体定义、类型与架构",
+      "slides": [
+        { "type": "cover", "title": "第一章", "subtitle": "初识智能体" },
+        { "type": "content", "title": "什么是智能体？", "content": "智能体（Agent）是指能够感知环境并采取行动以实现目标的自主实体。" },
+        { "type": "content", "title": "智能体的类型", "content": "简单反射型、基于模型的反射型、基于目标的智能体、基于效用的智能体、学习型智能体。" },
+        { "type": "animation", "title": "智能体架构", "animation": "ch1-agent-types" },
+        { "type": "content", "title": "智能体的核心组件", "content": "感知（Perception）、推理（Reasoning）、行动（Action）、学习（Learning）。" },
+        { "type": "content", "title": "智能体 vs 传统程序", "content": "传统程序：输入→处理→输出；智能体：持续感知→推理→行动→学习。" },
+        { "type": "code", "title": "简单智能体示例", "language": "python", "code": "class SimpleAgent:\n    def __init__(self):\n        self.state = {}\n    \n    def perceive(self, observation):\n        self.state.update(observation)\n    \n    def act(self):\n        # 基于状态决定行动\n        return self.decide_action()\n    \n    def decide_action(self):\n        return 'default_action'" },
+        { "type": "quiz", "title": "知识测验" }
+      ],
+      "hasAnimation": true,
+      "hasQuiz": true,
+      "icon": "🤖"
+    },
+    {
+      "id": "ch4",
+      "title": "智能体经典范式构建",
+      "subtitle": "ReAct、Plan-and-Solve、Reflection",
+      "slides": [
+        { "type": "cover", "title": "第四章", "subtitle": "智能体经典范式构建" },
+        { "type": "content", "title": "为什么需要范式？", "content": "范式为智能体的思考与行动提供了结构化的框架，帮助LLM更好地推理和决策。" },
+        { "type": "content", "title": "ReAct 范式", "content": "ReAct = Reasoning + Acting，将推理与行动紧密结合，形成 Thought → Action → Observation 的循环。" },
+        { "type": "animation", "title": "ReAct 循环演示", "animation": "ch4-react-loop" },
+        { "type": "content", "title": "Plan-and-Solve 范式", "content": "先制定计划，再执行计划。适合需要多步骤解决的复杂任务。" },
+        { "type": "content", "title": "Reflection 范式", "content": "让智能体具备自我反思能力，通过评估和修正来优化结果。" },
+        { "type": "content", "title": "三种范式对比", "content": "ReAct适合动态环境、Plan-and-Solve适合结构化任务、Reflection适合需要迭代优化的场景。" },
+        { "type": "code", "title": "ReAct 实现", "language": "python", "code": "class ReActAgent:\n    def __init__(self, llm, tools):\n        self.llm = llm\n        self.tools = tools\n        self.memory = []\n    \n    def run(self, query, max_steps=5):\n        for step in range(max_steps):\n            # Thought\n            thought = self.think(query)\n            # Action\n            action = self.decide_action(thought)\n            # Observation\n            obs = self.execute_action(action)\n            self.memory.append((thought, action, obs))\n            if self.is_complete(obs):\n                break\n        return self.generate_answer()" },
+        { "type": "quiz", "title": "知识测验" }
+      ],
+      "hasAnimation": true,
+      "hasQuiz": true,
+      "icon": "🔄"
+    },
+    {
+      "id": "ch7",
+      "title": "构建你的Agent框架",
+      "subtitle": "从零开始构建智能体框架",
+      "slides": [
+        { "type": "cover", "title": "第七章", "subtitle": "构建你的Agent框架" },
+        { "type": "content", "title": "为什么要自己构建框架？", "content": "理解原理、灵活定制、学习设计模式。" },
+        { "type": "animation", "title": "框架组件架构", "animation": "ch7-framework" },
+        { "type": "content", "title": "核心组件设计", "content": "LLM客户端、工具管理器、记忆系统、规划器、执行器。" },
+        { "type": "code", "title": "框架核心代码", "language": "python", "code": "class AgentFramework:\n    def __init__(self):\n        self.llm = LLMClient()\n        self.tools = ToolManager()\n        self.memory = Memory()\n        self.planner = Planner()\n    \n    def run(self, task):\n        plan = self.planner.create_plan(task)\n        for step in plan:\n            result = self.execute(step)\n            self.memory.store(result)\n        return self.compile_results()" },
+        { "type": "quiz", "title": "知识测验" }
+      ],
+      "hasAnimation": true,
+      "hasQuiz": true,
+      "icon": "🏗️"
+    },
+    {
+      "id": "ch8",
+      "title": "记忆与检索",
+      "subtitle": "Memory系统与RAG",
+      "slides": [
+        { "type": "cover", "title": "第八章", "subtitle": "记忆与检索" },
+        { "type": "content", "title": "为什么智能体需要记忆？", "content": "短期记忆处理当前上下文，长期记忆保存历史经验。" },
+        { "type": "animation", "title": "记忆系统工作流程", "animation": "ch8-memory" },
+        { "type": "content", "title": "RAG 检索增强生成", "content": "将外部知识库与LLM结合，实现动态知识检索。" },
+        { "type": "code", "title": "记忆系统实现", "language": "python", "code": "class MemorySystem:\n    def __init__(self):\n        self.short_term = []  # 短期记忆\n        self.long_term = VectorStore()  # 长期记忆\n    \n    def add(self, info):\n        self.short_term.append(info)\n        if len(self.short_term) > 10:\n            # 转移到长期记忆\n            self.long_term.store(self.short_term.pop(0))\n    \n    def retrieve(self, query):\n        return self.long_term.search(query, k=3)" },
+        { "type": "quiz", "title": "知识测验" }
+      ],
+      "hasAnimation": true,
+      "hasQuiz": true,
+      "icon": "🧠"
+    },
+    {
+      "id": "ch10",
+      "title": "智能体通信协议",
+      "subtitle": "MCP、A2A、ANP",
+      "slides": [
+        { "type": "cover", "title": "第十章", "subtitle": "智能体通信协议" },
+        { "type": "content", "title": "为什么需要通信协议？", "content": "多智能体协作需要标准化的消息格式和交互规范。" },
+        { "type": "animation", "title": "MCP 协议交互", "animation": "ch10-protocol" },
+        { "type": "content", "title": "A2A 与 ANP 协议", "content": "A2A（Agent-to-Agent）和 ANP（Agent Network Protocol）是新兴的通信标准。" },
+        { "type": "code", "title": "协议消息格式", "language": "python", "code": "class MCPMessage:\n    def __init__(self, from_agent, to_agent, action, payload):\n        self.header = {\n            'from': from_agent,\n            'to': to_agent,\n            'timestamp': time.time()\n        }\n        self.body = {\n            'action': action,\n            'payload': payload\n        }\n    \n    def to_json(self):\n        return json.dumps({\n            'header': self.header,\n            'body': self.body\n        })" },
+        { "type": "quiz", "title": "知识测验" }
+      ],
+      "hasAnimation": true,
+      "hasQuiz": true,
+      "icon": "📡"
+    },
+    {
+      "id": "ch13",
+      "title": "智能旅行助手",
+      "subtitle": "多智能体协作实战",
+      "slides": [
+        { "type": "cover", "title": "第十三章", "subtitle": "智能旅行助手" },
+        { "type": "content", "title": "项目概述", "content": "构建一个多智能体协作的旅行规划系统。" },
+        { "type": "animation", "title": "多智能体协作流程", "animation": "ch13-travel" },
+        { "type": "content", "title": "角色分工", "content": "Planner（规划师）、Booking（预订员）、Advisor（顾问）。" },
+        { "type": "code", "title": "多智能体协作代码", "language": "python", "code": "class TravelAssistant:\n    def __init__(self):\n        self.planner = PlannerAgent()\n        self.booking = BookingAgent()\n        self.advisor = AdvisorAgent()\n    \n    def plan_trip(self, request):\n        # 规划行程\n        itinerary = self.planner.create_itinerary(request)\n        # 预订服务\n        bookings = self.booking.make_reservations(itinerary)\n        # 提供建议\n        tips = self.advisor.give_advice(itinerary)\n        return {\n            'itinerary': itinerary,\n            'bookings': bookings,\n            'tips': tips\n        }" },
+        { "type": "quiz", "title": "知识测验" }
+      ],
+      "hasAnimation": true,
+      "hasQuiz": true,
+      "icon": "✈️"
+    }
+  ]
+}
