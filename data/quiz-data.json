@@ -235,3 +235,30 @@
         {"id": "A", "text": "BookingAgent"},
         {"id": "B", "text": "PlannerAgent"},
         {"id": "C", "text": "AdvisorAgent"},
+        {"id": "D", "text": "SearchAgent"}
+      ],
+      "answer": "B",
+      "explanation": "PlannerAgent 负责根据用户需求制定行程规划。"
+    },
+    {
+      "id": "ch13-q2",
+      "type": "single",
+      "question": "多智能体协作的主要优势是？",
+      "options": [
+        {"id": "A", "text": "减少代码量"},
+        {"id": "B", "text": "每个Agent专注特定任务，提高整体效率"},
+        {"id": "C", "text": "降低系统复杂度"},
+        {"id": "D", "text": "不需要通信协议"}
+      ],
+      "answer": "B",
+      "explanation": "多智能体通过分工协作，让每个Agent专注自己擅长的任务，提高整体系统效率。"
+    },
+    {
+      "id": "ch13-q3",
+      "type": "judge",
+      "question": "在多智能体系统中，Agent之间必须通过共享内存来通信。",
+      "answer": false,
+      "explanation": "Agent之间可以通过多种方式通信，包括消息传递、共享内存、RPC等，消息传递是最常见的方式。"
+    }
+  ]
+}
