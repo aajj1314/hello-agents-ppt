@@ -37,17 +37,13 @@ presenter.html ──> js/presenter-main.js
 | `js/quiz/` | QuizSystem(单选/多选/判断, XSS安全, 错题记录) |
 | `js/features/` | search, toc-sidebar, review, presenter-mode, keyboard-shortcuts, focus-manager, print |
 
-## 已知问题
-
-### Quiz 答题后无法切换下一题
-`submit()` 已从 async 改为同步，`submitBtn.onclick` 在 submit 内第一时间更新为下一题处理器，但问题仍存。有待进一步用浏览器 DevTools 断点调试 submit 的完整调用链和 onclick 触发时序。
-
-### 其余 5 个遗留问题已全部修复
+## 已修复的全部 6 个遗留问题
 - ✅ Storage 缓存 Bug（`_cache` 属性化 + 深拷贝嵌套默认值）
 - ✅ 6 个旧动画迁移到 CanvasAnimation + registerAnimation
 - ✅ 旧全局 JS 文件已删除
 - ✅ 5 个原有章节扩展到 20+ slides
 - ✅ ch5/ch16 视频占位添加 Canvas fallback
+- ✅ Quiz 按钮不显示 + 无法切换下一题
 
 ## 不在范围内 (YAGNI)
 

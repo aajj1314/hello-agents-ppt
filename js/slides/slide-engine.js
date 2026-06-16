@@ -196,7 +196,6 @@ export class SlideEngine {
 
     _mountQuiz() {
         const container = document.getElementById('quiz-container');
-        console.log('[SlideEngine._mountQuiz] container found:', !!container, 'chapterId:', this.chapterId);
         if (container) {
             this.quiz = new QuizSystem(this.chapterId, container);
             this.quiz.init().catch(err => console.error('[QuizSystem.init] failed:', err));
