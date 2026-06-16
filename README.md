@@ -15,7 +15,7 @@
 ## 快速开始
 
 ```bash
-git clone https://github.com/datawhalechina/hello-agents.git
+git clone https://github.com/aajj1314/hello-agents-ppt.git
 cd hello-agents-ppt
 python3 -m http.server 8080
 ```
