@@ -2,7 +2,7 @@
 
 纯静态 HTML/CSS/JS 交互式学习 PPT，对应 Datawhale《Hello-Agents》教程。
 
-**当前状态：Phase 1 + Phase 2 完成，16 章 304 slides + 98 quiz + 14 动画。**
+**当前状态：Phase 1 + 2 + 3 完成。16 章 304 slides + 98 quiz + 14 动画 + 搜索/TOC/错题本/演讲者模式/键盘导航。**
 
 ## 运行
 
