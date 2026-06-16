@@ -106,6 +106,31 @@
       ],
       "answer": "B",
       "explanation": "传统程序通常是输入→处理→输出的一次性流程，而智能体是持续运行的，能主动感知环境并采取行动。"
+    },
+    {
+      "id": "ch1-q6",
+      "type": "single",
+      "question": "LLM Agent 的优势？",
+      "options": [
+        {
+          "id": "A",
+          "text": "推理能力"
+        },
+        {
+          "id": "B",
+          "text": "预训练知识和推理能力"
+        },
+        {
+          "id": "C",
+          "text": "速度快"
+        },
+        {
+          "id": "D",
+          "text": "无需网络"
+        }
+      ],
+      "answer": "B",
+      "explanation": "LLM Agent 利用大模型预训练知识和推理能力。"
     }
   ],
   "ch4": [
@@ -215,6 +240,38 @@
       ],
       "answer": "B",
       "explanation": "ReAct 适合需要动态决策、与外部工具交互的开放性问题，能够边思考边行动。"
+    },
+    {
+      "id": "ch4-q6",
+      "type": "single",
+      "question": "含事实核查的报告最适合哪种组合？",
+      "options": [
+        {
+          "id": "A",
+          "text": "纯ReAct"
+        },
+        {
+          "id": "B",
+          "text": "Plan-and-Solve+Reflection"
+        },
+        {
+          "id": "C",
+          "text": "纯Reflection"
+        },
+        {
+          "id": "D",
+          "text": "ReAct+Reflection"
+        }
+      ],
+      "answer": "B",
+      "explanation": "先计划再执行后反思。"
+    },
+    {
+      "id": "ch4-q7",
+      "type": "judge",
+      "question": "ReAct中Observation只能来自外部工具。",
+      "answer": false,
+      "explanation": "Observations来自工具结果、中间推理或用户输入。"
     }
   ],
   "ch7": [
@@ -274,6 +331,63 @@
       "question": "Planner 组件负责将复杂任务分解为可执行的步骤。",
       "answer": true,
       "explanation": "Planner 是框架中的规划组件，负责任务分解和步骤编排。"
+    },
+    {
+      "id": "ch7-q4",
+      "type": "single",
+      "question": "ToolRegistry的主要作用？",
+      "options": [
+        {
+          "id": "A",
+          "text": "管理API密钥"
+        },
+        {
+          "id": "B",
+          "text": "注册管理和执行外部工具"
+        },
+        {
+          "id": "C",
+          "text": "存储对话历史"
+        },
+        {
+          "id": "D",
+          "text": "执行代码编译"
+        }
+      ],
+      "answer": "B",
+      "explanation": "ToolRegistry负责工具注册和执行调度。"
+    },
+    {
+      "id": "ch7-q5",
+      "type": "single",
+      "question": "插件生命周期正确顺序？",
+      "options": [
+        {
+          "id": "A",
+          "text": "注册→执行→初始化→销毁"
+        },
+        {
+          "id": "B",
+          "text": "注册→初始化→执行→销毁"
+        },
+        {
+          "id": "C",
+          "text": "初始化→注册→执行→销毁"
+        },
+        {
+          "id": "D",
+          "text": "执行→注册→初始化→销毁"
+        }
+      ],
+      "answer": "B",
+      "explanation": "标准生命周期：注册→初始化→执行→销毁。"
+    },
+    {
+      "id": "ch7-q6",
+      "type": "judge",
+      "question": "所有项目都应该从零构建框架。",
+      "answer": false,
+      "explanation": "产品开发优先用成熟框架，学习或特殊需求才从零构建。"
     }
   ],
   "ch8": [
@@ -333,6 +447,63 @@
       "question": "向量数据库是 RAG 系统中用于存储和检索语义表示的关键组件。",
       "answer": true,
       "explanation": "向量数据库将文本转换为向量嵌入，支持基于语义的相似性检索。"
+    },
+    {
+      "id": "ch8-q4",
+      "type": "single",
+      "question": "查询重写(Query Rewriting)的主要作用？",
+      "options": [
+        {
+          "id": "A",
+          "text": "缩短查询长度"
+        },
+        {
+          "id": "B",
+          "text": "将模糊查询转化为精确独立查询"
+        },
+        {
+          "id": "C",
+          "text": "翻译多种语言"
+        },
+        {
+          "id": "D",
+          "text": "加密查询"
+        }
+      ],
+      "answer": "B",
+      "explanation": "消除指代歧义提高检索准确率。"
+    },
+    {
+      "id": "ch8-q5",
+      "type": "single",
+      "question": "哪种记忆组合适合长期陪伴型AI助手？",
+      "options": [
+        {
+          "id": "A",
+          "text": "仅滑动窗口"
+        },
+        {
+          "id": "B",
+          "text": "滑动窗口+摘要+向量检索"
+        },
+        {
+          "id": "C",
+          "text": "仅向量检索"
+        },
+        {
+          "id": "D",
+          "text": "仅摘要记忆"
+        }
+      ],
+      "answer": "B",
+      "explanation": "三层组合兼顾近中远期记忆。"
+    },
+    {
+      "id": "ch8-q6",
+      "type": "judge",
+      "question": "RAG中检索结果越多回答越准确。",
+      "answer": false,
+      "explanation": "过多结果引入噪声，需重排序和阈值过滤。"
     }
   ],
   "ch10": [
@@ -392,6 +563,63 @@
       "question": "通信协议只需要定义消息格式，不需要规定交互流程。",
       "answer": false,
       "explanation": "完整的通信协议不仅需要定义消息格式，还需要规定交互流程、错误处理等。"
+    },
+    {
+      "id": "ch10-q4",
+      "type": "single",
+      "question": "MCP基于什么消息格式？",
+      "options": [
+        {
+          "id": "A",
+          "text": "RESTful"
+        },
+        {
+          "id": "B",
+          "text": "JSON-RPC 2.0"
+        },
+        {
+          "id": "C",
+          "text": "GraphQL"
+        },
+        {
+          "id": "D",
+          "text": "SOAP"
+        }
+      ],
+      "answer": "B",
+      "explanation": "MCP基于JSON-RPC 2.0进行远程过程调用。"
+    },
+    {
+      "id": "ch10-q5",
+      "type": "single",
+      "question": "多Agent协作系统的最佳协议组合？",
+      "options": [
+        {
+          "id": "A",
+          "text": "仅MCP"
+        },
+        {
+          "id": "B",
+          "text": "仅A2A"
+        },
+        {
+          "id": "C",
+          "text": "MCP+A2A+ANP"
+        },
+        {
+          "id": "D",
+          "text": "仅ANP"
+        }
+      ],
+      "answer": "C",
+      "explanation": "MCP工具集成+A2A任务协调+ANP事件通知。"
+    },
+    {
+      "id": "ch10-q6",
+      "type": "judge",
+      "question": "Agent Card描述Agent能力便于发现和调用。",
+      "answer": true,
+      "explanation": "Agent Card类似OpenAPI，描述名称、能力、通信方式。"
     }
   ],
   "ch13": [

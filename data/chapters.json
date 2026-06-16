@@ -62,6 +62,110 @@
           "content": "智能体是具有感知-推理-行动能力的自主实体\n五种类型：简单反射型、基于模型、基于目标、基于效用、学习型\n智能体与传统程序的核心区别在于自主性和适应性\n智能体由感知、推理、行动、学习四大组件构成"
         },
         {
+          "type": "content",
+          "title": "LLM Agent 简介",
+          "content": "**LLM Agent** 是以大语言模型为大脑的智能体。"
+        },
+        {
+          "type": "content",
+          "title": "智能体应用场景扩展",
+          "content": "医疗健康、科研创新、企业运营、创意产业。"
+        },
+        {
+          "type": "content",
+          "title": "学习路线图",
+          "content": "基础入门→核心概念→框架实践→进阶开发。"
+        },
+        {
+          "type": "code",
+          "title": "基于 LLM 的对话智能体",
+          "language": "python",
+          "code": "from openai import OpenAI\n\nclass LLMAgent:\n    def __init__(self, api_key, model=\"gpt-4\"):\n        self.client = OpenAI(api_key=api_key)\n        self.model = model\n        self.messages = [{\"role\": \"system\", \"content\": \"你是一个有用的助手。\"}]\n\n    def think_and_act(self, user_input):\n        self.messages.append({\"role\": \"user\", \"content\": user_input})\n        r = self.client.chat.completions.create(model=self.model, messages=self.messages)\n        reply = r.choices[0].message.content\n        self.messages.append({\"role\": \"assistant\", \"content\": reply})\n        return reply\n\nagent = LLMAgent(api_key=\"sk-your-key\")\nprint(agent.think_and_act(\"智能体和程序有什么区别？\"))",
+          "explanation": "最小 LLM Agent 实现，维护对话历史实现多轮交互。"
+        },
+        {
+          "type": "concepts",
+          "title": "智能体核心组件详解",
+          "items": [
+            {
+              "icon": "👁️",
+              "title": "感知模块",
+              "description": "从环境获取信息，LLM 通过自然语言理解感知意图。"
+            },
+            {
+              "icon": "🧠",
+              "title": "推理与规划模块",
+              "description": "负责任务拆解、步骤排序、决策制定。"
+            },
+            {
+              "icon": "🔧",
+              "title": "行动与工具模块",
+              "description": "将决策转化为代码执行、API 调用等。"
+            },
+            {
+              "icon": "💾",
+              "title": "记忆模块",
+              "description": "短期维持上下文，长期向量数据库持久化。"
+            }
+          ]
+        },
+        {
+          "type": "comparison",
+          "title": "智能体 vs 传统程序",
+          "headers": [
+            "维度",
+            "传统程序",
+            "智能体"
+          ],
+          "rows": [
+            [
+              "执行模式",
+              "被动执行",
+              "主动持续感知"
+            ],
+            [
+              "决策方式",
+              "固定规则",
+              "动态推理"
+            ],
+            [
+              "适应性",
+              "格式变化即失效",
+              "理解自然语言变体"
+            ],
+            [
+              "学习能力",
+              "需人工更新",
+              "可从反馈改进"
+            ],
+            [
+              "错误处理",
+              "严格异常流程",
+              "自主识别修正"
+            ],
+            [
+              "交互方式",
+              "GUI/命令行",
+              "自然语言对话"
+            ],
+            [
+              "扩展性",
+              "重新编译部署",
+              "工具动态扩展"
+            ]
+          ]
+        },
+        {
+          "type": "content",
+          "title": "智能体学习资源推荐",
+          "content": "**入门资源**\n• 书籍：《AI: A Modern Approach》、周志华《机器学习》\n• 课程：Stanford CS221、HuggingFace NLP Course\n• 项目：LangChain Tutorial、OpenAI Cookbook\n\n**实践平台**\n• HuggingFace：模型和数据集\n• GitHub：awesome-llm-agent\n\n**社区**\n• Discord：LangChain社区\n• Datawhale社区教程\n\n[提示] 动手实践是最好的学习方式。"
+        },
+        {
+          "type": "content",
+          "title": "智能体未来展望",
+          "content": "**1. 多模态Agent**：同时处理文本、图像、音频。\n**2. Agent生态**：标准化协议推动互操作。\n**3. 自主Agent**：从辅助工具向自主决策演进。\n**4. 可解释Agent**：推理过程透明化。\n**5. 端侧Agent**：小模型在手机端运行保护隐私。\n\n[成功] 智能体技术正处于爆发期。"
+        },
+        {
           "type": "quiz",
           "title": "知识测验"
         }
@@ -569,6 +673,80 @@
           "content": "ReAct：将推理与行动结合，形成 Thought-Action-Observation 循环\nPlan-and-Solve：先制定计划再执行，适合结构化任务\nReflection：自我评估和修正，提升输出质量\n根据任务类型选择合适的范式，复杂任务可组合使用"
         },
         {
+          "type": "content",
+          "title": "ReAct 深入",
+          "content": "ReAct 让推理和行动交替进行。\n\n**三种思维模式**\n• **线性**：Thought→Action→Observation\n• **分支**：一个Observation触发多个Thought\n• **回溯**：结果为负时回退重新思考\n\n[成功] HotpotQA上ReAct比CoT准确率高15%。"
+        },
+        {
+          "type": "content",
+          "title": "Reflection 深入",
+          "content": "反思让智能体审视输出并改进。\n\n**三个层次**\n1. 结果反思：检查答案是否符合预期\n2. 过程反思：回溯执行步骤的合理性\n3. 元反思：调整整体推理策略\n\n[提示] 反思是提升LLM输出质量最有效手段。"
+        },
+        {
+          "type": "content",
+          "title": "范式组合使用",
+          "content": "组合多种范式达1+1>2效果。\n\n**ReAct+Reflection**：外层ReAct+内层反思，适用复杂推理\n**Plan+ReAct**：先计划再动态执行，适用大型项目\n**Plan+Reflection**：计划→执行→反思迭代，适用研究任务"
+        },
+        {
+          "type": "code",
+          "title": "Plan-and-Solve实现",
+          "language": "python",
+          "code": "from openai import OpenAI\n\nclass PlanAndSolveAgent:\n    def __init__(self, api_key, model=\"gpt-4\"):\n        self.client = OpenAI(api_key=api_key)\n        self.model = model\n\n    def plan(self, task):\n        p = f\"分解任务：{task}\"\n        r = self.client.chat.completions.create(\n            model=self.model,\n            messages=[{\"role\":\"user\",\"content\":p}])\n        return r.choices[0].message.content\n\n    def solve(self, task):\n        plan = self.plan(task)\n        print(f\"计划：{plan}\")\n        return plan\n\nagent = PlanAndSolveAgent(api_key=\"sk-key\")\nagent.solve(\"分析市场趋势\")",
+          "explanation": "Plan-and-Solve分规划和执行两阶段。"
+        },
+        {
+          "type": "comparison",
+          "title": "三种范式对比",
+          "headers": [
+            "维度",
+            "ReAct",
+            "Plan-and-Solve",
+            "Reflection"
+          ],
+          "rows": [
+            [
+              "策略",
+              "边思考边行动",
+              "先计划后执行",
+              "执行后反思"
+            ],
+            [
+              "适用",
+              "探索性任务",
+              "结构化任务",
+              "精准任务"
+            ],
+            [
+              "容错",
+              "中",
+              "低",
+              "高"
+            ],
+            [
+              "效率",
+              "中等",
+              "高",
+              "低"
+            ],
+            [
+              "复杂度",
+              "低",
+              "中",
+              "中"
+            ]
+          ]
+        },
+        {
+          "type": "content",
+          "title": "在HelloAgents中使用范式",
+          "content": "框架内置范式：\n```python\nfrom helloagents import SimpleAgent\nagent = SimpleAgent(paradigm=\"react\")\nagent = SimpleAgent(paradigm=\"plan-and-solve\")\nagent = SimpleAgent(paradigm=\"reflection\")\n```\n动态选择(auto)按任务复杂度自动匹配。"
+        },
+        {
+          "type": "content",
+          "title": "ReAct实战经验总结",
+          "content": "**1. Thought质量决定上限**\n提示词中明确要求逐步推理效果更佳。\n\n**2. Action粒度控制**\n单步Action聚焦单一工具调用。\n\n**3. Observation处理**\n工具结果需格式化送入下一轮。\n\n**4. 循环终止**\n设置最大迭代次数防止无限循环（5-10轮）。\n\n**常见陷阱**\n• Action结果过短→误解结果\n• Observation格式不一致→解析失败\n\n[提示] 健壮的ReAct循环需要对每个环节做防御性编程。"
+        },
+        {
           "type": "quiz",
           "title": "知识测验"
         }
@@ -1030,6 +1208,64 @@
           "content": "构建框架的核心组件：LLM客户端、工具管理器、记忆系统、规划器、执行器\n设计原则：模块化、可扩展、可配置、可测试、可监控\n开发流程：需求分析→架构设计→组件开发→集成测试→优化迭代\n理解框架原理有助于更好地使用和定制智能体"
         },
         {
+          "type": "content",
+          "title": "插件系统设计",
+          "content": "插件系统让框架高可扩展。\n\n**设计原则**\n**1. 接口标准化**\n```python\nclass BasePlugin:\n    name: str\n    def initialize(self): pass\n    def execute(self,**kwargs): pass\n    def cleanup(self): pass\n```\n\n**2. 生命周期**：注册→初始化→执行→销毁\n\n**3. 依赖注入**：插件可声明HttpClient等依赖\n\n[成功] LangChain的成功归功于丰富工具集成。"
+        },
+        {
+          "type": "content",
+          "title": "框架对比表",
+          "content": "| 维度 | 从零构建 | 现有框架 |\n|------|---------|---------|\n| 学习曲线 | 陡峭 | 平缓 |\n| 灵活性 | 极高 | 受限 |\n| 开发速度 | 慢 | 快 |\n| 代码量 | 大 | 小 |\n| 社区支持 | 无 | 丰富 |\n| BUG风险 | 高 | 低 |\n\n**建议**：学习目的从零构建，产品开发用框架。\n\n[提示] 折中：理解原理+使用框架+按需定制。"
+        },
+        {
+          "type": "code",
+          "title": "ToolRegistry实现",
+          "language": "python",
+          "code": "from typing import Callable,Dict,Any\n\nclass ToolRegistry:\n    def __init__(self):\n        self.tools = {}\n\n    def register(self,name,func,desc,params=None):\n        self.tools[name] = {\n            \"name\":name,\"function\":func,\"description\":desc,\n            \"parameters\":params or {\"type\":\"object\",\"properties\":{}}}\n        print(f\"已注册: {name}\")\n\n    def execute(self,name,**kw):\n        if name not in self.tools:\n            raise ValueError(f\"工具{name}未注册\")\n        return self.tools[name][\"function\"](**kw)\n\n    def list_tools(self):\n        return [{\"type\":\"function\",\"function\":{\"name\":t[\"name\"],\n            \"description\":t[\"description\"],\n            \"parameters\":t[\"parameters\"]}}\n            for t in self.tools.values()]\n\nr = ToolRegistry()\nr.register(\"search\",lambda q:f\"结果:{q}\",\"搜索网络\")\nr.register(\"calc\",lambda e:eval(e),\"计算表达式\")\nprint(r.list_tools())\nprint(r.execute(\"calc\",e=\"2+3*4\"))",
+          "explanation": "ToolRegistry管理外部工具，自动生成OpenAI函数调用格式。"
+        },
+        {
+          "type": "concepts",
+          "title": "框架核心组件",
+          "items": [
+            {
+              "icon": "🔗",
+              "title": "LLM Client",
+              "description": "统一对接OpenAI/Claude等LLM API。"
+            },
+            {
+              "icon": "🗂️",
+              "title": "Tool Manager",
+              "description": "管理外部工具注册和执行调度。"
+            },
+            {
+              "icon": "💭",
+              "title": "Memory Manager",
+              "description": "管理短期/长期记忆。"
+            },
+            {
+              "icon": "📋",
+              "title": "Planner",
+              "description": "任务规划与分解。"
+            },
+            {
+              "icon": "⚙️",
+              "title": "Executor",
+              "description": "执行循环、工具调度、异常恢复。"
+            }
+          ]
+        },
+        {
+          "type": "content",
+          "title": "框架测试策略",
+          "content": "**单元测试**\n• ToolRegistry注册/注销\n• LLM Client连接Mock\n• Memory Manager读写\n\n**集成测试**\n• 感知-思考-行动闭环\n• 多工具组合执行\n• 错误恢复和重试\n\n**端到端测试**\n• 真实LLM API交互\n• 复杂多步骤任务\n• 超时和异常场景\n\n[成功] 充分测试可发现70%以上问题。"
+        },
+        {
+          "type": "content",
+          "title": "框架文档化与API设计",
+          "content": "**API设计原则**\n• **一致性**：相似功能相似命名\n• **渐进复杂度**：简繁兼顾\n• **类型提示**：完整类型标注\n\n**文档结构**\n• **快速入门**：5分钟搭建\n• **核心概念**：组件关系\n• **教程**：完整示例\n• **API参考**：自动生成文档\n\n[成功] 良好文档减少80%用户问题。"
+        },
+        {
           "type": "quiz",
           "title": "知识测验"
         }
@@ -1103,6 +1339,105 @@
           "type": "content",
           "title": "本章小结",
           "content": "记忆分为短期记忆和长期记忆\nRAG是检索增强生成，将外部知识与LLM结合\n向量数据库是RAG的核心，支持相似度搜索\n文档处理流程：加载→分割→向量化→存储→检索\n进阶技巧包括上下文压缩、查询改写、多轮检索等"
+        },
+        {
+          "type": "content",
+          "title": "向量数据库选型",
+          "content": "| 数据库 | 部署 | 规模 | 特点 |\n|--------|------|------|------|\n| FAISS | 本地/内存 | 百万级 | Meta开源，最快之一 |\n| Chroma | 本地 | 十万级 | 轻量级Python原生 |\n| Milvus | 分布式 | 十亿级 | 企业级功能完整 |\n| Qdrant | 自托管/云 | 亿级 | Rust编写性能优异 |\n| Pinecone | 云托管 | 十亿级 | 免运维按量付费 |\n\n**选型因素**：数据规模、部署复杂度、功能需求、预算。\n\n[提示] 学习项目从Chroma开始。"
+        },
+        {
+          "type": "content",
+          "title": "记忆策略对比",
+          "content": "| 策略 | 原理 | 优势 | 劣势 | 场景 |\n|-----|------|------|------|------|\n| 滑动窗口 | 保留最近N轮 | 简单零延迟 | 长程丢失 | 简单对话 |\n| 摘要记忆 | 定期做摘要 | 保留核心 | 丢失细节 | 长时间对话 |\n| 向量检索 | 语义检索 | 精确回溯 | 需嵌入 | RAG系统 |\n| 分层记忆 | 短+长期分层 | 兼顾效率质量 | 复杂 | 知识密集型 |\n\n**混合推荐**：短期滑动窗口+中期摘要+长期向量检索。"
+        },
+        {
+          "type": "content",
+          "title": "RAG优化技巧",
+          "content": "**1. 文档分块**\n• 按语义边界分块优于固定长度\n• 相邻块重叠10-20%避免信息断裂\n\n**2. 查询优化**\n• 查询重写：\"它的价格？\"→\"GPT-4 API价格？\"\n• HyDE：先生成答案再检索\n• 多查询检索提高覆盖率\n\n**3. 检索后处理**\n• 重排序：Cross-encoder重新排序\n• MMR：平衡相关性和多样性\n\n[成功] 综合使用准确率提升30-50%。"
+        },
+        {
+          "type": "code",
+          "title": "RAG检索增强生成",
+          "language": "python",
+          "code": "from openai import OpenAI\nimport chromadb\nfrom chromadb.utils import embedding_functions\n\nclass SimpleRAG:\n    def __init__(self, api_key):\n        self.client = OpenAI(api_key=api_key)\n        self.chroma = chromadb.Client()\n        self.col = self.chroma.create_collection(\n            name=\"kb\",\n            embedding_function=embedding_functions.OpenAIEmbeddingFunction(api_key=api_key))\n\n    def add_docs(self, docs, ids):\n        self.col.add(documents=docs, ids=ids)\n\n    def query(self, q, k=3):\n        results = self.col.query(query_texts=[q], n_results=k)\n        ctx = \"\\n\\n\".join(results[\"documents\"][0])\n        prompt = f\"基于上下文回答问题。\\n\\n上下文：{ctx}\\n问题：{q}\\n回答：\"\n        r = self.client.chat.completions.create(model=\"gpt-4\", messages=[{\"role\":\"user\",\"content\":prompt}])\n        return r.choices[0].message.content\n\nrag = SimpleRAG(api_key=\"sk-key\")\nrag.add_docs([\"RAG是Retrieval-Augmented Generation的缩写。\"], [\"d1\"])\nprint(rag.query(\"什么是RAG？\"))",
+          "explanation": "RAG系统：向量数据库存储嵌入→检索top-k→注入prompt增强回答。"
+        },
+        {
+          "type": "flow",
+          "title": "记忆流转流程",
+          "nodes": [
+            {
+              "id": "input",
+              "label": "用户输入",
+              "description": "用户发送消息"
+            },
+            {
+              "id": "stm",
+              "label": "短期记忆",
+              "description": "加载最近对话上下文"
+            },
+            {
+              "id": "ltm",
+              "label": "长期记忆检索",
+              "description": "从向量数据库检索"
+            },
+            {
+              "id": "merge",
+              "label": "记忆融合",
+              "description": "整合多层次记忆"
+            },
+            {
+              "id": "llm",
+              "label": "LLM推理",
+              "description": "基于完整上下文推理"
+            },
+            {
+              "id": "update",
+              "label": "记忆更新",
+              "description": "存入短期+长期记忆"
+            },
+            {
+              "id": "output",
+              "label": "生成回复",
+              "description": "输出结果"
+            }
+          ],
+          "edges": [
+            [
+              "input",
+              "stm"
+            ],
+            [
+              "stm",
+              "ltm"
+            ],
+            [
+              "ltm",
+              "merge"
+            ],
+            [
+              "merge",
+              "llm"
+            ],
+            [
+              "llm",
+              "update"
+            ],
+            [
+              "update",
+              "output"
+            ]
+          ]
+        },
+        {
+          "type": "content",
+          "title": "记忆持久化与安全",
+          "content": "生产环境需持久化记忆。\n\n**短期记忆序列化**\n```python\nimport json\nm = {\"session_id\":\"s1\",\"history\":[{\"role\":\"user\",\"content\":\"你好\"}],\"timestamp\":\"2025-01-15\"}\nwith open(f\"mem/{m[\"session_id\"]}.json\",\"w\") as f:\n    json.dump(m, f, ensure_ascii=False)\n```\n\n**冷热分层**：热数据SSD毫秒级，温数据磁盘秒级，冷数据归档\n\n**安全**：AES-256加密+TTL清理+遗忘权\n\n[警告] 记忆安全直接影响用户隐私。"
+        },
+        {
+          "type": "content",
+          "title": "混合搜索：向量+关键词",
+          "content": "纯向量检索在精确匹配上表现不佳。\n\n**原理**\n1. 向量检索：语义相似度\n2. BM25关键词：精确匹配\n3. RRF加权融合结果\n\n```python\ndef hybrid_search(query):\n    vec = vector_search(query)\n    kw = bm25_search(query)\n    # RRF融合\n    scores = {}\n    for rank,d in enumerate(vec):\n        scores[d[\"id\"]] = scores.get(d[\"id\"],0)+0.5/(rank+1)\n    for rank,d in enumerate(kw):\n        scores[d[\"id\"]] = scores.get(d[\"id\"],0)+0.5/(rank+1)\n    return sorted(scores.items(),key=lambda x:-x[1])\n```\n\n[成功] 混合搜索比纯向量检索准确率高15-25%。"
         },
         {
           "type": "quiz",
@@ -1318,6 +1653,87 @@
           "type": "content",
           "title": "本章小结",
           "content": "MCP：模型与工具通信的标准化协议\nA2A：智能体之间直接通信的协议\nANP：智能体网络的高级协议\n选择合适的协议取决于具体场景\n消息格式包含 Header 和 Body，支持 JSON 序列化"
+        },
+        {
+          "type": "content",
+          "title": "协议选型指南",
+          "content": "**MCP**：LLM↔工具/数据标准化通信 ★★★★★\n**A2A**：Agent间直接通信和协作 ★★★★☆\n**ANP**：事件通知和状态广播 ★★★☆☆\n\n**组合策略**：系统内用MCP，Agent间用A2A+ANP。\n\n[提示] 协议选择基于实际需求。"
+        },
+        {
+          "type": "content",
+          "title": "A2A协议深入",
+          "content": "A2A由Google提出，用于Agent间直接通信。\n\n**核心概念**\n• **Agent Card**：能力描述卡片(类似OpenAPI)\n• **Task生命周期**：创建→执行→完成→取消\n• **消息路由**：点对点、广播、多播\n\n```json\n{\"protocol\":\"a2a\",\"version\":\"1.0\",\n \"sender\":{\"agent_id\":\"planner-001\",\"capabilities\":[\"task_decomposition\"]},\n \"target\":\"booking-agent-002\",\n \"task\":{\"id\":\"t1\",\"type\":\"execute\",\"payload\":{\"action\":\"book_hotel\",\"params\":{\"city\":\"北京\"}}}}\n```\n\n[提示] A2A反映行业对Agent互通的需求。"
+        },
+        {
+          "type": "content",
+          "title": "MCP传输层与认证",
+          "content": "| 传输方式 | 场景 | 特点 |\n|---------|------|------|\n| Stdio | 本地进程 | 最简单零配置 |\n| SSE | 远程HTTP | 标准跨网络 |\n| WebSocket | 双向实时 | 低延迟高频 |\n\n**认证**：API Key / OAuth 2.0 / JWT Token\n\n**错误处理**\n```json\n{\"jsonrpc\":\"2.0\",\"id\":1,\"error\":{\"code\":-32000,\"message\":\"执行超时\"}}\n```\n\n[提示] 传输层选择考虑网络环境和延迟。"
+        },
+        {
+          "type": "code",
+          "title": "MCP Client实现",
+          "language": "python",
+          "code": "import requests\nfrom typing import Dict, Optional\n\nclass MCPClient:\n    def __init__(self, url: str, key: Optional[str] = None):\n        self.url = url.rstrip(\"/\")\n        self.headers = {\"Content-Type\": \"application/json\"}\n        if key: self.headers[\"Authorization\"] = f\"Bearer {key}\"\n        self.req_id = 0\n\n    def call(self, method: str, params: Dict = None) -> Dict:\n        self.req_id += 1\n        p = {\"jsonrpc\":\"2.0\",\"id\":self.req_id,\"method\":method,\"params\":params or {}}\n        return requests.post(f\"{self.url}/mcp\", headers=self.headers, json=p).json()\n\n    def list_tools(self):\n        r = self.call(\"tools/list\")\n        return r.get(\"result\",{}).get(\"tools\",[])\n\n    def call_tool(self, name, args=None):\n        r = self.call(\"tools/call\", {\"name\":name,\"arguments\":args or {}})\n        return r.get(\"result\",{}).get(\"content\",[])\n\nc = MCPClient(\"http://localhost:8000\", \"sk-key\")\nprint([t[\"name\"] for t in c.list_tools()])\nprint(c.call_tool(\"web_search\", {\"query\":\"MCP\"}))",
+          "explanation": "MCP Client通过JSON-RPC 2.0实现工具发现和调用。"
+        },
+        {
+          "type": "comparison",
+          "title": "MCP vs A2A vs ANP",
+          "headers": [
+            "维度",
+            "MCP",
+            "A2A",
+            "ANP"
+          ],
+          "rows": [
+            [
+              "全称",
+              "Model Context Protocol",
+              "Agent-to-Agent",
+              "Agent Notification Protocol"
+            ],
+            [
+              "发起方",
+              "Anthropic",
+              "Google",
+              "社区"
+            ],
+            [
+              "用途",
+              "LLM↔工具/数据",
+              "Agent↔Agent",
+              "事件通知/广播"
+            ],
+            [
+              "模式",
+              "客户端-服务器",
+              "对等",
+              "发布-订阅"
+            ],
+            [
+              "格式",
+              "JSON-RPC 2.0",
+              "JSON自定义",
+              "JSON自定义"
+            ],
+            [
+              "传输",
+              "Stdio/SSE/WS",
+              "HTTP/WS",
+              "HTTP/WS"
+            ],
+            [
+              "状态",
+              "无状态",
+              "有状态",
+              "有状态"
+            ]
+          ]
+        },
+        {
+          "type": "content",
+          "title": "通信协议未来趋势",
+          "content": "**1. MCP生态爆发**\n• 正在成为LLM工具集成行业标准\n• 大量MCP Server涌现\n• 主流IDE已集成MCP\n\n**2. A2A标准化**\n• Google推动A2A部署\n• Agent Card注册中心\n\n**3. 协议融合**\n• MCP处理工具，A2A处理通信\n• 单一框架支持多协议\n\n**4. 安全治理**\n• Agent身份验证标准化\n• 通信审计和溯源\n\n[提示] 关注协议演进趋势有助于前瞻性决策。"
         },
         {
           "type": "quiz",
