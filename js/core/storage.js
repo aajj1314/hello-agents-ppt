@@ -9,27 +9,36 @@ const defaultState = {
     settings: { animationSpeed: 1, showNotes: true, autoPlay: false }
 };
 
-let _cache = null;
-
 export const Storage = {
+    _cache: null,
+
     _readRaw() {
         return localStorage.getItem(STORAGE_KEY);
     },
 
-    _resetCache() { _cache = null; },
-    invalidateCache() { _cache = null; },
+    _resetCache() { this._cache = null; },
+    invalidateCache() { this._cache = null; },
 
     get() {
-        if (_cache === null) {
+        if (this._cache === null) {
             const raw = this._readRaw();
-            _cache = raw ? { ...defaultState, ...JSON.parse(raw) } : { ...defaultState };
+            if (raw) {
+                this._cache = { ...defaultState, ...JSON.parse(raw) };
+            } else {
+                // Deep copy nested objects to prevent mutating module-level defaults
+                this._cache = {
+                    ...defaultState,
+                    chapters: {},
+                    settings: { ...defaultState.settings }
+                };
+            }
         }
-        return _cache;
+        return this._cache;
     },
 
     set(data) {
-        _cache = { ...defaultState, ...data };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(_cache));
+        this._cache = { ...defaultState, ...data };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(this._cache));
     },
 
     getChapterProgress(chapterId) {
@@ -65,7 +74,7 @@ export const Storage = {
     },
 
     reset() {
-        _cache = null;
+        this._cache = null;
         localStorage.removeItem(STORAGE_KEY);
     },
 
@@ -105,7 +114,7 @@ export const Storage = {
 // 跨窗口缓存失效：其他窗口写入时让本窗口缓存作废
 if (typeof window !== 'undefined') {
     window.addEventListener('storage', (e) => {
-        if (e.key === STORAGE_KEY) _cache = null;
+        if (e.key === STORAGE_KEY) Storage._cache = null;
     });
     // 启动时从 localStorage 同步一次 theme
     const theme = Storage.getTheme();

@@ -58,8 +58,7 @@ describe('SlideEngine', () => {
         expect(engine.currentIndex).toBe(1);
     });
 
-    // FIXME: test isolation issue with Storage cache between tests in same suite
-    it.skip('next/prev navigate and stay within bounds', async () => {
+    it('next/prev navigate and stay within bounds', async () => {
         stubChapters();
         const engine = new SlideEngine({ chapter: 'ch1' });
         await engine.init();
