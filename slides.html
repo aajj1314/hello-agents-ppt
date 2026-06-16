@@ -7,30 +7,42 @@
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/slides.css">
     <link rel="stylesheet" href="css/themes.css">
-    <link rel="stylesheet" href="css/animations.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
 </head>
 <body>
-    <div class="slide-player">
-        <header class="slide-header">
-            <a href="index.html" class="btn-back">← 返回</a>
-            <h2 class="chapter-title" id="chapterTitle">章节标题</h2>
-            <div class="slide-controls">
-                <span class="progress" id="slideProgress">1 / 10</span>
-                <button class="btn-settings" id="btnSettings">⚙️</button>
+    <div class="slides-app">
+        <header class="slides-nav">
+            <button class="nav-btn" id="btnHome" title="返回首页">🏠</button>
+            <div class="chapter-info">
+                <div class="ch-title" id="chapterTitle">加载中...</div>
+                <div class="ch-subtitle" id="chapterSubtitle" style="font-size:0.75rem;opacity:0.75;letter-spacing:0.05em;">&nbsp;</div>
+                <div class="ch-progress-text" id="slideProgress">1 / 1</div>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="nav-btn" id="btnPrev" title="上一页 (←)">◀</button>
+                <button class="nav-btn" id="btnNext" title="下一页 (→)">▶</button>
             </div>
         </header>
-        <main class="slide-stage" id="slideStage"></main>
-        <nav class="slide-nav">
-            <button class="btn-nav" id="btnPrev">← 上一页</button>
-            <div class="progress-bar" id="progressBar"></div>
-            <button class="btn-nav" id="btnNext">下一页 →</button>
-        </nav>
-        <aside class="slide-notes hidden" id="slideNotes"></aside>
+
+        <div class="progress-top-bar" id="progressBar">
+            <div class="fill" style="width: 0%"></div>
+        </div>
+
+        <main class="slide-container" id="slideStage">
+            <!-- Slides injected here -->
+        </main>
+
+        <footer class="slides-bottom-nav">
+            <button class="bottom-btn" id="btnPrevBottom">← 上一页</button>
+            <div class="kbd-shortcuts">
+                <kbd class="kbd">←</kbd><kbd class="kbd">→</kbd>
+                <span>切换页面</span>
+            </div>
+            <button class="bottom-btn primary" id="btnNextBottom">下一页 →</button>
+        </footer>
     </div>
+
     <button class="theme-toggle" id="themeToggle">🌓</button>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+
     <script src="js/utils.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/animations/ch1-agent-types.js"></script>
@@ -39,8 +51,8 @@
     <script src="js/animations/ch8-memory.js"></script>
     <script src="js/animations/ch10-protocol.js"></script>
     <script src="js/animations/ch13-travel.js"></script>
-    <script src="js/slides.js"></script>
     <script src="js/quiz.js"></script>
+    <script src="js/slides.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const toggle = document.getElementById('themeToggle');

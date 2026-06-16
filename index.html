@@ -11,21 +11,53 @@
 <body>
     <div class="app">
         <header class="hero-banner">
+            <div class="hero-tag">✦ AI Agent 系列教程</div>
             <h1>Hello-Agents</h1>
-            <p class="subtitle">从零开始构建智能体 · 交互式学习</p>
+            <p class="subtitle">从零开始构建智能体 · 交互式学习平台</p>
+
+            <div class="hero-stats" id="heroStats">
+                <div class="stat-card">
+                    <div class="stat-value" id="statChapters">0</div>
+                    <div class="stat-label">章节</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statPages">0</div>
+                    <div class="stat-label">幻灯片</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statAnimations">0</div>
+                    <div class="stat-label">交互动画</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statQuizzes">0</div>
+                    <div class="stat-label">测验</div>
+                </div>
+            </div>
+
             <div class="progress-overview" id="heroProgress">
-                <span>学习进度</span>
+                <span>整体进度</span>
                 <div class="progress-bar-hero">
                     <div class="fill" id="heroProgressFill" style="width: 0%"></div>
                 </div>
                 <span id="heroProgressText">0%</span>
             </div>
         </header>
+
         <main class="chapter-grid" id="chapterGrid"></main>
+
         <footer class="app-footer">
-            <button class="btn btn-primary" id="btnStart">开始学习</button>
-            <button class="btn btn-secondary" id="btnContinue">继续上次</button>
-            <button class="btn btn-danger" id="btnReset">重置进度</button>
+            <button class="btn btn-primary" id="btnStart">
+                <span class="btn-icon">🚀</span>
+                <span>开始学习</span>
+            </button>
+            <button class="btn btn-secondary" id="btnContinue">
+                <span class="btn-icon">📖</span>
+                <span>继续上次</span>
+            </button>
+            <button class="btn btn-danger" id="btnReset">
+                <span class="btn-icon">↺</span>
+                <span>重置进度</span>
+            </button>
         </footer>
     </div>
     <button class="theme-toggle" id="themeToggle">🌓</button>
