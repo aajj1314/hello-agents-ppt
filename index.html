@@ -61,19 +61,6 @@
         </footer>
     </div>
     <button class="theme-toggle" id="themeToggle">🌓</button>
-    <script src="js/utils.js"></script>
-    <script src="js/storage.js"></script>
-    <script src="js/app.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const toggle = document.getElementById('themeToggle');
-            if (toggle) {
-                toggle.addEventListener('click', () => {
-                    const current = Storage.getTheme();
-                    Storage.setTheme(current === 'light' ? 'dark' : 'light');
-                });
-            }
-        });
-    </script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>

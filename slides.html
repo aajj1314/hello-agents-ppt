@@ -43,26 +43,12 @@
 
     <button class="theme-toggle" id="themeToggle">🌓</button>
 
-    <script src="js/utils.js"></script>
-    <script src="js/storage.js"></script>
     <script src="js/animations/ch1-agent-types.js"></script>
     <script src="js/animations/ch4-react-loop.js"></script>
     <script src="js/animations/ch7-framework.js"></script>
     <script src="js/animations/ch8-memory.js"></script>
     <script src="js/animations/ch10-protocol.js"></script>
     <script src="js/animations/ch13-travel.js"></script>
-    <script src="js/quiz.js"></script>
-    <script src="js/slides.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const toggle = document.getElementById('themeToggle');
-            if (toggle) {
-                toggle.addEventListener('click', () => {
-                    const current = Storage.getTheme();
-                    Storage.setTheme(current === 'light' ? 'dark' : 'light');
-                });
-            }
-        });
-    </script>
+    <script type="module" src="js/slides-main.js"></script>
 </body>
 </html>
