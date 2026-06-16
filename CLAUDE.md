@@ -8,7 +8,7 @@
 
 ```bash
 python3 -m http.server 8080   # 访问 http://localhost:8080/
-npm test                       # 68 tests (vitest + jsdom)
+npm test                       # 103 tests (vitest + jsdom)
 ```
 
 > 不支持 `file://` 双击打开 — fetch + ES Modules 需要 HTTP。
@@ -28,24 +28,19 @@ js/core/: storage.js, utils.js, content-parser.js, code-highlighter.js
 
 ## 待处理问题
 
-### 1. Storage 跨测试隔离 Bug
-`tests/slides/slide-engine.test.js` 中 `it.skip('next/prev navigate and stay within bounds')` — 单独运行通过，与其他测试同跑时失败。根因待排查。
+### 1. 浏览器端功能等价性验证未做
+需 `python3 -m http.server` 启动后人工验证 16 章。
 
-### 2. 6 个旧动画文件未迁移
-旧动画仍用全局 `window.Animations` + `<script src>` 加载。需改为 `CanvasAnimation` 子类 + `registerAnimation()`：
-`ch1-agent-types`, `ch4-react-loop`, `ch7-framework`, `ch8-memory`, `ch10-protocol`, `ch13-travel`
+### 2. 6 个旧动画文件迁移中（子代理工作中）
+旧动画 `ch1-agent-types`, `ch4-react-loop`, `ch7-framework`, `ch8-memory`, `ch10-protocol`, `ch13-travel` 正在改造为 CanvasAnimation + registerAnimation。
 
-### 3. 旧核心文件待删除
-`js/utils.js`, `js/storage.js`, `js/quiz.js`, `js/slides.js` — 新架构已替代，等浏览器验证后删除。
+### 3. 原有 5 章 slide 扩展中（子代理工作中）
+ch1(12→20), ch4(13→20), ch7(14→20), ch8(13→20), ch10(14→20) 正在扩充。
 
-### 4. 浏览器端功能等价性验证未做
-需启动 HTTP 服务器人工验证。
-
-### 5. 原有 6 章 slide 数偏少
-ch1(12), ch4(13), ch7(14), ch8(13), ch10(14) — 都低于 20 张。Phase 2 新增的 10 章均已达到 20+。
-
-### 6. ch5 和 ch16 为视频占位
-animation slide 使用 `media.video` + `canvasFallback: false`，无实际 mp4 文件。
+## 已修复
+- ✅ Storage 缓存 Bug：`_cache` 从模块级 `let` 改为 `Storage._cache` 属性 + deep copy nested defaults
+- ✅ 旧核心文件已删除：`js/utils.js`, `js/storage.js`, `js/quiz.js`, `js/slides.js`
+- ✅ ch5/ch16 视频占位：添加 Canvas 占位动画 + `canvasFallback: true`
 
 ## 技术栈约束
 
