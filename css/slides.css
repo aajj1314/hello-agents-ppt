@@ -1282,3 +1282,58 @@
         padding: 1.25rem;
     }
 }
+
+/* ===== Presenter Mode ===== */
+.presenter-app {
+    min-height: 100vh;
+    display: flex;
+    background: var(--bg-secondary);
+}
+
+.presenter-stage {
+    flex: 1;
+    padding: var(--space-xl);
+    overflow-y: auto;
+    background: var(--bg-primary);
+}
+
+.presenter-side {
+    width: 320px;
+    padding: var(--space-lg);
+    background: var(--bg-elevated);
+    border-left: 1px solid var(--border-light);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.presenter-timer {
+    font-size: 2rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-primary);
+    text-align: center;
+    padding: var(--space-md);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+}
+
+.presenter-notes {
+    padding: var(--space-md);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    border-left: 4px solid var(--primary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    min-height: 120px;
+}
+
+.presenter-next {
+    padding: var(--space-md);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    border: 1px dashed var(--border-color);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}

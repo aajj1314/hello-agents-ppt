@@ -87,6 +87,10 @@ export class SlideEngine {
             if (tag === 'INPUT' || tag === 'TEXTAREA') return;
             if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'ArrowUp') { e.preventDefault(); this.next(); }
             else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { e.preventDefault(); this.prev(); }
+            else if (e.key === 'p' || e.key === 'P') {
+                e.preventDefault();
+                window.open(`presenter.html?chapter=${this.chapterId}&slide=${this.currentIndex + 1}`, 'presenter', 'width=1280,height=720');
+            }
         });
 
         if (this.progressBar) {
@@ -197,6 +201,19 @@ export class SlideEngine {
         if (this.btnNextBottom) this.btnNextBottom.disabled = last;
         Storage.setChapterProgress(this.chapterId, { slideIndex: this.currentIndex });
         Storage.setLastVisited(this.chapterId, this.currentIndex);
+        this._broadcastSlide();
+    }
+
+    _broadcastSlide() {
+        if (typeof BroadcastChannel === 'undefined') return;
+        if (!this._channel) this._channel = new BroadcastChannel('presenter');
+        const slide = this.slides[this.currentIndex];
+        this._channel.postMessage({
+            type: 'slide',
+            chapterId: this.chapterId,
+            slideIndex: this.currentIndex,
+            notes: slide.speakerNotes || ''
+        });
     }
 
     next() { if (this.currentIndex < this.slides.length - 1) { this.currentIndex++; this.updateSlideVisibility(); this.updateUI(); } }

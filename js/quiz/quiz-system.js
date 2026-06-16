@@ -85,7 +85,7 @@ export class QuizSystem {
         }
     }
 
-    submit() {
+    async submit() {
         if (this.submitted || this.selectedIds.length === 0) return;
         this.submitted = true;
         const q = this.questions[this.currentIndex];
@@ -117,6 +117,11 @@ export class QuizSystem {
             correctAnswer,
             correct: isCorrect
         });
+
+        if (!isCorrect) {
+            const { addWrongAnswer } = await import('../core/storage.js');
+            addWrongAnswer(this.chapterId, { questionId: q.id, userAnswer, correctAnswer });
+        }
 
         // Show explanation
         const explanation = document.getElementById('quiz-explanation');

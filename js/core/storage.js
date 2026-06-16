@@ -74,6 +74,31 @@ export const Storage = {
         if (!chapterIds.length) return 0;
         const completed = chapterIds.filter(id => state.chapters[id]?.completed).length;
         return Math.round((completed / chapterIds.length) * 100);
+    },
+
+    addWrongAnswer(chapterId, entry) {
+        const state = this.get();
+        if (!state.wrongAnswers) state.wrongAnswers = {};
+        if (!state.wrongAnswers[chapterId]) state.wrongAnswers[chapterId] = [];
+        state.wrongAnswers[chapterId].push({ ...entry, ts: Date.now() });
+        state.wrongAnswers[chapterId] = state.wrongAnswers[chapterId].slice(-50);
+        this.set(state);
+    },
+    getWrongAnswers(chapterId) {
+        return this.get().wrongAnswers?.[chapterId] || [];
+    },
+    getTotalWrongCount() {
+        const wa = this.get().wrongAnswers || {};
+        return Object.values(wa).reduce((s, arr) => s + arr.length, 0);
+    },
+    clearWrong(chapterId) {
+        const state = this.get();
+        if (state.wrongAnswers?.[chapterId]) { delete state.wrongAnswers[chapterId]; this.set(state); }
+    },
+    clearAllWrong() {
+        const state = this.get();
+        state.wrongAnswers = {};
+        this.set(state);
     }
 };
 

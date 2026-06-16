@@ -58,4 +58,28 @@ describe('Storage', () => {
         window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY }));
         expect(Storage.get().theme).toBe('dark');
     });
+
+    describe('wrong answer book', () => {
+        beforeEach(() => { localStorage.clear(); Storage._resetCache(); });
+
+        it('addWrongAnswer stores entry', () => {
+            Storage.addWrongAnswer('ch1', { questionId: 'q1', userAnswer: 'A', correctAnswer: 'B' });
+            expect(Storage.getWrongAnswers('ch1').length).toBe(1);
+        });
+
+        it('getWrongAnswers returns empty for unknown chapter', () => {
+            expect(Storage.getWrongAnswers('ch99')).toEqual([]);
+        });
+
+        it('clearWrong removes entries', () => {
+            Storage.addWrongAnswer('ch1', { questionId: 'q1' });
+            Storage.clearWrong('ch1');
+            expect(Storage.getWrongAnswers('ch1')).toEqual([]);
+        });
+
+        it('caps at 50 per chapter', () => {
+            for (let i = 0; i < 60; i++) Storage.addWrongAnswer('ch1', { questionId: `q${i}` });
+            expect(Storage.getWrongAnswers('ch1').length).toBe(50);
+        });
+    });
 });
