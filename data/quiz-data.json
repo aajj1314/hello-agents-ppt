@@ -5,10 +5,22 @@
       "type": "single",
       "question": "以下哪个不是智能体的核心组件？",
       "options": [
-        {"id": "A", "text": "感知（Perception）"},
-        {"id": "B", "text": "推理（Reasoning）"},
-        {"id": "C", "text": "数据库（Database）"},
-        {"id": "D", "text": "行动（Action）"}
+        {
+          "id": "A",
+          "text": "感知（Perception）"
+        },
+        {
+          "id": "B",
+          "text": "推理（Reasoning）"
+        },
+        {
+          "id": "C",
+          "text": "数据库（Database）"
+        },
+        {
+          "id": "D",
+          "text": "行动（Action）"
+        }
       ],
       "answer": "C",
       "explanation": "智能体的核心组件包括感知、推理、行动和学习，数据库不是必需的。"
@@ -18,10 +30,22 @@
       "type": "single",
       "question": "学习型智能体与其他类型智能体的主要区别是什么？",
       "options": [
-        {"id": "A", "text": "它能感知环境"},
-        {"id": "B", "text": "它能从经验中改进性能"},
-        {"id": "C", "text": "它能执行行动"},
-        {"id": "D", "text": "它有明确的目标"}
+        {
+          "id": "A",
+          "text": "它能感知环境"
+        },
+        {
+          "id": "B",
+          "text": "它能从经验中改进性能"
+        },
+        {
+          "id": "C",
+          "text": "它能执行行动"
+        },
+        {
+          "id": "D",
+          "text": "它有明确的目标"
+        }
       ],
       "answer": "B",
       "explanation": "学习型智能体的关键特征是能够从过去的经验中学习并改进未来的决策。"
@@ -31,10 +55,22 @@
       "type": "single",
       "question": "基于效用的智能体与基于目标的智能体的主要区别是？",
       "options": [
-        {"id": "A", "text": "基于效用的智能体更复杂"},
-        {"id": "B", "text": "基于目标的智能体不能感知环境"},
-        {"id": "C", "text": "基于效用的智能体能在多个目标间权衡"},
-        {"id": "D", "text": "基于目标的智能体不需要推理"}
+        {
+          "id": "A",
+          "text": "基于效用的智能体更复杂"
+        },
+        {
+          "id": "B",
+          "text": "基于目标的智能体不能感知环境"
+        },
+        {
+          "id": "C",
+          "text": "基于效用的智能体能在多个目标间权衡"
+        },
+        {
+          "id": "D",
+          "text": "基于目标的智能体不需要推理"
+        }
       ],
       "answer": "C",
       "explanation": "基于效用的智能体使用效用函数来评估不同状态的优劣，可以在多个冲突目标间做出权衡。"
@@ -51,10 +87,22 @@
       "type": "single",
       "question": "智能体与传统程序的主要区别是什么？",
       "options": [
-        {"id": "A", "text": "智能体运行速度更快"},
-        {"id": "B", "text": "智能体是持续运行的，能主动感知和行动"},
-        {"id": "C", "text": "智能体只能使用Python编写"},
-        {"id": "D", "text": "智能体不需要输入"}
+        {
+          "id": "A",
+          "text": "智能体运行速度更快"
+        },
+        {
+          "id": "B",
+          "text": "智能体是持续运行的，能主动感知和行动"
+        },
+        {
+          "id": "C",
+          "text": "智能体只能使用Python编写"
+        },
+        {
+          "id": "D",
+          "text": "智能体不需要输入"
+        }
       ],
       "answer": "B",
       "explanation": "传统程序通常是输入→处理→输出的一次性流程，而智能体是持续运行的，能主动感知环境并采取行动。"
@@ -66,10 +114,22 @@
       "type": "single",
       "question": "ReAct 范式中，正确的循环顺序是？",
       "options": [
-        {"id": "A", "text": "Action → Thought → Observation"},
-        {"id": "B", "text": "Thought → Action → Observation"},
-        {"id": "C", "text": "Observation → Thought → Action"},
-        {"id": "D", "text": "Thought → Observation → Action"}
+        {
+          "id": "A",
+          "text": "Action → Thought → Observation"
+        },
+        {
+          "id": "B",
+          "text": "Thought → Action → Observation"
+        },
+        {
+          "id": "C",
+          "text": "Observation → Thought → Action"
+        },
+        {
+          "id": "D",
+          "text": "Thought → Observation → Action"
+        }
       ],
       "answer": "B",
       "explanation": "ReAct 的核心循环是：Thought（思考）→ Action（行动）→ Observation（观察）。"
@@ -79,10 +139,22 @@
       "type": "single",
       "question": "Plan-and-Solve 范式最适合什么类型的任务？",
       "options": [
-        {"id": "A", "text": "需要实时响应的任务"},
-        {"id": "B", "text": "需要多步骤解决的复杂任务"},
-        {"id": "C", "text": "简单的问答任务"},
-        {"id": "D", "text": "图像识别任务"}
+        {
+          "id": "A",
+          "text": "需要实时响应的任务"
+        },
+        {
+          "id": "B",
+          "text": "需要多步骤解决的复杂任务"
+        },
+        {
+          "id": "C",
+          "text": "简单的问答任务"
+        },
+        {
+          "id": "D",
+          "text": "图像识别任务"
+        }
       ],
       "answer": "B",
       "explanation": "Plan-and-Solve 先制定完整计划再执行，适合需要多步骤、结构化的复杂任务。"
@@ -92,10 +164,22 @@
       "type": "single",
       "question": "Reflection 范式的主要作用是什么？",
       "options": [
-        {"id": "A", "text": "加快执行速度"},
-        {"id": "B", "text": "让智能体能够自我评估和修正"},
-        {"id": "C", "text": "减少内存使用"},
-        {"id": "D", "text": "简化代码结构"}
+        {
+          "id": "A",
+          "text": "加快执行速度"
+        },
+        {
+          "id": "B",
+          "text": "让智能体能够自我评估和修正"
+        },
+        {
+          "id": "C",
+          "text": "减少内存使用"
+        },
+        {
+          "id": "D",
+          "text": "简化代码结构"
+        }
       ],
       "answer": "B",
       "explanation": "Reflection 让智能体在执行后反思结果，识别问题并进行修正，从而优化输出质量。"
@@ -112,10 +196,22 @@
       "type": "single",
       "question": "以下哪种情况最适合使用 ReAct 范式？",
       "options": [
-        {"id": "A", "text": "计算大量数据的统计指标"},
-        {"id": "B", "text": "需要与外部工具动态交互的开放性问题"},
-        {"id": "C", "text": "格式化固定模板的文档"},
-        {"id": "D", "text": "批量处理图片"}
+        {
+          "id": "A",
+          "text": "计算大量数据的统计指标"
+        },
+        {
+          "id": "B",
+          "text": "需要与外部工具动态交互的开放性问题"
+        },
+        {
+          "id": "C",
+          "text": "格式化固定模板的文档"
+        },
+        {
+          "id": "D",
+          "text": "批量处理图片"
+        }
       ],
       "answer": "B",
       "explanation": "ReAct 适合需要动态决策、与外部工具交互的开放性问题，能够边思考边行动。"
@@ -127,10 +223,22 @@
       "type": "single",
       "question": "构建自己的Agent框架的主要好处不包括？",
       "options": [
-        {"id": "A", "text": "深入理解原理"},
-        {"id": "B", "text": "灵活定制功能"},
-        {"id": "C", "text": "自动获得商业支持"},
-        {"id": "D", "text": "学习设计模式"}
+        {
+          "id": "A",
+          "text": "深入理解原理"
+        },
+        {
+          "id": "B",
+          "text": "灵活定制功能"
+        },
+        {
+          "id": "C",
+          "text": "自动获得商业支持"
+        },
+        {
+          "id": "D",
+          "text": "学习设计模式"
+        }
       ],
       "answer": "C",
       "explanation": "自己构建框架主要是为了学习和定制，不意味着自动获得商业支持。"
@@ -140,10 +248,22 @@
       "type": "single",
       "question": "Agent框架中，负责管理外部工具调用的组件是？",
       "options": [
-        {"id": "A", "text": "LLMClient"},
-        {"id": "B", "text": "ToolManager"},
-        {"id": "C", "text": "Memory"},
-        {"id": "D", "text": "Planner"}
+        {
+          "id": "A",
+          "text": "LLMClient"
+        },
+        {
+          "id": "B",
+          "text": "ToolManager"
+        },
+        {
+          "id": "C",
+          "text": "Memory"
+        },
+        {
+          "id": "D",
+          "text": "Planner"
+        }
       ],
       "answer": "B",
       "explanation": "ToolManager 负责注册、管理和执行外部工具。"
@@ -162,10 +282,22 @@
       "type": "single",
       "question": "短期记忆（STM）与长期记忆（LTM）的主要区别是？",
       "options": [
-        {"id": "A", "text": "STM 容量更大"},
-        {"id": "B", "text": "LTM 保存时间更长，容量更大"},
-        {"id": "C", "text": "STM 只能存储数字"},
-        {"id": "D", "text": "LTM 不能检索"}
+        {
+          "id": "A",
+          "text": "STM 容量更大"
+        },
+        {
+          "id": "B",
+          "text": "LTM 保存时间更长，容量更大"
+        },
+        {
+          "id": "C",
+          "text": "STM 只能存储数字"
+        },
+        {
+          "id": "D",
+          "text": "LTM 不能检索"
+        }
       ],
       "answer": "B",
       "explanation": "短期记忆容量有限、保存时间短；长期记忆容量大、可持久保存。"
@@ -175,10 +307,22 @@
       "type": "single",
       "question": "RAG 的全称是什么？",
       "options": [
-        {"id": "A", "text": "Random Access Generation"},
-        {"id": "B", "text": "Retrieval-Augmented Generation"},
-        {"id": "C", "text": "Recursive Agent Graph"},
-        {"id": "D", "text": "Real-time API Gateway"}
+        {
+          "id": "A",
+          "text": "Random Access Generation"
+        },
+        {
+          "id": "B",
+          "text": "Retrieval-Augmented Generation"
+        },
+        {
+          "id": "C",
+          "text": "Recursive Agent Graph"
+        },
+        {
+          "id": "D",
+          "text": "Real-time API Gateway"
+        }
       ],
       "answer": "B",
       "explanation": "RAG = Retrieval-Augmented Generation（检索增强生成）。"
@@ -197,10 +341,22 @@
       "type": "single",
       "question": "MCP 协议中的三个核心角色是？",
       "options": [
-        {"id": "A", "text": "Host、Client、Server"},
-        {"id": "B", "text": "Sender、Receiver、Router"},
-        {"id": "C", "text": "Master、Slave、Proxy"},
-        {"id": "D", "text": "Producer、Consumer、Broker"}
+        {
+          "id": "A",
+          "text": "Host、Client、Server"
+        },
+        {
+          "id": "B",
+          "text": "Sender、Receiver、Router"
+        },
+        {
+          "id": "C",
+          "text": "Master、Slave、Proxy"
+        },
+        {
+          "id": "D",
+          "text": "Producer、Consumer、Broker"
+        }
       ],
       "answer": "A",
       "explanation": "MCP（Model Context Protocol）包含 Host、Client 和 Server 三个核心角色。"
@@ -210,10 +366,22 @@
       "type": "single",
       "question": "A2A 协议主要用于什么场景？",
       "options": [
-        {"id": "A", "text": "数据库连接"},
-        {"id": "B", "text": "智能体之间的直接通信"},
-        {"id": "C", "text": "文件传输"},
-        {"id": "D", "text": "视频流处理"}
+        {
+          "id": "A",
+          "text": "数据库连接"
+        },
+        {
+          "id": "B",
+          "text": "智能体之间的直接通信"
+        },
+        {
+          "id": "C",
+          "text": "文件传输"
+        },
+        {
+          "id": "D",
+          "text": "视频流处理"
+        }
       ],
       "answer": "B",
       "explanation": "A2A（Agent-to-Agent）协议专门用于智能体之间的通信和协作。"
@@ -230,35 +398,1743 @@
     {
       "id": "ch13-q1",
       "type": "single",
-      "question": "智能旅行助手项目中，负责制定行程规划的Agent是？",
+      "question": "智能旅行助手项目中，负责制定行程规划的 Agent 是？",
       "options": [
-        {"id": "A", "text": "BookingAgent"},
-        {"id": "B", "text": "PlannerAgent"},
-        {"id": "C", "text": "AdvisorAgent"},
-        {"id": "D", "text": "SearchAgent"}
+        {
+          "id": "A",
+          "text": "BookingAgent"
+        },
+        {
+          "id": "B",
+          "text": "PlannerAgent"
+        },
+        {
+          "id": "C",
+          "text": "AdvisorAgent"
+        },
+        {
+          "id": "D",
+          "text": "SearchAgent"
+        }
       ],
       "answer": "B",
-      "explanation": "PlannerAgent 负责根据用户需求制定行程规划。"
+      "explanation": "PlannerAgent 负责根据用户需求制定行程规划，是整个系统的核心协调器。"
     },
     {
       "id": "ch13-q2",
       "type": "single",
       "question": "多智能体协作的主要优势是？",
       "options": [
-        {"id": "A", "text": "减少代码量"},
-        {"id": "B", "text": "每个Agent专注特定任务，提高整体效率"},
-        {"id": "C", "text": "降低系统复杂度"},
-        {"id": "D", "text": "不需要通信协议"}
+        {
+          "id": "A",
+          "text": "减少代码量"
+        },
+        {
+          "id": "B",
+          "text": "每个 Agent 专注特定任务，提高整体效率"
+        },
+        {
+          "id": "C",
+          "text": "降低系统复杂度"
+        },
+        {
+          "id": "D",
+          "text": "不需要通信协议"
+        }
       ],
       "answer": "B",
-      "explanation": "多智能体通过分工协作，让每个Agent专注自己擅长的任务，提高整体系统效率。"
+      "explanation": "多智能体通过分工协作，让每个 Agent 专注自己擅长的任务，提高整体系统效率。"
     },
     {
       "id": "ch13-q3",
       "type": "judge",
-      "question": "在多智能体系统中，Agent之间必须通过共享内存来通信。",
+      "question": "在多智能体旅行规划系统中，Agent 之间必须通过共享内存来通信。",
       "answer": false,
-      "explanation": "Agent之间可以通过多种方式通信，包括消息传递、共享内存、RPC等，消息传递是最常见的方式。"
+      "explanation": "Agent 之间可以通过多种方式通信，包括消息传递、共享内存、RPC 等，消息传递是最常见的方式。"
+    },
+    {
+      "id": "ch13-q4",
+      "type": "single",
+      "question": "MCP（Model Context Protocol）协议的核心作用是？",
+      "options": [
+        {
+          "id": "A",
+          "text": "实现数据库连接"
+        },
+        {
+          "id": "B",
+          "text": "在语言模型和外部工具间建立标准化通信"
+        },
+        {
+          "id": "C",
+          "text": "加速 LLM 推理"
+        },
+        {
+          "id": "D",
+          "text": "替代 HTTP 协议"
+        }
+      ],
+      "answer": "B",
+      "explanation": "MCP（Model Context Protocol）是 Anthropic 提出的标准化协议，用于连接 LLM 和外部工具。"
+    },
+    {
+      "id": "ch13-q5",
+      "type": "single",
+      "question": "在旅行助手项目中，共享 MCP 实例的主要好处是？",
+      "options": [
+        {
+          "id": "A",
+          "text": "每个 Agent 可以独立控制 API 版本"
+        },
+        {
+          "id": "B",
+          "text": "节省资源，只需启动一个 MCP 服务器进程"
+        },
+        {
+          "id": "C",
+          "text": "提高 LLM 响应速度"
+        },
+        {
+          "id": "D",
+          "text": "增加系统的并发能力"
+        }
+      ],
+      "answer": "B",
+      "explanation": "共享 MCP 实例只需要启动一个服务器进程，多个 Agent 共享，节省内存和 CPU 资源。"
+    },
+    {
+      "id": "ch13-q6",
+      "type": "single",
+      "question": "旅行助手中，Planner 将预订和推荐任务发送给 Booking 和 Advisor 后，这两个 Agent 的工作模式是？",
+      "options": [
+        {
+          "id": "A",
+          "text": "串行执行"
+        },
+        {
+          "id": "B",
+          "text": "并行执行"
+        },
+        {
+          "id": "C",
+          "text": "只有一个执行"
+        },
+        {
+          "id": "D",
+          "text": "由用户选择哪个执行"
+        }
+      ],
+      "answer": "B",
+      "explanation": "Booking 和 Advisor 可以并行工作，同时查询预订信息和推荐内容，提高整体效率。"
+    }
+  ],
+  "ch2": [
+    {
+      "id": "ch2-q1",
+      "type": "single",
+      "question": "物理符号系统假说（PSSH）的两个核心论断是什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "充分性论断和必要性论断"
+        },
+        {
+          "id": "B",
+          "text": "完备性论断和一致性论断"
+        },
+        {
+          "id": "C",
+          "text": "可计算性论断和可终止性论断"
+        },
+        {
+          "id": "D",
+          "text": "可观察性论断和可预测性论断"
+        }
+      ],
+      "answer": "A",
+      "explanation": "PSSH的充分性论断表示任何物理符号系统都具备产生通用智能行为的充分手段；必要性论断表示任何展现通用智能的系统本质上必然是物理符号系统。"
+    },
+    {
+      "id": "ch2-q2",
+      "type": "single",
+      "question": "MYCIN专家系统主要采用哪种推理方式？",
+      "options": [
+        {
+          "id": "A",
+          "text": "正向链（Forward Chaining）"
+        },
+        {
+          "id": "B",
+          "text": "反向链（Backward Chaining）"
+        },
+        {
+          "id": "C",
+          "text": "双向链"
+        },
+        {
+          "id": "D",
+          "text": "随机搜索"
+        }
+      ],
+      "answer": "B",
+      "explanation": "MYCIN从“确定致病菌”这一最高目标出发，反向推导需要哪些证据和条件，然后向医生提问获取信息，是典型的目标驱动方式。"
+    },
+    {
+      "id": "ch2-q3",
+      "type": "single",
+      "question": "马文·明斯基的“心智社会”理论的核心观点是什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "智能来自单一完美的逻辑推理系统"
+        },
+        {
+          "id": "B",
+          "text": "智能来自大量简单智能体之间的交互涌现"
+        },
+        {
+          "id": "C",
+          "text": "智能来自超大规模神经网络的参数"
+        },
+        {
+          "id": "D",
+          "text": "智能来自对世界知识的完整符号编码"
+        }
+      ],
+      "answer": "B",
+      "explanation": "明斯基认为智能并非来自一个全知全能的中央处理器，而是从大量功能简单、彼此交互的智能体（Agent）的局部交互中涌现出来的。"
+    },
+    {
+      "id": "ch2-q4",
+      "type": "single",
+      "question": "强化学习中的“策略”（Policy）是指什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "环境反馈给智能体的奖励信号"
+        },
+        {
+          "id": "B",
+          "text": "从状态到行动的映射函数"
+        },
+        {
+          "id": "C",
+          "text": "训练数据的概率分布"
+        },
+        {
+          "id": "D",
+          "text": "模型参数的初始化方法"
+        }
+      ],
+      "answer": "B",
+      "explanation": "策略（Policy, π）是强化学习的核心，它定义了智能体在给定状态下应该采取什么行动，是状态到行动的映射。"
+    },
+    {
+      "id": "ch2-q5",
+      "type": "judge",
+      "question": "SHRDLU是第一个将语言理解、推理规划与行动记忆集成在同一系统中的综合智能体。",
+      "answer": true,
+      "explanation": "SHRDLU首次将自然语言理解、规划推理、行动执行和记忆问答等多个AI模块集成于统一系统中，奠定了现代智能体研究的基础。"
+    },
+    {
+      "id": "ch2-q6",
+      "type": "multiple",
+      "question": "以下哪些属于符号主义面临的根本性挑战？（多选）",
+      "options": [
+        {
+          "id": "A",
+          "text": "知识获取瓶颈（Knowledge Acquisition Bottleneck）"
+        },
+        {
+          "id": "B",
+          "text": "常识问题（Common-sense Problem）"
+        },
+        {
+          "id": "C",
+          "text": "过拟合问题（Overfitting）"
+        },
+        {
+          "id": "D",
+          "text": "框架问题（Frame Problem）"
+        }
+      ],
+      "answer": [
+        "A",
+        "B",
+        "D"
+      ],
+      "explanation": "符号主义面临三大挑战：知识获取瓶颈（知识难以手动编码）、常识问题（缺乏基本常识）、框架问题（在动态世界中高效判断哪些未发生变化是逻辑难题）。过拟合是机器学习问题，并非符号主义特有的挑战。"
+    },
+    {
+      "id": "ch2-q7",
+      "type": "single",
+      "question": "预训练-微调范式主要解决了符号主义的哪个核心问题？",
+      "options": [
+        {
+          "id": "A",
+          "text": "推理速度过慢"
+        },
+        {
+          "id": "B",
+          "text": "知识获取瓶颈"
+        },
+        {
+          "id": "C",
+          "text": "系统脆弱性"
+        },
+        {
+          "id": "D",
+          "text": "计算资源不足"
+        }
+      ],
+      "answer": "B",
+      "explanation": "预训练范式通过在海量文本数据上自监督学习，使模型自动习得世界知识，不再需要人类专家手工编码知识，从而解决了知识获取瓶颈问题。"
+    }
+  ],
+  "ch3": [
+    {
+      "id": "ch3-q1",
+      "type": "single",
+      "question": "Transformer架构最核心的创新是什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "循环神经网络（RNN）"
+        },
+        {
+          "id": "B",
+          "text": "自注意力机制（Self-Attention）"
+        },
+        {
+          "id": "C",
+          "text": "反向传播算法"
+        },
+        {
+          "id": "D",
+          "text": "词嵌入技术"
+        }
+      ],
+      "answer": "B",
+      "explanation": "Transformer完全抛弃了循环结构，转而完全依赖自注意力机制来捕捉序列内的依赖关系，从而实现了真正意义上的并行计算。"
+    },
+    {
+      "id": "ch3-q2",
+      "type": "single",
+      "question": "自注意力机制中，Q、K、V 分别代表什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "查询（Query）、键（Key）、值（Value）"
+        },
+        {
+          "id": "B",
+          "text": "质量（Quality）、知识（Knowledge）、价值（Value）"
+        },
+        {
+          "id": "C",
+          "text": "问题（Question）、关键（Key）、验证（Verify）"
+        },
+        {
+          "id": "D",
+          "text": "快速（Quick）、关键（Key）、变量（Variable）"
+        }
+      ],
+      "answer": "A",
+      "explanation": "Q（Query）代表当前词元主动查询其他词元，K（Key）代表可被查询的标签，V（Value）代表词元本身的语义内容。"
+    },
+    {
+      "id": "ch3-q3",
+      "type": "single",
+      "question": "Decoder-Only架构相比完整的Encoder-Decoder架构的一个劣势是？",
+      "options": [
+        {
+          "id": "A",
+          "text": "训练目标不统一"
+        },
+        {
+          "id": "B",
+          "text": "不适合需要双向理解输入的任务"
+        },
+        {
+          "id": "C",
+          "text": "结构过于复杂难以扩展"
+        },
+        {
+          "id": "D",
+          "text": "天然不适合文本生成任务"
+        }
+      ],
+      "answer": "B",
+      "explanation": "Decoder-Only架构只保留了解码器部分，缺乏编码器对输入的深度双向理解。但它的优势在于结构简单、训练目标统一（预测下一个词）、天然适合生成任务。"
+    },
+    {
+      "id": "ch3-q4",
+      "type": "judge",
+      "question": "BPE（字节对编码）是一种子词分词算法，GPT系列模型采用了此算法。",
+      "answer": true,
+      "explanation": "BPE通过迭代合并语料库中最高频的相邻词元对来构建词表，GPT系列模型采用此算法。类似的还有WordPiece（BERT）和SentencePiece（Llama）。"
+    },
+    {
+      "id": "ch3-q5",
+      "type": "single",
+      "question": "Temperature参数在LLM推理中的主要作用是什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "控制模型推理速度"
+        },
+        {
+          "id": "B",
+          "text": "控制输出文本的随机性和确定性"
+        },
+        {
+          "id": "C",
+          "text": "控制模型上下文窗口大小"
+        },
+        {
+          "id": "D",
+          "text": "控制模型参数量"
+        }
+      ],
+      "answer": "B",
+      "explanation": "Temperature通过调整Softmax分布的陡峭程度来控制输出的随机性。低温使分布更陡峭（更确定），高温使分布更平坦（更多样）。"
+    },
+    {
+      "id": "ch3-q6",
+      "type": "single",
+      "question": "以下哪种方法不是缓解模型幻觉（Hallucination）的有效策略？",
+      "options": [
+        {
+          "id": "A",
+          "text": "检索增强生成（RAG）"
+        },
+        {
+          "id": "B",
+          "text": "减小模型参数量"
+        },
+        {
+          "id": "C",
+          "text": "外部工具调用（搜索引擎、计算器）"
+        },
+        {
+          "id": "D",
+          "text": "多步推理与验证"
+        }
+      ],
+      "answer": "B",
+      "explanation": "减小模型参数量通常不利于缓解幻觉，因为小模型的推理能力更弱。RAG、外部工具调用和多步推理验证才是缓解幻觉的有效方法。"
+    },
+    {
+      "id": "ch3-q7",
+      "type": "single",
+      "question": "Chinchilla定律对缩放法则（Scaling Laws）的主要修正是什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "模型越大越好，无需考虑数据量"
+        },
+        {
+          "id": "B",
+          "text": "参数量和训练数据量存在最优配比，更多数据比更大模型更重要"
+        },
+        {
+          "id": "C",
+          "text": "增加计算量对性能提升没有帮助"
+        },
+        {
+          "id": "D",
+          "text": "小模型永远无法超越大模型"
+        }
+      ],
+      "answer": "B",
+      "explanation": "Chinchilla定律指出，在给定计算预算下，模型参数量和训练数据量之间应保持平衡。70B参数的Chinchilla用4倍于GPT-3的数据训练，性能反超175B的GPT-3，证明了数据效率的重要性。"
+    }
+  ],
+  "ch5": [
+    {
+      "id": "ch5-q1",
+      "type": "single",
+      "question": "Coze（扣子）的核心定位是什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "企业级 LLM 应用开发与运营平台"
+        },
+        {
+          "id": "B",
+          "text": "零代码/低代码的 Agent 构建平台"
+        },
+        {
+          "id": "C",
+          "text": "通用工作流自动化工具"
+        },
+        {
+          "id": "D",
+          "text": "数据库管理系统"
+        }
+      ],
+      "answer": "B",
+      "explanation": "Coze 由字节跳动推出，主打零代码/低代码的 Agent 构建体验，让不具备编程背景的用户也能轻松创造智能体。"
+    },
+    {
+      "id": "ch5-q2",
+      "type": "single",
+      "question": "Dify 相比 Coze 最显著的优势是什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "插件数量更多"
+        },
+        {
+          "id": "B",
+          "text": "开源且支持本地部署"
+        },
+        {
+          "id": "C",
+          "text": "操作更简单"
+        },
+        {
+          "id": "D",
+          "text": "发布渠道更多"
+        }
+      ],
+      "answer": "B",
+      "explanation": "Dify 是开源平台，支持本地部署（Docker Compose）和云端部署，这对需要数据安全的企业尤为重要。"
+    },
+    {
+      "id": "ch5-q3",
+      "type": "single",
+      "question": "n8n 最核心的优势是什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "最丰富的 LLM 功能"
+        },
+        {
+          "id": "B",
+          "text": "强大的\"连接\"能力，将各类服务串联为自动化流程"
+        },
+        {
+          "id": "C",
+          "text": "最友好的用户界面"
+        },
+        {
+          "id": "D",
+          "text": "最快的执行速度"
+        }
+      ],
+      "answer": "B",
+      "explanation": "n8n 的核心优势在于其强大的连接能力，拥有数百个预置节点，可将各类 SaaS 服务、数据库、API 连接成复杂的自动化业务流程。"
+    },
+    {
+      "id": "ch5-q4",
+      "type": "multiple",
+      "question": "低代码平台相比纯代码开发有哪些价值？（多选）",
+      "options": [
+        {
+          "id": "A",
+          "text": "降低技术门槛，非技术人员也能参与"
+        },
+        {
+          "id": "B",
+          "text": "提升开发效率，快速验证想法"
+        },
+        {
+          "id": "C",
+          "text": "提供可视化调试体验"
+        },
+        {
+          "id": "D",
+          "text": "完全替代代码开发"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "低代码平台降低门槛、提升效率、提供可视化体验，但并不完全替代代码开发。混合开发模式才是最佳实践。"
+    },
+    {
+      "id": "ch5-q5",
+      "type": "single",
+      "question": "Coze 当前的一个重要局限性是什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "不支持 MCP 协议"
+        },
+        {
+          "id": "B",
+          "text": "插件数量太少"
+        },
+        {
+          "id": "C",
+          "text": "无法发布到微信"
+        },
+        {
+          "id": "D",
+          "text": "不支持中文"
+        }
+      ],
+      "answer": "A",
+      "explanation": "Coze 当前不支持 MCP（Model Context Protocol），这被认为是其发展的重要局限，不过已在产品路线图中。"
+    },
+    {
+      "id": "ch5-q6",
+      "type": "judge",
+      "question": "Dify 的 API 格式与 OpenAI 完全兼容，可以直接使用 OpenAI 的客户端库调用。",
+      "answer": false,
+      "explanation": "Dify 的 API 格式不兼容 OpenAI，这可能限制与某些第三方系统的集成。这与 n8n 和 Coze 不同。"
+    },
+    {
+      "id": "ch5-q7",
+      "type": "single",
+      "question": "以下哪种场景最适合选择 n8n 平台？",
+      "options": [
+        {
+          "id": "A",
+          "text": "非技术用户快速创建聊天机器人"
+        },
+        {
+          "id": "B",
+          "text": "将 AI 能力深度嵌入现有业务流程"
+        },
+        {
+          "id": "C",
+          "text": "构建企业级 RAG 系统"
+        },
+        {
+          "id": "D",
+          "text": "创建多模态 AI 应用"
+        }
+      ],
+      "answer": "B",
+      "explanation": "n8n 的核心优势是连接各类服务和自动化业务流程，最适合将 AI 能力深度嵌入现有业务流程的场景。"
+    }
+  ],
+  "ch6": [
+    {
+      "id": "ch6-q1",
+      "type": "single",
+      "question": "AutoGen 的核心设计哲学是什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "通过状态机控制流程"
+        },
+        {
+          "id": "B",
+          "text": "通过对话驱动协作"
+        },
+        {
+          "id": "C",
+          "text": "通过角色扮演自主协作"
+        },
+        {
+          "id": "D",
+          "text": "通过消息路由分发任务"
+        }
+      ],
+      "answer": "B",
+      "explanation": "AutoGen 的核心思想是通过对话实现协作，将多智能体系统抽象为一个由多个可对话智能体组成的群聊。"
+    },
+    {
+      "id": "ch6-q2",
+      "type": "single",
+      "question": "LangGraph 将智能体执行流程建模为什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "线性管道"
+        },
+        {
+          "id": "B",
+          "text": "有向图（状态机）"
+        },
+        {
+          "id": "C",
+          "text": "树形结构"
+        },
+        {
+          "id": "D",
+          "text": "事件循环"
+        }
+      ],
+      "answer": "B",
+      "explanation": "LangGraph 将智能体的执行流程建模为有向图（State Machine），节点代表计算步骤，边代表跳转逻辑。"
+    },
+    {
+      "id": "ch6-q3",
+      "type": "single",
+      "question": "CAMEL 框架的核心创新是什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "分布式消息路由"
+        },
+        {
+          "id": "B",
+          "text": "角色扮演和引导性提示（Inception Prompting）"
+        },
+        {
+          "id": "C",
+          "text": "可视化工作流编排"
+        },
+        {
+          "id": "D",
+          "text": "工具调用标准化"
+        }
+      ],
+      "answer": "B",
+      "explanation": "CAMEL 的核心是角色扮演协作，两个智能体通过引导性提示（Inception Prompting）在最少人类干预下自主协作。"
+    },
+    {
+      "id": "ch6-q4",
+      "type": "single",
+      "question": "AgentScope 相比其他框架最突出的工程化特性是什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "原生支持分布式部署"
+        },
+        {
+          "id": "B",
+          "text": "零代码配置"
+        },
+        {
+          "id": "C",
+          "text": "内置 GUI 界面"
+        },
+        {
+          "id": "D",
+          "text": "自动生成文档"
+        }
+      ],
+      "answer": "A",
+      "explanation": "AgentScope 内置了分布式部署、容错恢复、可观测性等企业级特性，智能体可以被部署在不同进程或服务器上。"
+    },
+    {
+      "id": "ch6-q5",
+      "type": "judge",
+      "question": "LangGraph 的条件边（Conditional Edge）可以实现在节点之间动态跳转和循环。",
+      "answer": true,
+      "explanation": "条件边通过判断函数根据当前状态动态决定下一步路由，天然支持循环，这是实现反思-修正机制的关键。"
+    },
+    {
+      "id": "ch6-q6",
+      "type": "single",
+      "question": "以下哪个框架最适合构建需要精确流程控制的金融风控审批系统？",
+      "options": [
+        {
+          "id": "A",
+          "text": "AutoGen"
+        },
+        {
+          "id": "B",
+          "text": "AgentScope"
+        },
+        {
+          "id": "C",
+          "text": "CAMEL"
+        },
+        {
+          "id": "D",
+          "text": "LangGraph"
+        }
+      ],
+      "answer": "D",
+      "explanation": "LangGraph 通过显式的图结构赋予开发者对工作流的精确控制，每个步骤和跳转条件都明确可控，适合需要严格流程、可审计的场景。"
+    }
+  ],
+  "ch9": [
+    {
+      "id": "ch9-q1",
+      "type": "single",
+      "question": "上下文工程与提示工程的核心区别是什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "上下文工程比提示工程更简单"
+        },
+        {
+          "id": "B",
+          "text": "上下文工程关注整个信息集合而不仅仅是提示本身"
+        },
+        {
+          "id": "C",
+          "text": "提示工程不需要考虑系统提示"
+        },
+        {
+          "id": "D",
+          "text": "两者完全相同"
+        }
+      ],
+      "answer": "B",
+      "explanation": "上下文工程在推理阶段策划和维护最优的信息集合（tokens），包含提示本身以及进入上下文窗口的一切信息，如系统指令、工具、外部数据、消息历史等。"
+    },
+    {
+      "id": "ch9-q2",
+      "type": "single",
+      "question": "什么是\"上下文腐蚀\"（Context Rot）？",
+      "options": [
+        {
+          "id": "A",
+          "text": "上下文数据被恶意篡改"
+        },
+        {
+          "id": "B",
+          "text": "随着上下文 tokens 增加，模型准确回忆信息的能力下降"
+        },
+        {
+          "id": "C",
+          "text": "上下文窗口技术被淘汰"
+        },
+        {
+          "id": "D",
+          "text": "模型的训练数据质量下降"
+        }
+      ],
+      "answer": "B",
+      "explanation": "上下文腐蚀是指随着上下文窗口中的 tokens 增加，模型从上下文中准确回忆信息的能力反而下降的现象。这是 Transformer 架构的固有特征。"
+    },
+    {
+      "id": "ch9-q3",
+      "type": "single",
+      "question": "GSSC 流水线的正确顺序是什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "Select → Gather → Structure → Compress"
+        },
+        {
+          "id": "B",
+          "text": "Gather → Select → Structure → Compress"
+        },
+        {
+          "id": "C",
+          "text": "Structure → Gather → Select → Compress"
+        },
+        {
+          "id": "D",
+          "text": "Gather → Structure → Select → Compress"
+        }
+      ],
+      "answer": "B",
+      "explanation": "GSSC 代表 Gather（汇集）→ Select（选择）→ Structure（结构化）→ Compress（压缩），是 ContextBuilder 的核心流水线。"
+    },
+    {
+      "id": "ch9-q4",
+      "type": "single",
+      "question": "NoteTool 使用什么文件格式来兼顾机器可解析和人类可读？",
+      "options": [
+        {
+          "id": "A",
+          "text": "纯 JSON 格式"
+        },
+        {
+          "id": "B",
+          "text": "Markdown + YAML 混合格式"
+        },
+        {
+          "id": "C",
+          "text": "XML 格式"
+        },
+        {
+          "id": "D",
+          "text": "二进制格式"
+        }
+      ],
+      "answer": "B",
+      "explanation": "NoteTool 采用 Markdown + YAML 混合格式，YAML 前置元数据机器可解析，Markdown 正文人类可读且支持丰富格式化。"
+    },
+    {
+      "id": "ch9-q5",
+      "type": "judge",
+      "question": "TerminalTool 允许智能体执行所有 Linux 命令以实现最大的灵活性。",
+      "answer": false,
+      "explanation": "TerminalTool 通过命令白名单限制只读安全命令，并有工作目录沙箱、超时控制和输出大小限制等多层安全机制。"
+    },
+    {
+      "id": "ch9-q6",
+      "type": "multiple",
+      "question": "上下文工程中管理长时程任务的三大策略是什么？（多选）",
+      "options": [
+        {
+          "id": "A",
+          "text": "压缩整合（Compaction）"
+        },
+        {
+          "id": "B",
+          "text": "结构化笔记（Structured Note-taking）"
+        },
+        {
+          "id": "C",
+          "text": "子代理架构（Sub-agent Architectures）"
+        },
+        {
+          "id": "D",
+          "text": "增加模型参数量"
+        }
+      ],
+      "answer": "ABC",
+      "explanation": "三大策略是：压缩整合（高保真总结后重启窗口）、结构化笔记（持久化存储按需拉回）、子代理架构（主代理规划+子代理深挖）。"
+    }
+  ],
+  "ch11": [
+    {
+      "id": "ch11-q1",
+      "type": "single",
+      "question": "以下哪种训练方法不需要显式的奖励模型？",
+      "options": [
+        {
+          "id": "A",
+          "text": "RLHF（基于人类反馈的强化学习）"
+        },
+        {
+          "id": "B",
+          "text": "DPO（直接偏好优化）"
+        },
+        {
+          "id": "C",
+          "text": "PPO（近端策略优化）"
+        },
+        {
+          "id": "D",
+          "text": "以上都需要奖励模型"
+        }
+      ],
+      "answer": "B",
+      "explanation": "DPO（Direct Preference Optimization）不需要显式的奖励模型，它直接从偏好数据中优化策略。而 RLHF 和 PPO 都需要训练一个奖励模型来提供奖励信号。"
+    },
+    {
+      "id": "ch11-q2",
+      "type": "single",
+      "question": "GRPO 相比 PPO 的核心优势是什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "训练速度更快，不需要反向传播"
+        },
+        {
+          "id": "B",
+          "text": "不需要价值模型，使用组内相对奖励代替优势函数"
+        },
+        {
+          "id": "C",
+          "text": "不需要任何训练数据"
+        },
+        {
+          "id": "D",
+          "text": "可以直接在预训练模型上使用，无需 SFT"
+        }
+      ],
+      "answer": "B",
+      "explanation": "GRPO 的核心优势是不需要训练价值模型（Value Model），它使用组内相对奖励（Group Relative Reward）来代替 PPO 中的优势函数（Advantage），大大简化了训练流程并降低了显存占用。"
+    },
+    {
+      "id": "ch11-q3",
+      "type": "single",
+      "question": "在 GRPO 训练中，KL 散度惩罚的主要作用是什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "提升模型的计算速度"
+        },
+        {
+          "id": "B",
+          "text": "防止策略偏离 SFT 模型太远，避免遗忘学到的知识"
+        },
+        {
+          "id": "C",
+          "text": "减少训练数据的数量需求"
+        },
+        {
+          "id": "D",
+          "text": "自动调整学习率"
+        }
+      ],
+      "answer": "B",
+      "explanation": "KL 散度惩罚防止当前策略（Policy Model）偏离参考模型（Reference Model，即 SFT 后的模型）太远。如果没有 KL 惩罚，模型可能会在强化学习过程中丢失 SFT 阶段学到的格式和推理模式。"
+    },
+    {
+      "id": "ch11-q4",
+      "type": "judge",
+      "question": "LoRA 可以完全替代全参数微调，在所有场景下都能取得相同或更好的效果。",
+      "answer": false,
+      "explanation": "LoRA 在大多数场景下能取得接近全参数微调的效果，但并不总是相同甚至更好。LoRA 通过低秩分解限制了参数更新的表达能力，在某些复杂任务上全参数微调仍然可能取得更好的效果。LoRA 的优势在于显存占用低、训练速度快，而非效果必然更优。"
+    },
+    {
+      "id": "ch11-q5",
+      "type": "single",
+      "question": "GSM8K 数据集主要用于评估 LLM 的什么能力？",
+      "options": [
+        {
+          "id": "A",
+          "text": "文本分类能力"
+        },
+        {
+          "id": "B",
+          "text": "数学推理能力"
+        },
+        {
+          "id": "C",
+          "text": "代码生成能力"
+        },
+        {
+          "id": "D",
+          "text": "多语言翻译能力"
+        }
+      ],
+      "answer": "B",
+      "explanation": "GSM8K（Grade School Math 8K）是一个小学数学应用题数据集，包含 7473 个训练样本和 1319 个测试样本，专门用于评估 LLM 的多步数学推理能力。"
+    },
+    {
+      "id": "ch11-q6",
+      "type": "single",
+      "question": "在 GRPO 训练中，num_generations 参数控制什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "训练的轮数"
+        },
+        {
+          "id": "B",
+          "text": "每个问题生成多少个答案用于计算组内相对奖励"
+        },
+        {
+          "id": "C",
+          "text": "每批训练的样本数量"
+        },
+        {
+          "id": "D",
+          "text": "模型的最大输出 token 数"
+        }
+      ],
+      "answer": "B",
+      "explanation": "num_generations 控制每个问题生成的答案数量，这些答案构成一个组（group），用于计算组内相对奖励。典型值为 4-8，值越大训练信号越丰富，但计算成本也越高。"
+    },
+    {
+      "id": "ch11-q7",
+      "type": "judge",
+      "question": "强化学习训练可以完全替代 SFT 监督微调，直接从预训练模型开始 GRPO 训练。",
+      "answer": false,
+      "explanation": "SFT 是强化学习训练的必要基础。没有 SFT 的预训练模型连基本的输出格式都不懂，直接进行 GRPO 训练往往会导致失败。SFT 教会模型任务格式和基础推理能力，为强化学习提供合理的起点。"
+    },
+    {
+      "id": "ch11-q8",
+      "type": "multiple",
+      "question": "哪些属于 Agentic RL 旨在提升的智能体核心能力？（多选）",
+      "options": [
+        {
+          "id": "A",
+          "text": "推理（Reasoning）"
+        },
+        {
+          "id": "B",
+          "text": "工具使用（Tool Use）"
+        },
+        {
+          "id": "C",
+          "text": "数据库管理（Database Management）"
+        },
+        {
+          "id": "D",
+          "text": "规划（Planning）"
+        },
+        {
+          "id": "E",
+          "text": "自我改进（Self-Improvement）"
+        }
+      ],
+      "answer": "ABDE",
+      "explanation": "Agentic RL 旨在提升六大核心能力：推理、工具使用、记忆、规划、自我改进、感知。数据库管理是独立的工程领域，不是 Agentic RL 直接提升的核心能力。"
+    }
+  ],
+  "ch12": [
+    {
+      "id": "ch12-q1",
+      "type": "single",
+      "question": "BFCL 基准主要评估智能体的什么能力？",
+      "options": [
+        {
+          "id": "A",
+          "text": "数学推理能力"
+        },
+        {
+          "id": "B",
+          "text": "函数调用（工具调用）能力"
+        },
+        {
+          "id": "C",
+          "text": "文本生成质量"
+        },
+        {
+          "id": "D",
+          "text": "多模态理解能力"
+        }
+      ],
+      "answer": "B",
+      "explanation": "BFCL（Berkeley Function Calling Leaderboard）由 UC Berkeley 推出，专门评估智能体的函数调用能力，涵盖 simple、multiple、parallel、irrelevance 四个类别。"
+    },
+    {
+      "id": "ch12-q2",
+      "type": "single",
+      "question": "BFCL 使用什么算法来匹配函数调用？",
+      "options": [
+        {
+          "id": "A",
+          "text": "正则表达式匹配"
+        },
+        {
+          "id": "B",
+          "text": "字符串精确匹配"
+        },
+        {
+          "id": "C",
+          "text": "AST 匹配（抽象语法树匹配）"
+        },
+        {
+          "id": "D",
+          "text": "语义相似度匹配"
+        }
+      ],
+      "answer": "C",
+      "explanation": "BFCL 使用 AST 匹配（Abstract Syntax Tree Matching）算法，将函数调用解析为语法树后比较树的结构和节点值，可以忽略参数顺序并识别等价表达式，比字符串匹配更智能。"
+    },
+    {
+      "id": "ch12-q3",
+      "type": "single",
+      "question": "GAIA 基准使用什么评估算法？",
+      "options": [
+        {
+          "id": "A",
+          "text": "BLEU 分数"
+        },
+        {
+          "id": "B",
+          "text": "ROUGE 分数"
+        },
+        {
+          "id": "C",
+          "text": "准精确匹配（Quasi Exact Match）"
+        },
+        {
+          "id": "D",
+          "text": "Perplexity"
+        }
+      ],
+      "answer": "C",
+      "explanation": "GAIA 使用准精确匹配（Quasi Exact Match）算法，先对答案进行归一化处理（移除逗号、单位符号、冠词等），然后进行精确匹配。根据不同答案类型（数字、字符串、列表）应用不同的归一化规则。"
+    },
+    {
+      "id": "ch12-q4",
+      "type": "judge",
+      "question": "评估准确率越高，说明智能体在所有方面都表现优秀。",
+      "answer": false,
+      "explanation": "准确率只是评估的一个维度，高准确率不代表智能体在鲁棒性、效率、推理质量等其他维度也表现优秀。全面的评估应该从多个维度综合考虑，如准确率、鲁棒性、工具调用率、任务完成率、推理能力和效率。"
+    },
+    {
+      "id": "ch12-q5",
+      "type": "single",
+      "question": "在数据生成质量评估中，理想的 Win Rate 应该在什么水平？",
+      "options": [
+        {
+          "id": "A",
+          "text": "100%（生成题目完全胜出）"
+        },
+        {
+          "id": "B",
+          "text": "0%（生成题目完全不如真题）"
+        },
+        {
+          "id": "C",
+          "text": "50% 左右（生成题目与真题质量相当）"
+        },
+        {
+          "id": "D",
+          "text": "25% 左右"
+        }
+      ],
+      "answer": "C",
+      "explanation": "Win Rate 通过成对对比评估生成题目与真题的质量。理想情况下 Win Rate 在 50% 左右，说明生成题目的质量接近真题。如果显著低于 50% 则生成策略需要优化。"
+    },
+    {
+      "id": "ch12-q6",
+      "type": "multiple",
+      "question": "LLM Judge 评估 AIME 数学题目时，从哪些维度进行评分？（多选）",
+      "options": [
+        {
+          "id": "A",
+          "text": "正确性（Correctness）"
+        },
+        {
+          "id": "B",
+          "text": "清晰度（Clarity）"
+        },
+        {
+          "id": "C",
+          "text": "难度匹配（Difficulty Match）"
+        },
+        {
+          "id": "D",
+          "text": "完整性（Completeness）"
+        },
+        {
+          "id": "E",
+          "text": "运行速度（Execution Speed）"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "LLM Judge 从四个维度评分：正确性（数学逻辑是否正确）、清晰度（问题表述和解答是否易懂）、难度匹配（是否符合 AIME 标准难度）、完整性（解答步骤是否完整）。运行速度不是 LLM Judge 的评估维度。"
+    },
+    {
+      "id": "ch12-q7",
+      "type": "single",
+      "question": "GAIA 基准要求最终答案的格式是什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "Answer: [答案]"
+        },
+        {
+          "id": "B",
+          "text": "FINAL ANSWER: [答案]"
+        },
+        {
+          "id": "C",
+          "text": "[答案]"
+        },
+        {
+          "id": "D",
+          "text": "Result: [答案]"
+        }
+      ],
+      "answer": "B",
+      "explanation": "GAIA 要求模型输出以 FINAL ANSWER: [答案] 的格式给出答案。对于数字类型的答案，不使用逗号分隔符和单位符号；对于字符串类型的答案，不使用冠词和缩写。"
+    },
+    {
+      "id": "ch12-q8",
+      "type": "judge",
+      "question": "BFCL 只支持评估 simple_python 类别，无法评估其他编程语言的函数调用。",
+      "answer": false,
+      "explanation": "BFCL v4 支持多个类别，包括 simple_python、simple_java、simple_javascript、multiple、parallel、irrelevance 等。simple_python 只是其中一个基础类别。"
+    }
+  ],
+  "ch14": [
+    {
+      "id": "ch14-q1",
+      "type": "single",
+      "question": "DeepResearch 使用什么研究范式？",
+      "options": [
+        {
+          "id": "A",
+          "text": "贪婪搜索范式"
+        },
+        {
+          "id": "B",
+          "text": "TODO 驱动的研究范式"
+        },
+        {
+          "id": "C",
+          "text": "随机采样范式"
+        },
+        {
+          "id": "D",
+          "text": "暴力枚举范式"
+        }
+      ],
+      "answer": "B",
+      "explanation": "DeepResearch 使用 TODO 驱动的研究范式，将复杂的研究主题分解为可执行的子任务（TODO 列表），通过三个阶段完成研究：规划阶段、执行阶段、报告阶段。"
+    },
+    {
+      "id": "ch14-q2",
+      "type": "single",
+      "question": "DeepResearch 系统中有几个专门设计的 Agent？",
+      "options": [
+        {
+          "id": "A",
+          "text": "1 个"
+        },
+        {
+          "id": "B",
+          "text": "2 个"
+        },
+        {
+          "id": "C",
+          "text": "3 个"
+        },
+        {
+          "id": "D",
+          "text": "5 个"
+        }
+      ],
+      "answer": "C",
+      "explanation": "DeepResearch 设计了三个专门的 Agent：TODO Planner（研究规划专家）、Task Summarizer（任务总结专家）、Report Writer（报告撰写专家），各司其职实现从研究主题到最终报告的自动化流程。"
+    },
+    {
+      "id": "ch14-q3",
+      "type": "single",
+      "question": "ToolAwareSimpleAgent 相比 SimpleAgent 主要增加了什么功能？",
+      "options": [
+        {
+          "id": "A",
+          "text": "多模态处理能力"
+        },
+        {
+          "id": "B",
+          "text": "工具调用监听能力"
+        },
+        {
+          "id": "C",
+          "text": "代码执行能力"
+        },
+        {
+          "id": "D",
+          "text": "分布式训练能力"
+        }
+      ],
+      "answer": "B",
+      "explanation": "ToolAwareSimpleAgent 在 SimpleAgent 的基础上增加了 tool_call_listener 参数，通过回调函数监听每次工具调用，可以实时记录和推送工具调用信息到前端。"
+    },
+    {
+      "id": "ch14-q4",
+      "type": "judge",
+      "question": "DeepResearch 的三个 Agent 之间是并行独立工作的，互不依赖。",
+      "answer": false,
+      "explanation": "三个 Agent 之间是顺序协作的关系：TODO Planner 先生成子任务列表，然后 Task Summarizer 逐个总结搜索结果，最后 Report Writer 整合所有总结生成报告。每个 Agent 的输入依赖上一个 Agent 的输出，形成线性流程。"
+    },
+    {
+      "id": "ch14-q5",
+      "type": "single",
+      "question": "DeepResearch 研究流程的第一步是什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "生成最终报告"
+        },
+        {
+          "id": "B",
+          "text": "搜索相关信息"
+        },
+        {
+          "id": "C",
+          "text": "规划阶段——将研究主题分解为子任务"
+        },
+        {
+          "id": "D",
+          "text": "格式化研究结果"
+        }
+      ],
+      "answer": "C",
+      "explanation": "研究流程的第一步是规划阶段，由 TODO Planner Agent 将研究主题分解为 3-5 个子任务，每个子任务包含标题（title）、意图（intent）和搜索查询（query）。"
+    },
+    {
+      "id": "ch14-q6",
+      "type": "single",
+      "question": "DeepResearch 使用什么技术实现实时进度展示？",
+      "options": [
+        {
+          "id": "A",
+          "text": "WebSocket"
+        },
+        {
+          "id": "B",
+          "text": "SSE（Server-Sent Events）"
+        },
+        {
+          "id": "C",
+          "text": "轮询（Polling）"
+        },
+        {
+          "id": "D",
+          "text": "gRPC"
+        }
+      ],
+      "answer": "B",
+      "explanation": "DeepResearch 使用 SSE（Server-Sent Events）实现实时进度展示。SSE 是一种服务器推送技术，允许服务器主动向客户端发送数据，适合实时更新场景。后端使用 FastAPI 的 StreamingResponse 推送 SSE 事件。"
+    },
+    {
+      "id": "ch14-q7",
+      "type": "multiple",
+      "question": "DeepResearch 系统包含哪些核心服务？（多选）",
+      "options": [
+        {
+          "id": "A",
+          "text": "PlanningService（任务规划服务）"
+        },
+        {
+          "id": "B",
+          "text": "SummarizationService（总结服务）"
+        },
+        {
+          "id": "C",
+          "text": "ReportingService（报告生成服务）"
+        },
+        {
+          "id": "D",
+          "text": "SearchService（搜索调度服务）"
+        },
+        {
+          "id": "E",
+          "text": "AuthenticationService（认证服务）"
+        }
+      ],
+      "answer": "ABCD",
+      "explanation": "DeepResearch 系统包含四个核心服务：PlanningService（任务规划）、SummarizationService（信息总结）、ReportingService（报告生成）和 SearchService（搜索调度）。认证服务不是该系统的核心组件。"
+    },
+    {
+      "id": "ch14-q8",
+      "type": "single",
+      "question": "DeepResearch 的最终报告以什么格式生成？",
+      "options": [
+        {
+          "id": "A",
+          "text": "PDF 格式"
+        },
+        {
+          "id": "B",
+          "text": "Markdown 格式"
+        },
+        {
+          "id": "C",
+          "text": "Word 文档格式"
+        },
+        {
+          "id": "D",
+          "text": "纯文本格式"
+        }
+      ],
+      "answer": "B",
+      "explanation": "DeepResearch 生成 Markdown 格式的最终报告，包含标题、段落、列表、引用等元素。前端使用 marked 库将 Markdown 转换为 HTML 渲染展示，并添加了自定义样式。"
+    }
+  ],
+  "ch15": [
+    {
+      "id": "ch15-q1",
+      "type": "single",
+      "question": "赛博小镇中，每个 NPC 使用什么框架实现智能？",
+      "options": [
+        {
+          "id": "A",
+          "text": "FastAPI"
+        },
+        {
+          "id": "B",
+          "text": "HelloAgents 的 SimpleAgent"
+        },
+        {
+          "id": "C",
+          "text": "Godot 引擎内置 AI"
+        },
+        {
+          "id": "D",
+          "text": "TensorFlow"
+        }
+      ],
+      "answer": "B",
+      "explanation": "每个 NPC 都是 HelloAgents 框架中 SimpleAgent 的独立实例，拥有独特的角色设定和记忆系统。"
+    },
+    {
+      "id": "ch15-q2",
+      "type": "single",
+      "question": "赛博小镇的好感度系统共有几个等级？",
+      "options": [
+        {
+          "id": "A",
+          "text": "3 个"
+        },
+        {
+          "id": "B",
+          "text": "4 个"
+        },
+        {
+          "id": "C",
+          "text": "5 个"
+        },
+        {
+          "id": "D",
+          "text": "6 个"
+        }
+      ],
+      "answer": "C",
+      "explanation": "好感度分为五级：陌生(0-20)、熟悉(21-40)、友好(41-60)、亲密(61-80)、挚友(81-100)。"
+    },
+    {
+      "id": "ch15-q3",
+      "type": "single",
+      "question": "NPC Agent 的记忆系统包含哪两层？",
+      "options": [
+        {
+          "id": "A",
+          "text": "缓存记忆和归档记忆"
+        },
+        {
+          "id": "B",
+          "text": "短期记忆和长期记忆"
+        },
+        {
+          "id": "C",
+          "text": "文字记忆和图像记忆"
+        },
+        {
+          "id": "D",
+          "text": "本地记忆和云端记忆"
+        }
+      ],
+      "answer": "B",
+      "explanation": "短期记忆（WorkingMemory）保持对话连贯性，长期记忆（EpisodicMemory）通过向量数据库检索历史互动。"
+    },
+    {
+      "id": "ch15-q4",
+      "type": "single",
+      "question": "批量对话生成的核心优势是什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "提高回复质量"
+        },
+        {
+          "id": "B",
+          "text": "降低 LLM 调用成本至 1/3"
+        },
+        {
+          "id": "C",
+          "text": "增加对话长度"
+        },
+        {
+          "id": "D",
+          "text": "支持更多语言"
+        }
+      ],
+      "answer": "B",
+      "explanation": "批量生成将多个 NPC 的对话合并为一次 LLM 调用，成本降低到原来的 1/3，延迟也大幅减少。"
+    },
+    {
+      "id": "ch15-q5",
+      "type": "single",
+      "question": "赛博小镇采用哪种混合模式处理 NPC 对话？",
+      "options": [
+        {
+          "id": "A",
+          "text": "全部使用即时响应"
+        },
+        {
+          "id": "B",
+          "text": "后台批量生成背景对话 + 玩家交互时即时响应"
+        },
+        {
+          "id": "C",
+          "text": "全部使用批量生成"
+        },
+        {
+          "id": "D",
+          "text": "仅使用预设对话树"
+        }
+      ],
+      "answer": "B",
+      "explanation": "后台批量生成背景对话让 NPC 看起来\"活着\"，玩家交互时切换到即时响应保证个性化和准确性。"
+    },
+    {
+      "id": "ch15-q6",
+      "type": "judge",
+      "question": "NPC 对玩家的好感度只需要在每次对话中固定增加分数即可。",
+      "answer": false,
+      "explanation": "好感度使用 LLM 分析对话情感动态调整：友好(+5)、中立(+2)、不友好(-3)，而不是固定增加。"
+    },
+    {
+      "id": "ch15-q7",
+      "type": "single",
+      "question": "赛博小镇选择 Godot 作为游戏引擎的原因不包括？",
+      "options": [
+        {
+          "id": "A",
+          "text": "2D 开发优势"
+        },
+        {
+          "id": "B",
+          "text": "完全开源免费"
+        },
+        {
+          "id": "C",
+          "text": "强大的 3D 渲染能力"
+        },
+        {
+          "id": "D",
+          "text": "GDScript 类似 Python，学习成本低"
+        }
+      ],
+      "answer": "C",
+      "explanation": "Godot 的优势在于 2D 开发，其 3D 能力相比 Unreal Engine 和 Unity 还有差距。"
+    },
+    {
+      "id": "ch15-q8",
+      "type": "judge",
+      "question": "赛博小镇中 NPC 的批量对话生成和前台即时响应使用的是同一个 LLM 调用流程。",
+      "answer": false,
+      "explanation": "后台批量生成是一次调用生成所有 NPC 的背景对话；前台即时响应是调用该 NPC 专属的 Agent 生成个性化回复。两者流程不同。"
+    }
+  ],
+  "ch16": [
+    {
+      "id": "ch16-q1",
+      "type": "single",
+      "question": "毕业设计项目命名规范是什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "项目名称-版本号"
+        },
+        {
+          "id": "B",
+          "text": "{GitHub用户名}-{项目名称}"
+        },
+        {
+          "id": "C",
+          "text": "{年份}-{项目名称}"
+        },
+        {
+          "id": "D",
+          "text": "{框架名称}-{项目名称}"
+        }
+      ],
+      "answer": "B",
+      "explanation": "项目命名使用 {你的GitHub用户名}-{项目名称} 的格式，例如 jjyaoao-CodeReviewAgent。"
+    },
+    {
+      "id": "ch16-q2",
+      "type": "single",
+      "question": "毕业设计通过什么方式提交到主仓库？",
+      "options": [
+        {
+          "id": "A",
+          "text": "直接推送 main 分支"
+        },
+        {
+          "id": "B",
+          "text": "通过 GitHub Pull Request"
+        },
+        {
+          "id": "C",
+          "text": "发送邮件给维护者"
+        },
+        {
+          "id": "D",
+          "text": "通过 npm 发布"
+        }
+      ],
+      "answer": "B",
+      "explanation": "通过 GitHub 的 Pull Request（PR）提交，经过社区 Review 后合并到主仓库。"
+    },
+    {
+      "id": "ch16-q3",
+      "type": "single",
+      "question": "PR 标题的统一格式是什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "[项目] 名称 - 描述"
+        },
+        {
+          "id": "B",
+          "text": "[毕业设计] 项目名称 - 简短描述"
+        },
+        {
+          "id": "C",
+          "text": "feat: 项目名称"
+        },
+        {
+          "id": "D",
+          "text": "Add 项目名称"
+        }
+      ],
+      "answer": "B",
+      "explanation": "所有毕业设计项目的 PR 标题必须遵循 [毕业设计] 项目名称 - 简短描述 的格式。"
+    },
+    {
+      "id": "ch16-q4",
+      "type": "single",
+      "question": "毕业设计项目总大小限制是多少？",
+      "options": [
+        {
+          "id": "A",
+          "text": "1MB"
+        },
+        {
+          "id": "B",
+          "text": "5MB"
+        },
+        {
+          "id": "C",
+          "text": "10MB"
+        },
+        {
+          "id": "D",
+          "text": "50MB"
+        }
+      ],
+      "answer": "B",
+      "explanation": "为了保持主仓库轻量化，项目总大小不超过 5MB，禁止直接提交视频、大型数据集等。"
+    },
+    {
+      "id": "ch16-q5",
+      "type": "judge",
+      "question": "毕业设计项目中可以直接提交视频文件和大型数据集。",
+      "answer": false,
+      "explanation": "视频文件和大型数据集应上传到外部平台（如B站、百度网盘）并在README中提供链接，或使用独立仓库。"
+    },
+    {
+      "id": "ch16-q6",
+      "type": "single",
+      "question": "以下哪个不是推荐的毕业设计选题方向？",
+      "options": [
+        {
+          "id": "A",
+          "text": "生产力工具类"
+        },
+        {
+          "id": "B",
+          "text": "学习辅助类"
+        },
+        {
+          "id": "C",
+          "text": "操作系统开发"
+        },
+        {
+          "id": "D",
+          "text": "数据分析类"
+        }
+      ],
+      "answer": "C",
+      "explanation": "推荐方向包括生产力工具、学习辅助、创意娱乐、数据分析、生活服务五大类。操作系统开发超出了本教程的范围。"
+    },
+    {
+      "id": "ch16-q7",
+      "type": "single",
+      "question": "毕业设计提交代码时，推荐的 commit 类型是什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "fix"
+        },
+        {
+          "id": "B",
+          "text": "feat"
+        },
+        {
+          "id": "C",
+          "text": "docs"
+        },
+        {
+          "id": "D",
+          "text": "style"
+        }
+      ],
+      "answer": "B",
+      "explanation": "新增功能或项目使用 feat 类型，毕业设计项目推荐使用 feat: 添加XXX毕业设计项目 的格式。"
+    },
+    {
+      "id": "ch16-q8",
+      "type": "judge",
+      "question": "毕业设计只需要提交代码，不需要写 README 文档。",
+      "answer": false,
+      "explanation": "README 是项目的门面，必须包含项目简介、核心功能、快速开始、使用示例等内容。完整的文档是毕业设计的基本要求之一。"
     }
   ]
 }

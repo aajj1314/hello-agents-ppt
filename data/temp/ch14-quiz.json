@@ -1,0 +1,101 @@
+[
+  {
+    "id": "ch14-q1",
+    "type": "single",
+    "question": "DeepResearch 使用什么研究范式？",
+    "options": [
+      {"id": "A", "text": "贪婪搜索范式"},
+      {"id": "B", "text": "TODO 驱动的研究范式"},
+      {"id": "C", "text": "随机采样范式"},
+      {"id": "D", "text": "暴力枚举范式"}
+    ],
+    "answer": "B",
+    "explanation": "DeepResearch 使用 TODO 驱动的研究范式，将复杂的研究主题分解为可执行的子任务（TODO 列表），通过三个阶段完成研究：规划阶段、执行阶段、报告阶段。"
+  },
+  {
+    "id": "ch14-q2",
+    "type": "single",
+    "question": "DeepResearch 系统中有几个专门设计的 Agent？",
+    "options": [
+      {"id": "A", "text": "1 个"},
+      {"id": "B", "text": "2 个"},
+      {"id": "C", "text": "3 个"},
+      {"id": "D", "text": "5 个"}
+    ],
+    "answer": "C",
+    "explanation": "DeepResearch 设计了三个专门的 Agent：TODO Planner（研究规划专家）、Task Summarizer（任务总结专家）、Report Writer（报告撰写专家），各司其职实现从研究主题到最终报告的自动化流程。"
+  },
+  {
+    "id": "ch14-q3",
+    "type": "single",
+    "question": "ToolAwareSimpleAgent 相比 SimpleAgent 主要增加了什么功能？",
+    "options": [
+      {"id": "A", "text": "多模态处理能力"},
+      {"id": "B", "text": "工具调用监听能力"},
+      {"id": "C", "text": "代码执行能力"},
+      {"id": "D", "text": "分布式训练能力"}
+    ],
+    "answer": "B",
+    "explanation": "ToolAwareSimpleAgent 在 SimpleAgent 的基础上增加了 tool_call_listener 参数，通过回调函数监听每次工具调用，可以实时记录和推送工具调用信息到前端。"
+  },
+  {
+    "id": "ch14-q4",
+    "type": "judge",
+    "question": "DeepResearch 的三个 Agent 之间是并行独立工作的，互不依赖。",
+    "answer": false,
+    "explanation": "三个 Agent 之间是顺序协作的关系：TODO Planner 先生成子任务列表，然后 Task Summarizer 逐个总结搜索结果，最后 Report Writer 整合所有总结生成报告。每个 Agent 的输入依赖上一个 Agent 的输出，形成线性流程。"
+  },
+  {
+    "id": "ch14-q5",
+    "type": "single",
+    "question": "DeepResearch 研究流程的第一步是什么？",
+    "options": [
+      {"id": "A", "text": "生成最终报告"},
+      {"id": "B", "text": "搜索相关信息"},
+      {"id": "C", "text": "规划阶段——将研究主题分解为子任务"},
+      {"id": "D", "text": "格式化研究结果"}
+    ],
+    "answer": "C",
+    "explanation": "研究流程的第一步是规划阶段，由 TODO Planner Agent 将研究主题分解为 3-5 个子任务，每个子任务包含标题（title）、意图（intent）和搜索查询（query）。"
+  },
+  {
+    "id": "ch14-q6",
+    "type": "single",
+    "question": "DeepResearch 使用什么技术实现实时进度展示？",
+    "options": [
+      {"id": "A", "text": "WebSocket"},
+      {"id": "B", "text": "SSE（Server-Sent Events）"},
+      {"id": "C", "text": "轮询（Polling）"},
+      {"id": "D", "text": "gRPC"}
+    ],
+    "answer": "B",
+    "explanation": "DeepResearch 使用 SSE（Server-Sent Events）实现实时进度展示。SSE 是一种服务器推送技术，允许服务器主动向客户端发送数据，适合实时更新场景。后端使用 FastAPI 的 StreamingResponse 推送 SSE 事件。"
+  },
+  {
+    "id": "ch14-q7",
+    "type": "multiple",
+    "question": "DeepResearch 系统包含哪些核心服务？（多选）",
+    "options": [
+      {"id": "A", "text": "PlanningService（任务规划服务）"},
+      {"id": "B", "text": "SummarizationService（总结服务）"},
+      {"id": "C", "text": "ReportingService（报告生成服务）"},
+      {"id": "D", "text": "SearchService（搜索调度服务）"},
+      {"id": "E", "text": "AuthenticationService（认证服务）"}
+    ],
+    "answer": "ABCD",
+    "explanation": "DeepResearch 系统包含四个核心服务：PlanningService（任务规划）、SummarizationService（信息总结）、ReportingService（报告生成）和 SearchService（搜索调度）。认证服务不是该系统的核心组件。"
+  },
+  {
+    "id": "ch14-q8",
+    "type": "single",
+    "question": "DeepResearch 的最终报告以什么格式生成？",
+    "options": [
+      {"id": "A", "text": "PDF 格式"},
+      {"id": "B", "text": "Markdown 格式"},
+      {"id": "C", "text": "Word 文档格式"},
+      {"id": "D", "text": "纯文本格式"}
+    ],
+    "answer": "B",
+    "explanation": "DeepResearch 生成 Markdown 格式的最终报告，包含标题、段落、列表、引用等元素。前端使用 marked 库将 Markdown 转换为 HTML 渲染展示，并添加了自定义样式。"
+  }
+]

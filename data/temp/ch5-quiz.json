@@ -1,0 +1,89 @@
+{
+  "ch5": [
+    {
+      "id": "ch5-q1",
+      "type": "single",
+      "question": "Coze（扣子）的核心定位是什么？",
+      "options": [
+        {"id": "A", "text": "企业级 LLM 应用开发与运营平台"},
+        {"id": "B", "text": "零代码/低代码的 Agent 构建平台"},
+        {"id": "C", "text": "通用工作流自动化工具"},
+        {"id": "D", "text": "数据库管理系统"}
+      ],
+      "answer": "B",
+      "explanation": "Coze 由字节跳动推出，主打零代码/低代码的 Agent 构建体验，让不具备编程背景的用户也能轻松创造智能体。"
+    },
+    {
+      "id": "ch5-q2",
+      "type": "single",
+      "question": "Dify 相比 Coze 最显著的优势是什么？",
+      "options": [
+        {"id": "A", "text": "插件数量更多"},
+        {"id": "B", "text": "开源且支持本地部署"},
+        {"id": "C", "text": "操作更简单"},
+        {"id": "D", "text": "发布渠道更多"}
+      ],
+      "answer": "B",
+      "explanation": "Dify 是开源平台，支持本地部署（Docker Compose）和云端部署，这对需要数据安全的企业尤为重要。"
+    },
+    {
+      "id": "ch5-q3",
+      "type": "single",
+      "question": "n8n 最核心的优势是什么？",
+      "options": [
+        {"id": "A", "text": "最丰富的 LLM 功能"},
+        {"id": "B", "text": "强大的\"连接\"能力，将各类服务串联为自动化流程"},
+        {"id": "C", "text": "最友好的用户界面"},
+        {"id": "D", "text": "最快的执行速度"}
+      ],
+      "answer": "B",
+      "explanation": "n8n 的核心优势在于其强大的连接能力，拥有数百个预置节点，可将各类 SaaS 服务、数据库、API 连接成复杂的自动化业务流程。"
+    },
+    {
+      "id": "ch5-q4",
+      "type": "multiple",
+      "question": "低代码平台相比纯代码开发有哪些价值？（多选）",
+      "options": [
+        {"id": "A", "text": "降低技术门槛，非技术人员也能参与"},
+        {"id": "B", "text": "提升开发效率，快速验证想法"},
+        {"id": "C", "text": "提供可视化调试体验"},
+        {"id": "D", "text": "完全替代代码开发"}
+      ],
+      "answer": "ABC",
+      "explanation": "低代码平台降低门槛、提升效率、提供可视化体验，但并不完全替代代码开发。混合开发模式才是最佳实践。"
+    },
+    {
+      "id": "ch5-q5",
+      "type": "single",
+      "question": "Coze 当前的一个重要局限性是什么？",
+      "options": [
+        {"id": "A", "text": "不支持 MCP 协议"},
+        {"id": "B", "text": "插件数量太少"},
+        {"id": "C", "text": "无法发布到微信"},
+        {"id": "D", "text": "不支持中文"}
+      ],
+      "answer": "A",
+      "explanation": "Coze 当前不支持 MCP（Model Context Protocol），这被认为是其发展的重要局限，不过已在产品路线图中。"
+    },
+    {
+      "id": "ch5-q6",
+      "type": "judge",
+      "question": "Dify 的 API 格式与 OpenAI 完全兼容，可以直接使用 OpenAI 的客户端库调用。",
+      "answer": false,
+      "explanation": "Dify 的 API 格式不兼容 OpenAI，这可能限制与某些第三方系统的集成。这与 n8n 和 Coze 不同。"
+    },
+    {
+      "id": "ch5-q7",
+      "type": "single",
+      "question": "以下哪种场景最适合选择 n8n 平台？",
+      "options": [
+        {"id": "A", "text": "非技术用户快速创建聊天机器人"},
+        {"id": "B", "text": "将 AI 能力深度嵌入现有业务流程"},
+        {"id": "C", "text": "构建企业级 RAG 系统"},
+        {"id": "D", "text": "创建多模态 AI 应用"}
+      ],
+      "answer": "B",
+      "explanation": "n8n 的核心优势是连接各类服务和自动化业务流程，最适合将 AI 能力深度嵌入现有业务流程的场景。"
+    }
+  ]
+}

@@ -1,0 +1,185 @@
+[
+  {
+    "type": "cover",
+    "title": "第三章",
+    "subtitle": "大语言模型基础"
+  },
+  {
+    "type": "content",
+    "title": "本章概述",
+    "content": "大语言模型（Large Language Model, LLM）是现代智能体的核心“大脑”。本章将深入探讨：\n\n• **模型演进**：从N-gram、RNN到Transformer架构\n• **核心原理**：自注意力机制、多头注意力、位置编码\n• **交互方式**：提示工程、采样参数、文本分词\n• **模型生态**：主流模型对比、缩放法则、幻觉与局限\n\n[提示] 深入理解LLM原理是构建可靠智能体的基础。"
+  },
+  {
+    "type": "content",
+    "title": "语言模型与 N-gram",
+    "content": "**语言模型（Language Model, LM）** 的核心任务是计算一个词序列出现的概率。\n\n**N-gram模型**基于**马尔可夫假设**：一个词的出现概率只与它前面有限的N-1个词有关。\n\n**Bigram示例**（N=2）：\n`P(agent learns) = P(agent) × P(learns|agent)`\n\n条件概率通过**最大似然估计**计算：\n`P(learns|agent) = Count(agent, learns) / Count(agent)`\n\n**两大局限**\n• **数据稀疏性（Sparsity）**：未出现的词序列概率为0\n• **泛化能力差**：无法理解“agent”和“robot”的语义相似性"
+  },
+  {
+    "type": "code",
+    "title": "Bigram 概率计算",
+    "language": "python",
+    "code": "import collections\n\n# 迷你语料库\ncorpus = \"datawhale agent learns datawhale agent works\"\ntokens = corpus.split()\ntotal_tokens = len(tokens)\n\n# P(datawhale) = 2/6\np_datawhale = tokens.count('datawhale') / total_tokens\nprint(f\"P(datawhale) = {p_datawhale:.3f}\")\n\n# 计算 Bigram 频率\nbigrams = zip(tokens, tokens[1:])\nbigram_counts = collections.Counter(bigrams)\n\n# P(agent | datawhale) = 2 / 2\np_agent_given_dw = (\n    bigram_counts[('datawhale', 'agent')]\n    / tokens.count('datawhale'))\nprint(f\"P(agent|datawhale) = {p_agent_given_dw:.3f}\")\n\n# P(learns | agent) = 1 / 2\np_learns_given_agent = (\n    bigram_counts[('agent', 'learns')]\n    / tokens.count('agent'))\nprint(f\"P(learns|agent) = {p_learns_given_agent:.3f}\")\n\n# 句子概率\np = p_datawhale * p_agent_given_dw * p_learns_given_agent\nprint(f\"P('datawhale agent learns') = {p:.3f}\")\n# 输出: 0.333 * 1.000 * 0.500 = 0.167",
+    "explanation": "该代码演示了Bigram语言模型的核心计算过程：先计算词的边际概率，再计算条件概率，通过链式法则连乘得到句子概率。当N-gram训练数据中未出现的词组合被分配概率0时，就体现了数据稀疏性问题。"
+  },
+  {
+    "type": "content",
+    "title": "神经网络语言模型与词嵌入",
+    "content": "2003年Bengio等人提出**前馈神经网络语言模型**，引入**词嵌入（Word Embedding）** 概念。\n\n**核心思想**\n• 创建一个高维连续向量空间，每个词映射为一个向量\n• 语义相近的词在空间中位置相近\n\n**词向量的语义类比**\n`vector('King') - vector('Man') + vector('Woman') ≈ vector('Queen')`\n\n这证明了词嵌入能够学习到“性别”、“皇室”这类抽象概念。\n\n**余弦相似度（Cosine Similarity）**：\n`cos(A,B) = (A·B) / (|A| × |B|)`\n\n[成功] 词嵌入彻底解决了N-gram的泛化能力差的问题。"
+  },
+  {
+    "type": "content",
+    "title": "RNN 与 LSTM",
+    "content": "**循环神经网络（Recurrent Neural Network, RNN）** 通过**隐藏状态（Hidden State）** 打破固定上下文窗口限制。\n\n**RNN的局限——长期依赖问题**\n• 序列越长，反向传播梯度越容易消失/爆炸\n• 模型无法有效学习早期信息对后期输出的影响\n\n**长短时记忆网络（Long Short-Term Memory, LSTM）**\n• **细胞状态（Cell State）**：独立的信息通路\n• **门控机制（Gating Mechanism）**：\n  - 遗忘门（Forget Gate）：丢弃不重要信息\n  - 输入门（Input Gate）：存入新信息\n  - 输出门（Output Gate）：输出相关信息\n\n[提示] LSTM缓解了长期依赖问题，但串行计算的本质使其无法大规模并行。"
+  },
+  {
+    "type": "content",
+    "title": "Transformer 架构总览",
+    "content": "2017年Google团队发表 **“Attention Is All You Need”**，提出Transformer架构，完全抛弃循环结构，依赖注意力机制实现真正意义上的并行计算。\n\n**Encoder-Decoder 结构**\n\n• **编码器（Encoder）**：理解整个输入序列\n  - 自注意力 → 前馈网络 → 层归一化（×N层）\n\n• **解码器（Decoder）**：逐词生成目标序列\n  - 掩码自注意力 → 交叉注意力 → 前馈网络（×N层）\n\n**四大核心创新**\n1. 自注意力机制（Self-Attention）\n2. 多头注意力（Multi-Head Attention）\n3. 位置编码（Positional Encoding）\n4. 残差连接与层归一化（Residual + LayerNorm）"
+  },
+  {
+    "type": "content",
+    "title": "自注意力机制（Self-Attention）",
+    "content": "自注意力机制为每个词元引入三个可学习的角色：\n\n• **查询（Query, Q）**：代表当前词元，主动查询其他词元\n• **键（Key, K）**：可被查询的“标签”或“索引”\n• **值（Value, V）**：词元本身的“内容”或“信息”\n\n**计算步骤**\n1. 通过权重矩阵Wq, Wk, Wv计算Q, K, V\n2. 计算注意力得分：`Scores = QKᵀ`\n3. 缩放与归一化：`Scores / √d_k` → Softmax\n4. 加权求和：注意力权重 × V\n\n**核心公式**\n`Attention(Q,K,V) = softmax(QKᵀ / √(d_k)) × V`\n\n[成功] 这一机制让模型能同时关注序列中的所有位置，实现全局上下文建模。"
+  },
+  {
+    "type": "content",
+    "title": "多头注意力（Multi-Head Attention）",
+    "content": "单头注意力只能关注一种关联关系，但语言中的关系是复杂多样的。多头注意力让模型从不同角度审视序列。\n\n**工作原理**\n1. 将Q, K, V在维度上切分成h份（h为“头数”）\n2. 每一份独立进行单头注意力计算\n3. 将h个输出拼接后通过线性变换整合\n\n这相当于让h个不同的“专家”从不同角度审视句子，每个专家捕捉一种特征关系。\n\n**数学表达**\n`MultiHead(Q,K,V) = Concat(head₁, ..., head_h) × Wᵥ`\n其中 `head_i = Attention(QWq_i, KWk_i, VWv_i)`\n\n[提示] 这种设计让模型能共同关注来自不同位置、不同表示子空间的信息。"
+  },
+  {
+    "type": "code",
+    "title": "多头注意力 PyTorch 实现",
+    "language": "python",
+    "code": "import torch\nimport torch.nn as nn\nimport math\n\nclass MultiHeadAttention(nn.Module):\n    def __init__(self, d_model, num_heads):\n        super().__init__()\n        assert d_model % num_heads == 0\n        self.d_model = d_model\n        self.num_heads = num_heads\n        self.d_k = d_model // num_heads\n        self.W_q = nn.Linear(d_model, d_model)\n        self.W_k = nn.Linear(d_model, d_model)\n        self.W_v = nn.Linear(d_model, d_model)\n        self.W_o = nn.Linear(d_model, d_model)\n\n    def scaled_dot_product_attention(self, Q, K, V, mask=None):\n        # Q, K, V shape: (batch, heads, seq, d_k)\n        scores = torch.matmul(Q, K.transpose(-2, -1))\n        scores = scores / math.sqrt(self.d_k)\n        if mask is not None:\n            scores = scores.masked_fill(mask == 0, -1e9)\n        attn_weights = torch.softmax(scores, dim=-1)\n        return torch.matmul(attn_weights, V)\n\n    def split_heads(self, x):\n        b, s, d = x.size()\n        return (x.view(b, s, self.num_heads, self.d_k)\n                .transpose(1, 2))\n\n    def forward(self, Q, K, V, mask=None):\n        Q = self.split_heads(self.W_q(Q))\n        K = self.split_heads(self.W_k(K))\n        V = self.split_heads(self.W_v(V))\n        attn = self.scaled_dot_product_attention(Q, K, V, mask)\n        # 合并多头: (b, h, s, d_k) -> (b, s, d_model)\n        b, h, s, dk = attn.size()\n        attn = attn.transpose(1, 2).contiguous()\n        attn = attn.view(b, s, self.d_model)\n        return self.W_o(attn)",
+    "explanation": "该代码实现了Transformer核心模块——多头注意力机制。它将Q/K/V分成多个头（head）分别计算缩放点积注意力，然后拼接整合。这种设计让模型能在不同表示子空间中捕捉不同类型的关联关系，是Transformer成功的关键。"
+  },
+  {
+    "type": "content",
+    "title": "位置编码与残差连接",
+    "content": "**位置编码（Positional Encoding）**\n\n自注意力本身不包含位置信息，“agent learns”和“learns agent”对它完全等价。位置编码通过在词向量上叠加位置向量来解决此问题。\n\n使用正弦和余弦函数生成：\n`PE(pos, 2i) = sin(pos / 10000^(2i/d_model))`\n`PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))`\n\n**残差连接与层归一化（Add & Norm）**\n\n• **残差连接**：`output = Sublayer(x) + x`，解决深层网络梯度消失\n• **层归一化**：每层输入归一化为均值0、方差1，加速收敛\n\n[提示] 这些设计共同保证了深层Transformer网络的稳定训练，使模型能扩展到数十甚至数百层。"
+  },
+  {
+    "type": "content",
+    "title": "Decoder-Only 架构与自回归生成",
+    "content": "OpenAI在开发GPT系列时提出：语言的核心任务就是预测下一个最可能的词。\n\n**Decoder-Only架构**：完全抛弃编码器，只保留解码器，专注“预测下一个词”。\n\n**自回归（Autoregressive）生成**\n1. 输入起始文本 “Datawhale Agent is”\n2. 模型预测 “a”\n3. 将“a”追加到输入末尾，形成新输入\n4. 继续预测”powerful”，重复直到结束\n\n**掩码自注意力（Masked Self-Attention）**\n• Softmax之前将未来位置的分数设为-∞\n• 保证模型只能看到已生成的内容\n\n**优势**：训练目标统一、结构简易扩展、天然适合生成任务"
+  },
+  {
+    "type": "animation",
+    "title": "注意力权重热图",
+    "animation": "ch3-attention"
+  },
+  {
+    "type": "content",
+    "title": "提示工程：采样参数",
+    "content": "**Temperature（温度）**：控制输出随机性\n• 低（0~0.3）：精准、确定 → 事实问答、代码生成\n• 中（0.3~0.7）：平衡、自然 → 日常对话、常规创作\n• 高（0.7~2）：创新、发散 → 诗歌、头脑风暴\n\n**Top-k 采样**：只保留概率最高的k个候选token\n• k=1 退化为贪心采样\n\n**Top-p 采样（核采样）**：保留累积概率达阈值p的最小候选集\n• 相对Top-k动态适应不同分布的长尾特性\n\n**协作优先级**：温度调整 → Top-k → Top-p\n\n[警告] 温度设为0时Top-k和Top-p将失去作用。"
+  },
+  {
+    "type": "content",
+    "title": "零样本、少样本与思维链",
+    "content": "**零样本（Zero-shot Prompting）**\n直接下达指令，不给示例，依赖预训练学到的泛化能力。\n例：`文本：课程非常棒！情感：` → 模型输出“正面”\n\n**少样本（Few-shot Prompting）**\n提供多个示例让模型理解任务格式和边界。\n例：依次给出正面、负面、中性示例后让模型分类新文本\n\n**思维链（Chain-of-Thought, CoT）**\n引导模型逐步思考，显著提升推理能力：\n`请一步一步地思考并解答。`\n\n[成功] CoT使模型在算术、逻辑推理等复杂任务上的准确性大幅提升。\n\n**指令调优（Instruction Tuning）**\n使用“指令-回答”数据微调后，模型能更好地理解并遵循人类指令。"
+  },
+  {
+    "type": "comparison",
+    "title": "主流大语言模型对比",
+    "headers": [
+      "维度",
+      "闭源模型",
+      "开源模型"
+    ],
+    "rows": [
+      [
+        "代表",
+        "GPT-5, Claude 4, Gemini 2.5",
+        "Llama 4, Qwen, Mistral"
+      ],
+      [
+        "性能",
+        "领先，最前沿能力",
+        "接近闭源，持续追赶"
+      ],
+      [
+        "成本",
+        "API按Token计费",
+        "自备硬件，无API费用"
+      ],
+      [
+        "部署",
+        "开箱即用，无需运维",
+        "本地部署，数据不离开"
+      ],
+      [
+        "可控性",
+        "受服务商条款限制",
+        "完全自主控制"
+      ],
+      [
+        "定制化",
+        "有限（Prompt/微调）",
+        "可任意微调修改"
+      ],
+      [
+        "上下文",
+        "较大（128K~1M Token）",
+        "差异大（8K~1M Token）"
+      ],
+      [
+        "生态",
+        "成熟稳定，文档完善",
+        "社区活跃，工具丰富"
+      ]
+    ]
+  },
+  {
+    "type": "content",
+    "title": "文本分词（Tokenization）",
+    "content": "将文本转换为模型能处理的数字序列的过程称为**分词**。\n\n**三种策略对比**\n\n**按词分词**\n• 词表爆炸，存在未登录词（OOV）问题\n• “look”、”looks”、”looking”被视为三个完全不同的词元\n\n**按字符分词**\n• 词表极小，无OOV问题\n• 单个字符无独立语义，学习效率低\n\n**子词分词（Subword Tokenization）** ✔ 现代LLM标准\n• 常见词保留为完整词元，不常见词拆分为有意义的子词\n• 例：“Tokenization” → [“Token”, “ization”]\n• **BPE**（GPT系列使用）、**WordPiece**（BERT使用）、**SentencePiece**（Llama使用）"
+  },
+  {
+    "type": "code",
+    "title": "BPE（字节对编码）算法",
+    "language": "python",
+    "code": "import re, collections\n\ndef get_stats(vocab):\n    \"\"\"统计相邻词元对频率\"\"\"\n    pairs = collections.defaultdict(int)\n    for word, freq in vocab.items():\n        symbols = word.split()\n        for i in range(len(symbols) - 1):\n            pairs[symbols[i], symbols[i+1]] += freq\n    return pairs\n\ndef merge_vocab(pair, v_in):\n    \"\"\"合并最高频词元对\"\"\"\n    v_out = {}\n    bigram = re.escape(' '.join(pair))\n    p = re.compile(r'(?<!\\S)' + bigram + r'(?!\\S)')\n    for word in v_in:\n        w_out = p.sub(''.join(pair), word)\n        v_out[w_out] = v_in[word]\n    return v_out\n\n# 迷你语料库（</w>表示词尾）\nvocab = {'h u g </w>': 1, 'p u g </w>': 1,\n         'p u n </w>': 1, 'b u n </w>': 1}\n\nfor i in range(4):\n    pairs = get_stats(vocab)\n    if not pairs:\n        break\n    best = max(pairs, key=pairs.get)\n    vocab = merge_vocab(best, vocab)\n    print(f\"第{i+1}次合并: {best} -> {''.join(best)}\")\n# 输出:\n# 第1次合并: ('u', 'g') -> ug\n# 第2次合并: ('ug', '</w>') -> ug</w>\n# 第3次合并: ('u', 'n') -> un\n# 第4次合并: ('un', '</w>') -> un</w>",
+    "explanation": "BPE是一种贪心算法，通过迭代合并语料库中出现频率最高的相邻词元对来构建词表。GPT系列模型采用此算法。它平衡了词表大小和语义表达能力，使模型能通过组合子词来理解和生成新词。"
+  },
+  {
+    "type": "content",
+    "title": "分词器对开发者的实践意义",
+    "content": "理解分词原理直接关系到智能体的性能、成本和稳定性：\n\n**上下文窗口限制**\n• 模型上下文窗口以Token数量计算，而非字符数\n• 同样一段话在中文和英文下Token数可能相差巨大\n\n**API成本控制**\n• 大多数模型API按Token计费\n• 了解文本的分词方式是预估成本的关键\n\n**常见陷阱**\n• `2 + 2` 和 `2+2` 可能因分词不同导致模型表现截然不同\n• 首字母大小写不同可能产生不同的Token序列\n• 设计提示词和解析输出时需考虑这些陷阱\n\n[警告] 忽视分词细节可能导致智能体行为异常或成本超预期。"
+  },
+  {
+    "type": "content",
+    "title": "调用开源大语言模型（HuggingFace）",
+    "content": "使用Hugging Face Transformers库在本地调用开源模型：\n\n**安装**：`pip install transformers torch`\n\n**选择模型**：`Qwen/Qwen1.5-0.5B-Chat`（约5亿参数，适合本地部署）\n\n**使用流程**：\n1. 使用 `AutoTokenizer` 加载分词器\n2. 使用 `AutoModelForCausalLM` 加载模型\n3. 通过 `apply_chat_template` 格式化对话输入\n4. 调用 `tokenizer` 编码为Token ID\n5. 调用 `model.generate()` 生成回答\n6. 使用 `tokenizer.decode()` 解码为文本\n\n[提示] 对于需要处理敏感数据或离线运行的场景，本地部署是重要选择。"
+  },
+  {
+    "type": "code",
+    "title": "HuggingFace Transformers 调用示例",
+    "language": "python",
+    "code": "from transformers import AutoModelForCausalLM, AutoTokenizer\nimport torch\n\n# 1. 加载模型和分词器\nmodel_id = \"Qwen/Qwen1.5-0.5B-Chat\"\ndevice = \"cuda\" if torch.cuda.is_available() else \"cpu\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(\n    model_id).to(device)\n\n# 2. 准备对话\nmessages = [\n    {\"role\": \"system\",\n     \"content\": \"You are a helpful assistant.\"},\n    {\"role\": \"user\",\n     \"content\": \"你好，请介绍你自己。\"}\n]\n\n# 3. 格式化并编码\ntext = tokenizer.apply_chat_template(\n    messages, tokenize=False,\n    add_generation_prompt=True)\ninputs = tokenizer([text], return_tensors=\"pt\").to(device)\n\n# 4. 生成\nout = model.generate(\n    inputs.input_ids, max_new_tokens=512)\n\n# 5. 解码\nresponse = tokenizer.decode(\n    out[0][inputs.input_ids.shape[1]:],\n    skip_special_tokens=True)\nprint(response)\n# 输出: 我叫通义千问，是由阿里云研发的预训练语言模型...",
+    "explanation": "该代码展示了使用HuggingFace Transformers库在本地部署并调用开源大语言模型的完整流程。关键步骤包括加载模型和分词器、使用聊天模板格式化输入、编码为Token ID、生成回答、解码输出。这是构建本地智能体系统的基础能力。"
+  },
+  {
+    "type": "content",
+    "title": "模型选型的关键考量",
+    "content": "选择模型不是简单地追求“最大、最强”，而是在多个维度间权衡：\n\n1. **性能与能力**：不同模型擅长不同任务\n2. **成本**：API调用费用 vs 本地部署硬件成本\n3. **速度（延迟）**：实时交互应用需要低延迟\n4. **上下文窗口**：长文档分析需要大窗口（128K+）\n5. **部署方式**：API便捷 vs 本地部署数据隐私\n6. **生态与工具链**：社区支持、教程、兼容框架\n7. **可微调性**：是否需要定制化训练\n8. **安全性与伦理**：偏见、毒性、幻觉表现\n\n[提示] 可参考LMSys Chatbot Arena排行榜评估模型综合能力。"
+  },
+  {
+    "type": "content",
+    "title": "缩放法则与涌现能力",
+    "content": "**缩放法则（Scaling Laws）** 揭示了模型性能与参数量、数据量、计算量之间可预测的幂律关系。\n\n**关键发现**\n• 持续、按比例增加三要素，性能平滑提升\n• **Chinchilla定律**（2022）：参数量和训练数据量存在最优配比\n  - 70B参数的Chinchilla用4倍于GPT-3的数据训练，性能反超\n\n**涌现能力（Emergent Abilities）**\n当模型规模达到阈值后，突然展现出全新能力：\n• **上下文学习**：提供几个示例即能完成新任务\n• **思维链推理**：通过逐步推理提升准确性\n• **指令遵循**：理解和执行复杂人类指令\n\n[提示] 选择足够大规模的模型是实现复杂自主决策能力的前提。"
+  },
+  {
+    "type": "content",
+    "title": "模型幻觉与局限性",
+    "content": "**模型幻觉（Hallucination）** 指LLM生成与事实不符的内容：\n• **事实性幻觉**：生成不存在的事实或实体\n• **忠实性幻觉**：未能忠实反映源文本含义\n• **内在幻觉**：与输入信息直接矛盾\n\n**其他局限**\n• **知识截止**：训练数据收集日期后的事件无法感知\n• **偏见**：训练数据中的人类偏见被模型吸收和放大\n\n**缓解策略**\n1. **检索增强生成（RAG）**：从外部知识库检索相关信息作为上下文\n2. **多步推理与验证**：分步骤推理并自我检查\n3. **外部工具调用**：搜索引擎、计算器获取实时信息\n4. **RLHF**：通过人类反馈强化学习与意图对齐\n\n[提示] 构建可靠智能体必须设计验证机制以规避幻觉。"
+  },
+  {
+    "type": "content",
+    "title": "本章小结",
+    "content": "• 语言模型从N-gram演进到Transformer，自注意力机制实现了并行化全局上下文建模\n• Decoder-Only架构通过“预测下一个词”的统一范式开启了LLM时代\n• 提示工程（Zero-shot/Few-shot/CoT）和采样参数（Temperature/Top-k/Top-p）是引导模型的关键工具\n• 子词分词（BPE/WordPiece/SentencePiece）平衡了词表大小和语义表达能力\n• 缩放法则揭示了性能与规模的可预测关系，涌现能力让大模型具备独特的高级推理能力\n• 幻觉是LLM的重要局限，RAG和外部工具调用是构建可靠智能体的必要设计"
+  },
+  {
+    "type": "quiz",
+    "title": "知识测验"
+  }
+]

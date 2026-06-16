@@ -1,0 +1,76 @@
+{
+  "ch6": [
+    {
+      "id": "ch6-q1",
+      "type": "single",
+      "question": "AutoGen 的核心设计哲学是什么？",
+      "options": [
+        {"id": "A", "text": "通过状态机控制流程"},
+        {"id": "B", "text": "通过对话驱动协作"},
+        {"id": "C", "text": "通过角色扮演自主协作"},
+        {"id": "D", "text": "通过消息路由分发任务"}
+      ],
+      "answer": "B",
+      "explanation": "AutoGen 的核心思想是通过对话实现协作，将多智能体系统抽象为一个由多个可对话智能体组成的群聊。"
+    },
+    {
+      "id": "ch6-q2",
+      "type": "single",
+      "question": "LangGraph 将智能体执行流程建模为什么？",
+      "options": [
+        {"id": "A", "text": "线性管道"},
+        {"id": "B", "text": "有向图（状态机）"},
+        {"id": "C", "text": "树形结构"},
+        {"id": "D", "text": "事件循环"}
+      ],
+      "answer": "B",
+      "explanation": "LangGraph 将智能体的执行流程建模为有向图（State Machine），节点代表计算步骤，边代表跳转逻辑。"
+    },
+    {
+      "id": "ch6-q3",
+      "type": "single",
+      "question": "CAMEL 框架的核心创新是什么？",
+      "options": [
+        {"id": "A", "text": "分布式消息路由"},
+        {"id": "B", "text": "角色扮演和引导性提示（Inception Prompting）"},
+        {"id": "C", "text": "可视化工作流编排"},
+        {"id": "D", "text": "工具调用标准化"}
+      ],
+      "answer": "B",
+      "explanation": "CAMEL 的核心是角色扮演协作，两个智能体通过引导性提示（Inception Prompting）在最少人类干预下自主协作。"
+    },
+    {
+      "id": "ch6-q4",
+      "type": "single",
+      "question": "AgentScope 相比其他框架最突出的工程化特性是什么？",
+      "options": [
+        {"id": "A", "text": "原生支持分布式部署"},
+        {"id": "B", "text": "零代码配置"},
+        {"id": "C", "text": "内置 GUI 界面"},
+        {"id": "D", "text": "自动生成文档"}
+      ],
+      "answer": "A",
+      "explanation": "AgentScope 内置了分布式部署、容错恢复、可观测性等企业级特性，智能体可以被部署在不同进程或服务器上。"
+    },
+    {
+      "id": "ch6-q5",
+      "type": "judge",
+      "question": "LangGraph 的条件边（Conditional Edge）可以实现在节点之间动态跳转和循环。",
+      "answer": true,
+      "explanation": "条件边通过判断函数根据当前状态动态决定下一步路由，天然支持循环，这是实现反思-修正机制的关键。"
+    },
+    {
+      "id": "ch6-q6",
+      "type": "single",
+      "question": "以下哪个框架最适合构建需要精确流程控制的金融风控审批系统？",
+      "options": [
+        {"id": "A", "text": "AutoGen"},
+        {"id": "B", "text": "AgentScope"},
+        {"id": "C", "text": "CAMEL"},
+        {"id": "D", "text": "LangGraph"}
+      ],
+      "answer": "D",
+      "explanation": "LangGraph 通过显式的图结构赋予开发者对工作流的精确控制，每个步骤和跳转条件都明确可控，适合需要严格流程、可审计的场景。"
+    }
+  ]
+}

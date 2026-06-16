@@ -1,0 +1,94 @@
+[
+  {
+    "id": "ch16-q1",
+    "type": "single",
+    "question": "毕业设计项目命名规范是什么？",
+    "options": [
+      { "id": "A", "text": "项目名称-版本号" },
+      { "id": "B", "text": "{GitHub用户名}-{项目名称}" },
+      { "id": "C", "text": "{年份}-{项目名称}" },
+      { "id": "D", "text": "{框架名称}-{项目名称}" }
+    ],
+    "answer": "B",
+    "explanation": "项目命名使用 {你的GitHub用户名}-{项目名称} 的格式，例如 jjyaoao-CodeReviewAgent。"
+  },
+  {
+    "id": "ch16-q2",
+    "type": "single",
+    "question": "毕业设计通过什么方式提交到主仓库？",
+    "options": [
+      { "id": "A", "text": "直接推送 main 分支" },
+      { "id": "B", "text": "通过 GitHub Pull Request" },
+      { "id": "C", "text": "发送邮件给维护者" },
+      { "id": "D", "text": "通过 npm 发布" }
+    ],
+    "answer": "B",
+    "explanation": "通过 GitHub 的 Pull Request（PR）提交，经过社区 Review 后合并到主仓库。"
+  },
+  {
+    "id": "ch16-q3",
+    "type": "single",
+    "question": "PR 标题的统一格式是什么？",
+    "options": [
+      { "id": "A", "text": "[项目] 名称 - 描述" },
+      { "id": "B", "text": "[毕业设计] 项目名称 - 简短描述" },
+      { "id": "C", "text": "feat: 项目名称" },
+      { "id": "D", "text": "Add 项目名称" }
+    ],
+    "answer": "B",
+    "explanation": "所有毕业设计项目的 PR 标题必须遵循 [毕业设计] 项目名称 - 简短描述 的格式。"
+  },
+  {
+    "id": "ch16-q4",
+    "type": "single",
+    "question": "毕业设计项目总大小限制是多少？",
+    "options": [
+      { "id": "A", "text": "1MB" },
+      { "id": "B", "text": "5MB" },
+      { "id": "C", "text": "10MB" },
+      { "id": "D", "text": "50MB" }
+    ],
+    "answer": "B",
+    "explanation": "为了保持主仓库轻量化，项目总大小不超过 5MB，禁止直接提交视频、大型数据集等。"
+  },
+  {
+    "id": "ch16-q5",
+    "type": "judge",
+    "question": "毕业设计项目中可以直接提交视频文件和大型数据集。",
+    "answer": false,
+    "explanation": "视频文件和大型数据集应上传到外部平台（如B站、百度网盘）并在README中提供链接，或使用独立仓库。"
+  },
+  {
+    "id": "ch16-q6",
+    "type": "single",
+    "question": "以下哪个不是推荐的毕业设计选题方向？",
+    "options": [
+      { "id": "A", "text": "生产力工具类" },
+      { "id": "B", "text": "学习辅助类" },
+      { "id": "C", "text": "操作系统开发" },
+      { "id": "D", "text": "数据分析类" }
+    ],
+    "answer": "C",
+    "explanation": "推荐方向包括生产力工具、学习辅助、创意娱乐、数据分析、生活服务五大类。操作系统开发超出了本教程的范围。"
+  },
+  {
+    "id": "ch16-q7",
+    "type": "single",
+    "question": "毕业设计提交代码时，推荐的 commit 类型是什么？",
+    "options": [
+      { "id": "A", "text": "fix" },
+      { "id": "B", "text": "feat" },
+      { "id": "C", "text": "docs" },
+      { "id": "D", "text": "style" }
+    ],
+    "answer": "B",
+    "explanation": "新增功能或项目使用 feat 类型，毕业设计项目推荐使用 feat: 添加XXX毕业设计项目 的格式。"
+  },
+  {
+    "id": "ch16-q8",
+    "type": "judge",
+    "question": "毕业设计只需要提交代码，不需要写 README 文档。",
+    "answer": false,
+    "explanation": "README 是项目的门面，必须包含项目简介、核心功能、快速开始、使用示例等内容。完整的文档是毕业设计的基本要求之一。"
+  }
+]

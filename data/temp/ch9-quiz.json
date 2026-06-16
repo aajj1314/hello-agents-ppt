@@ -1,0 +1,76 @@
+{
+  "ch9": [
+    {
+      "id": "ch9-q1",
+      "type": "single",
+      "question": "上下文工程与提示工程的核心区别是什么？",
+      "options": [
+        {"id": "A", "text": "上下文工程比提示工程更简单"},
+        {"id": "B", "text": "上下文工程关注整个信息集合而不仅仅是提示本身"},
+        {"id": "C", "text": "提示工程不需要考虑系统提示"},
+        {"id": "D", "text": "两者完全相同"}
+      ],
+      "answer": "B",
+      "explanation": "上下文工程在推理阶段策划和维护最优的信息集合（tokens），包含提示本身以及进入上下文窗口的一切信息，如系统指令、工具、外部数据、消息历史等。"
+    },
+    {
+      "id": "ch9-q2",
+      "type": "single",
+      "question": "什么是\"上下文腐蚀\"（Context Rot）？",
+      "options": [
+        {"id": "A", "text": "上下文数据被恶意篡改"},
+        {"id": "B", "text": "随着上下文 tokens 增加，模型准确回忆信息的能力下降"},
+        {"id": "C", "text": "上下文窗口技术被淘汰"},
+        {"id": "D", "text": "模型的训练数据质量下降"}
+      ],
+      "answer": "B",
+      "explanation": "上下文腐蚀是指随着上下文窗口中的 tokens 增加，模型从上下文中准确回忆信息的能力反而下降的现象。这是 Transformer 架构的固有特征。"
+    },
+    {
+      "id": "ch9-q3",
+      "type": "single",
+      "question": "GSSC 流水线的正确顺序是什么？",
+      "options": [
+        {"id": "A", "text": "Select → Gather → Structure → Compress"},
+        {"id": "B", "text": "Gather → Select → Structure → Compress"},
+        {"id": "C", "text": "Structure → Gather → Select → Compress"},
+        {"id": "D", "text": "Gather → Structure → Select → Compress"}
+      ],
+      "answer": "B",
+      "explanation": "GSSC 代表 Gather（汇集）→ Select（选择）→ Structure（结构化）→ Compress（压缩），是 ContextBuilder 的核心流水线。"
+    },
+    {
+      "id": "ch9-q4",
+      "type": "single",
+      "question": "NoteTool 使用什么文件格式来兼顾机器可解析和人类可读？",
+      "options": [
+        {"id": "A", "text": "纯 JSON 格式"},
+        {"id": "B", "text": "Markdown + YAML 混合格式"},
+        {"id": "C", "text": "XML 格式"},
+        {"id": "D", "text": "二进制格式"}
+      ],
+      "answer": "B",
+      "explanation": "NoteTool 采用 Markdown + YAML 混合格式，YAML 前置元数据机器可解析，Markdown 正文人类可读且支持丰富格式化。"
+    },
+    {
+      "id": "ch9-q5",
+      "type": "judge",
+      "question": "TerminalTool 允许智能体执行所有 Linux 命令以实现最大的灵活性。",
+      "answer": false,
+      "explanation": "TerminalTool 通过命令白名单限制只读安全命令，并有工作目录沙箱、超时控制和输出大小限制等多层安全机制。"
+    },
+    {
+      "id": "ch9-q6",
+      "type": "multiple",
+      "question": "上下文工程中管理长时程任务的三大策略是什么？（多选）",
+      "options": [
+        {"id": "A", "text": "压缩整合（Compaction）"},
+        {"id": "B", "text": "结构化笔记（Structured Note-taking）"},
+        {"id": "C", "text": "子代理架构（Sub-agent Architectures）"},
+        {"id": "D", "text": "增加模型参数量"}
+      ],
+      "answer": "ABC",
+      "explanation": "三大策略是：压缩整合（高保真总结后重启窗口）、结构化笔记（持久化存储按需拉回）、子代理架构（主代理规划+子代理深挖）。"
+    }
+  ]
+}

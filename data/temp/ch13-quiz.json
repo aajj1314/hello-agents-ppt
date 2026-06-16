@@ -1,0 +1,74 @@
+[
+  {
+    "id": "ch13-q1",
+    "type": "single",
+    "question": "智能旅行助手项目中，负责制定行程规划的 Agent 是？",
+    "options": [
+      { "id": "A", "text": "BookingAgent" },
+      { "id": "B", "text": "PlannerAgent" },
+      { "id": "C", "text": "AdvisorAgent" },
+      { "id": "D", "text": "SearchAgent" }
+    ],
+    "answer": "B",
+    "explanation": "PlannerAgent 负责根据用户需求制定行程规划，是整个系统的核心协调器。"
+  },
+  {
+    "id": "ch13-q2",
+    "type": "single",
+    "question": "多智能体协作的主要优势是？",
+    "options": [
+      { "id": "A", "text": "减少代码量" },
+      { "id": "B", "text": "每个 Agent 专注特定任务，提高整体效率" },
+      { "id": "C", "text": "降低系统复杂度" },
+      { "id": "D", "text": "不需要通信协议" }
+    ],
+    "answer": "B",
+    "explanation": "多智能体通过分工协作，让每个 Agent 专注自己擅长的任务，提高整体系统效率。"
+  },
+  {
+    "id": "ch13-q3",
+    "type": "judge",
+    "question": "在多智能体旅行规划系统中，Agent 之间必须通过共享内存来通信。",
+    "answer": false,
+    "explanation": "Agent 之间可以通过多种方式通信，包括消息传递、共享内存、RPC 等，消息传递是最常见的方式。"
+  },
+  {
+    "id": "ch13-q4",
+    "type": "single",
+    "question": "MCP（Model Context Protocol）协议的核心作用是？",
+    "options": [
+      { "id": "A", "text": "实现数据库连接" },
+      { "id": "B", "text": "在语言模型和外部工具间建立标准化通信" },
+      { "id": "C", "text": "加速 LLM 推理" },
+      { "id": "D", "text": "替代 HTTP 协议" }
+    ],
+    "answer": "B",
+    "explanation": "MCP（Model Context Protocol）是 Anthropic 提出的标准化协议，用于连接 LLM 和外部工具。"
+  },
+  {
+    "id": "ch13-q5",
+    "type": "single",
+    "question": "在旅行助手项目中，共享 MCP 实例的主要好处是？",
+    "options": [
+      { "id": "A", "text": "每个 Agent 可以独立控制 API 版本" },
+      { "id": "B", "text": "节省资源，只需启动一个 MCP 服务器进程" },
+      { "id": "C", "text": "提高 LLM 响应速度" },
+      { "id": "D", "text": "增加系统的并发能力" }
+    ],
+    "answer": "B",
+    "explanation": "共享 MCP 实例只需要启动一个服务器进程，多个 Agent 共享，节省内存和 CPU 资源。"
+  },
+  {
+    "id": "ch13-q6",
+    "type": "single",
+    "question": "旅行助手中，Planner 将预订和推荐任务发送给 Booking 和 Advisor 后，这两个 Agent 的工作模式是？",
+    "options": [
+      { "id": "A", "text": "串行执行" },
+      { "id": "B", "text": "并行执行" },
+      { "id": "C", "text": "只有一个执行" },
+      { "id": "D", "text": "由用户选择哪个执行" }
+    ],
+    "answer": "B",
+    "explanation": "Booking 和 Advisor 可以并行工作，同时查询预订信息和推荐内容，提高整体效率。"
+  }
+]

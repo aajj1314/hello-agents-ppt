@@ -1,0 +1,45 @@
+[
+  { "type": "cover", "title": "第十三章", "subtitle": "智能旅行助手" },
+  { "type": "content", "title": "项目概述", "content": "构建一个多智能体协作的旅行规划系统。用户输入旅行需求后，系统会自动规划行程、预订服务、提供建议。\n\n核心价值：\n• 将复杂旅行规划分解为多个简单子任务\n• 各 Agent 各司其职，专注擅长的领域\n• 支持个性化需求，生成定制化旅行方案" },
+  { "type": "content", "title": "需求分析", "content": "用户需求：\n• 目的地：城市或地区\n• 时间：出行日期和时长\n• 预算：人均预算\n• 偏好：旅行风格（休闲、冒险、文化等）\n• 人数：同行人数\n\n系统输出：\n• 行程规划：每日活动安排\n• 预订信息：机票、酒店、门票\n• 旅行建议：美食、交通、注意事项" },
+  { "type": "animation", "title": "多智能体协作流程", "animation": "ch13-travel" },
+  { "type": "content", "title": "角色分工", "content": "• **Planner（规划师）**：负责整体行程规划\n  - 分析用户需求，制定每日行程\n  - 协调其他智能体，验证可行性\n\n• **Booking（预订员）**：负责预订服务\n  - 预订机票/火车票、酒店、景点门票\n\n• **Advisor（顾问）**：负责提供建议\n  - 推荐当地美食、交通指南、注意事项" },
+  { "type": "content", "title": "协作流程", "content": "1. 用户提交旅行需求\n2. Planner 分析需求，制定初步行程\n3. Planner 将预订任务发送给 Booking\n4. Booking 完成预订，返回确认信息\n5. Planner 将行程发送给 Advisor\n6. Advisor 提供个性化建议\n7. Planner 汇总所有信息，生成最终方案\n8. 返回给用户" },
+  { "type": "flow", "title": "多 Agent 协作流程", "steps": [
+    { "title": "用户提交需求", "description": "输入目的地、日期、预算、偏好等信息" },
+    { "title": "Planner 规划", "description": "分析需求，制定初步行程框架" },
+    { "title": "Booking 预订", "description": "并行查询交通、酒店、门票信息" },
+    { "title": "Advisor 建议", "description": "并行搜索美食、交通、注意事项" },
+    { "title": "Planner 整合", "description": "汇总预订结果与建议，生成最终方案" },
+    { "title": "返回用户", "description": "展示完整旅行计划，支持编辑调整" }
+  ] },
+  { "type": "content", "title": "数据流转", "content": "• 用户需求 → Planner\n• 行程草稿 ↔ Booking（预订可行性验证）\n• 预订结果 → Planner\n• 确认行程 → Advisor\n• 建议信息 → Planner\n• 最终方案 → 用户\n\n[提示] 数据流是单向传递的，Planner 作为中心协调器，Booking 和 Advisor 可以并行工作。" },
+  { "type": "content", "title": "协作模式", "content": "• **主从模式**：Planner 为主，其他为从\n• **流水线模式**：任务依次传递\n• **反馈循环**：各智能体之间互相反馈\n• **并行执行**：Booking 和 Advisor 可并行工作\n\n这种设计使得系统能够高效利用资源，Booking 在查询交通时，Advisor 同时搜索美食推荐。" },
+  { "type": "concepts", "title": "多 Agent 架构设计模式", "items": [
+    { "icon": "🎯", "title": "主从协调", "description": "Planner 作为主Agent，负责任务分解和结果整合。Booking 和 Advisor 作为从Agent，执行具体任务。类似项目经理和团队成员的关系。" },
+    { "icon": "🔗", "title": "流水线处理", "description": "任务按照需求分析→景点搜索→天气查询→酒店推荐→行程生成的顺序流水线处理，每个阶段的输出是下一阶段的输入。" },
+    { "icon": "⚡", "title": "并行执行", "description": "Booking（预订）和 Advisor（建议）两个 Agent 相互独立，可以同时执行，提高系统响应速度。" }
+  ] },
+  { "type": "content", "title": "Planner Agent 详解", "content": "**PlannerAgent** 是整个系统的核心协调器。\n\n核心职责：\n• 分析用户输入的旅行需求\n• 调用 LLM 生成初步行程规划\n• 协调 Booking 和 Advisor 的工作\n• 整合所有结果，生成最终方案\n\n关键技术：\n• 使用简单的 Prompt 驱动（不需要工具调用）\n• 输出严格的 JSON 格式行程数据\n• 验证行程可行性（景点距离、时间安排）" },
+  { "type": "content", "title": "Booking Agent 详解", "content": "**BookingAgent** 负责具体的预订服务。\n\n核心职责：\n• 搜索可用交通方式（飞机、火车等）\n• 查找符合预算的酒店\n• 预订景点门票\n\n关键技术：\n• 调用高德地图 MCP 工具的 POI 搜索\n• 根据预算和偏好筛选结果\n• 返回结构化预订信息" },
+  { "type": "content", "title": "Advisor Agent 详解", "content": "**AdvisorAgent** 负责提供旅行建议。\n\n核心职责：\n• 推荐当地特色美食和餐厅\n• 提供交通出行指南\n• 提醒注意事项（天气、文化习俗等）\n\n关键技术：\n• 从知识库中检索相关信息\n• 结合天气数据提供针对性建议\n• 生成人性化的旅行提示" },
+  { "type": "content", "title": "MCP 接入概述", "content": "**MCP（Model Context Protocol）** 是 Anthropic 提出的标准化协议，用于连接 LLM 和外部工具。\n\n为什么通过 MCP 接入高德地图：\n• **标准化**：统一的接口和调用方式\n• **Agent 自主调用**：Agent 可通过提示词中的工具标记自主调用\n• **简化参数**：MCP 服务器封装了 API 细节\n• **易于管理**：16 个工具自动注册，一键集成" },
+  { "type": "content", "title": "高德地图 MCP 工具", "content": "高德地图 MCP 服务器提供了丰富的工具：\n\n| 类别 | 工具 |\n|------|------|\n| POI 搜索 | maps_text_search、maps_around_search |\n| 天气查询 | maps_weather |\n| 路线规划 | maps_driving、maps_transit、maps_walking |\n| 地理编码 | maps_geo_code、maps_regeo_code |\n| 行政区划 | maps_district |\n| 静态地图 | maps_staticmap |\n\n通过 `auto_expand=True` 可自动注册全部工具。" },
+  { "type": "content", "title": "共享 MCP 实例", "content": "在多 Agent 系统中，多个 Agent 共享同一个 MCPTool 实例。\n\n优势：\n• 只有一个 MCP 服务器进程在运行\n• 节省内存和 CPU 资源\n• 更好地控制 API 调用频率\n• 避免超过 API 速率限制\n\n实现方式：在 TripPlannerAgent 中创建 MCPTool，然后添加到每个子 Agent 的工具列表中。" },
+  { "type": "code", "title": "MCP 集成代码", "language": "python", "code": "from hello_agents.tools import MCPTool\n\n# 创建共享的MCP工具实例\nmcp_tool = MCPTool(\n    name=\"amap_mcp\",\n    command=\"npx\",\n    args=[\"-y\", \"@sugarforever/amap-mcp-server\"],\n    env={\"AMAP_API_KEY\": settings.amap_api_key},\n    auto_expand=True  # 自动注册所有16个工具\n)\n\n# 多个Agent共享同一个MCPTool\nself.attraction_agent = SimpleAgent(\n    name=\"AttractionSearchAgent\",\n    llm=self.llm,\n    system_prompt=ATTRACTION_AGENT_PROMPT\n)\nself.attraction_agent.add_tool(mcp_tool)\n\nself.weather_agent = SimpleAgent(\n    name=\"WeatherQueryAgent\",\n    llm=self.llm,\n    system_prompt=WEATHER_AGENT_PROMPT\n)\nself.weather_agent.add_tool(mcp_tool)  # 同一实例" },
+  { "type": "code", "title": "多 Agent 编排实现", "language": "python", "code": "class TripPlannerAgent:\n    \"\"\"旅行规划主协调器\"\"\"\n    def __init__(self):\n        self.llm = HelloAgentsLLM()\n        self.mcp_tool = MCPTool(name=\"amap_mcp\", ...)\n        \n        # 创建四个独立但协作的Agent\n        self.attraction_agent = SimpleAgent(\n            name=\"景点搜索\",\n            llm=self.llm, prompt=ATTRACTION_PROMPT\n        )\n        self.weather_agent = SimpleAgent(\n            name=\"天气查询\",\n            llm=self.llm, prompt=WEATHER_PROMPT\n        )\n        self.hotel_agent = SimpleAgent(\n            name=\"酒店推荐\",\n            llm=self.llm, prompt=HOTEL_PROMPT\n        )\n        self.planner_agent = SimpleAgent(\n            name=\"行程规划\",\n            llm=self.llm, prompt=PLANNER_PROMPT\n        )\n        # 三个工具Agent共享MCP工具\n        for agent in [self.attraction_agent, \n                      self.weather_agent, \n                      self.hotel_agent]:\n            agent.add_tool(self.mcp_tool)\n\n    def plan_trip(self, request: TripPlanRequest) -> TripPlan:\n        \"\"\"完整行程规划流程\"\"\"\n        # 步骤1-3: 并行查询\n        attraction = self.attraction_agent.run(\n            f\"搜索{request.city}的景点\")\n        weather = self.weather_agent.run(\n            f\"查询{request.city}天气\")\n        hotel = self.hotel_agent.run(\n            f\"搜索{request.city}酒店\")\n        # 步骤4: 整合生成\n        query = self._build_query(\n            request, attraction, weather, hotel)\n        result = self.planner_agent.run(query)\n        return self._parse_trip_plan(result)" },
+  { "type": "content", "title": "前端架构概览", "content": "采用前后端分离架构：\n\n后端（Python + FastAPI）：\n• POST /api/trip/plan 接收请求\n• 调用多 Agent 系统生成行程\n• 使用 Pydantic 模型（TripPlan, DayPlan, Attraction）\n\n前端（Vue 3 + TypeScript + Vite）：\n• Home 页面：表单收集旅行需求\n• Result 页面：展示完整旅行计划\n• 高德地图 JS API：景点地图可视化\n• 支持导出图片/PDF" },
+  { "type": "content", "title": "技术挑战与解决方案", "content": "• **信息一致性**：各智能体共享状态 → Planner 统一协调\n• **任务协调**：避免重复预订 → 通过流程顺序控制\n• **异常处理**：预订失败如何处理 → 回滚和重试机制\n• **用户反馈**：如何处理用户修改需求 → 行程可编辑\n• **成本优化**：在预算内找到最优方案 → LLM 估算+人工调整" },
+  { "type": "content", "title": "实际案例", "content": "用户需求：\n\"帮我规划一个3天的北京之旅，预算每人2000元，喜欢历史文化。\"\n\n**Planner 输出：**\nDay 1: 故宫 → 天安门 → 王府井\nDay 2: 颐和园 → 圆明园 → 清华北大\nDay 3: 长城 → 鸟巢水立方\n\n**Booking 完成：**\n• 往返高铁票 ・三星级酒店（市中心）・故宫和长城门票\n\n**Advisor 建议：**\n• 故宫需提前预约 ・长城建议选慕田峪 ・推荐北京烤鸭店" },
+  { "type": "content", "title": "功能实现要点", "content": "**预算计算**：\nPlannerAgent 根据行程自动估算费用，分为景点门票、酒店住宿、餐饮、交通四大类。\n\n**加载进度条**：\n模拟进度更新，状态对应步骤：搜索景点→查询天气→推荐酒店→生成行程。\n\n**行程编辑**：\n支持移动景点顺序、删除景点，使用深拷贝保存原始计划用于取消恢复。\n\n**导出功能**：\n使用 html2canvas 导出图片，jsPDF 导出 PDF。" },
+  { "type": "comparison", "title": "三种 Agent 角色对比", "headers": ["维度", "Planner", "Booking", "Advisor"], "rows": [
+    ["核心职责", "行程规划与协调", "预订服务", "旅行建议"],
+    ["输入", "用户需求 + 子Agent结果", "行程草稿", "确认行程"],
+    ["输出", "最终旅行计划(JSON)", "预订确认信息", "建议清单"],
+    ["工具需求", "无需工具(Prompt驱动)", "MCP(高德地图POI)", "知识库检索"],
+    ["工作模式", "串行(等待子Agent)", "可并行执行", "可并行执行"],
+    ["复杂度", "高(整合多源信息)", "中(API调用)", "中(知识检索)"]
+  ] },
+  { "type": "content", "title": "本章小结", "content": "• 多智能体协作需要明确的角色分工\n• Planner负责规划、Booking负责预订、Advisor负责建议\n• 通过 MCP 协议集成外部工具（高德地图）\n• 共享 MCP 实例节省资源，`auto_expand=True` 自动注册所有工具\n• 协作流程：需求分析→规划→预订→建议→汇总\n• 前端采用 Vue 3 + TypeScript，完成表单→API→展示完整链路\n• 实际应用可大幅提升旅行规划效率" },
+  { "type": "quiz", "title": "知识测验" }
+]

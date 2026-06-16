@@ -1,0 +1,94 @@
+[
+  {
+    "id": "ch15-q1",
+    "type": "single",
+    "question": "赛博小镇中，每个 NPC 使用什么框架实现智能？",
+    "options": [
+      { "id": "A", "text": "FastAPI" },
+      { "id": "B", "text": "HelloAgents 的 SimpleAgent" },
+      { "id": "C", "text": "Godot 引擎内置 AI" },
+      { "id": "D", "text": "TensorFlow" }
+    ],
+    "answer": "B",
+    "explanation": "每个 NPC 都是 HelloAgents 框架中 SimpleAgent 的独立实例，拥有独特的角色设定和记忆系统。"
+  },
+  {
+    "id": "ch15-q2",
+    "type": "single",
+    "question": "赛博小镇的好感度系统共有几个等级？",
+    "options": [
+      { "id": "A", "text": "3 个" },
+      { "id": "B", "text": "4 个" },
+      { "id": "C", "text": "5 个" },
+      { "id": "D", "text": "6 个" }
+    ],
+    "answer": "C",
+    "explanation": "好感度分为五级：陌生(0-20)、熟悉(21-40)、友好(41-60)、亲密(61-80)、挚友(81-100)。"
+  },
+  {
+    "id": "ch15-q3",
+    "type": "single",
+    "question": "NPC Agent 的记忆系统包含哪两层？",
+    "options": [
+      { "id": "A", "text": "缓存记忆和归档记忆" },
+      { "id": "B", "text": "短期记忆和长期记忆" },
+      { "id": "C", "text": "文字记忆和图像记忆" },
+      { "id": "D", "text": "本地记忆和云端记忆" }
+    ],
+    "answer": "B",
+    "explanation": "短期记忆（WorkingMemory）保持对话连贯性，长期记忆（EpisodicMemory）通过向量数据库检索历史互动。"
+  },
+  {
+    "id": "ch15-q4",
+    "type": "single",
+    "question": "批量对话生成的核心优势是什么？",
+    "options": [
+      { "id": "A", "text": "提高回复质量" },
+      { "id": "B", "text": "降低 LLM 调用成本至 1/3" },
+      { "id": "C", "text": "增加对话长度" },
+      { "id": "D", "text": "支持更多语言" }
+    ],
+    "answer": "B",
+    "explanation": "批量生成将多个 NPC 的对话合并为一次 LLM 调用，成本降低到原来的 1/3，延迟也大幅减少。"
+  },
+  {
+    "id": "ch15-q5",
+    "type": "single",
+    "question": "赛博小镇采用哪种混合模式处理 NPC 对话？",
+    "options": [
+      { "id": "A", "text": "全部使用即时响应" },
+      { "id": "B", "text": "后台批量生成背景对话 + 玩家交互时即时响应" },
+      { "id": "C", "text": "全部使用批量生成" },
+      { "id": "D", "text": "仅使用预设对话树" }
+    ],
+    "answer": "B",
+    "explanation": "后台批量生成背景对话让 NPC 看起来\"活着\"，玩家交互时切换到即时响应保证个性化和准确性。"
+  },
+  {
+    "id": "ch15-q6",
+    "type": "judge",
+    "question": "NPC 对玩家的好感度只需要在每次对话中固定增加分数即可。",
+    "answer": false,
+    "explanation": "好感度使用 LLM 分析对话情感动态调整：友好(+5)、中立(+2)、不友好(-3)，而不是固定增加。"
+  },
+  {
+    "id": "ch15-q7",
+    "type": "single",
+    "question": "赛博小镇选择 Godot 作为游戏引擎的原因不包括？",
+    "options": [
+      { "id": "A", "text": "2D 开发优势" },
+      { "id": "B", "text": "完全开源免费" },
+      { "id": "C", "text": "强大的 3D 渲染能力" },
+      { "id": "D", "text": "GDScript 类似 Python，学习成本低" }
+    ],
+    "answer": "C",
+    "explanation": "Godot 的优势在于 2D 开发，其 3D 能力相比 Unreal Engine 和 Unity 还有差距。"
+  },
+  {
+    "id": "ch15-q8",
+    "type": "judge",
+    "question": "赛博小镇中 NPC 的批量对话生成和前台即时响应使用的是同一个 LLM 调用流程。",
+    "answer": false,
+    "explanation": "后台批量生成是一次调用生成所有 NPC 的背景对话；前台即时响应是调用该 NPC 专属的 Agent 生成个性化回复。两者流程不同。"
+  }
+]

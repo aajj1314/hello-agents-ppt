@@ -1,0 +1,95 @@
+[
+  {
+    "id": "ch11-q1",
+    "type": "single",
+    "question": "以下哪种训练方法不需要显式的奖励模型？",
+    "options": [
+      {"id": "A", "text": "RLHF（基于人类反馈的强化学习）"},
+      {"id": "B", "text": "DPO（直接偏好优化）"},
+      {"id": "C", "text": "PPO（近端策略优化）"},
+      {"id": "D", "text": "以上都需要奖励模型"}
+    ],
+    "answer": "B",
+    "explanation": "DPO（Direct Preference Optimization）不需要显式的奖励模型，它直接从偏好数据中优化策略。而 RLHF 和 PPO 都需要训练一个奖励模型来提供奖励信号。"
+  },
+  {
+    "id": "ch11-q2",
+    "type": "single",
+    "question": "GRPO 相比 PPO 的核心优势是什么？",
+    "options": [
+      {"id": "A", "text": "训练速度更快，不需要反向传播"},
+      {"id": "B", "text": "不需要价值模型，使用组内相对奖励代替优势函数"},
+      {"id": "C", "text": "不需要任何训练数据"},
+      {"id": "D", "text": "可以直接在预训练模型上使用，无需 SFT"}
+    ],
+    "answer": "B",
+    "explanation": "GRPO 的核心优势是不需要训练价值模型（Value Model），它使用组内相对奖励（Group Relative Reward）来代替 PPO 中的优势函数（Advantage），大大简化了训练流程并降低了显存占用。"
+  },
+  {
+    "id": "ch11-q3",
+    "type": "single",
+    "question": "在 GRPO 训练中，KL 散度惩罚的主要作用是什么？",
+    "options": [
+      {"id": "A", "text": "提升模型的计算速度"},
+      {"id": "B", "text": "防止策略偏离 SFT 模型太远，避免遗忘学到的知识"},
+      {"id": "C", "text": "减少训练数据的数量需求"},
+      {"id": "D", "text": "自动调整学习率"}
+    ],
+    "answer": "B",
+    "explanation": "KL 散度惩罚防止当前策略（Policy Model）偏离参考模型（Reference Model，即 SFT 后的模型）太远。如果没有 KL 惩罚，模型可能会在强化学习过程中丢失 SFT 阶段学到的格式和推理模式。"
+  },
+  {
+    "id": "ch11-q4",
+    "type": "judge",
+    "question": "LoRA 可以完全替代全参数微调，在所有场景下都能取得相同或更好的效果。",
+    "answer": false,
+    "explanation": "LoRA 在大多数场景下能取得接近全参数微调的效果，但并不总是相同甚至更好。LoRA 通过低秩分解限制了参数更新的表达能力，在某些复杂任务上全参数微调仍然可能取得更好的效果。LoRA 的优势在于显存占用低、训练速度快，而非效果必然更优。"
+  },
+  {
+    "id": "ch11-q5",
+    "type": "single",
+    "question": "GSM8K 数据集主要用于评估 LLM 的什么能力？",
+    "options": [
+      {"id": "A", "text": "文本分类能力"},
+      {"id": "B", "text": "数学推理能力"},
+      {"id": "C", "text": "代码生成能力"},
+      {"id": "D", "text": "多语言翻译能力"}
+    ],
+    "answer": "B",
+    "explanation": "GSM8K（Grade School Math 8K）是一个小学数学应用题数据集，包含 7473 个训练样本和 1319 个测试样本，专门用于评估 LLM 的多步数学推理能力。"
+  },
+  {
+    "id": "ch11-q6",
+    "type": "single",
+    "question": "在 GRPO 训练中，num_generations 参数控制什么？",
+    "options": [
+      {"id": "A", "text": "训练的轮数"},
+      {"id": "B", "text": "每个问题生成多少个答案用于计算组内相对奖励"},
+      {"id": "C", "text": "每批训练的样本数量"},
+      {"id": "D", "text": "模型的最大输出 token 数"}
+    ],
+    "answer": "B",
+    "explanation": "num_generations 控制每个问题生成的答案数量，这些答案构成一个组（group），用于计算组内相对奖励。典型值为 4-8，值越大训练信号越丰富，但计算成本也越高。"
+  },
+  {
+    "id": "ch11-q7",
+    "type": "judge",
+    "question": "强化学习训练可以完全替代 SFT 监督微调，直接从预训练模型开始 GRPO 训练。",
+    "answer": false,
+    "explanation": "SFT 是强化学习训练的必要基础。没有 SFT 的预训练模型连基本的输出格式都不懂，直接进行 GRPO 训练往往会导致失败。SFT 教会模型任务格式和基础推理能力，为强化学习提供合理的起点。"
+  },
+  {
+    "id": "ch11-q8",
+    "type": "multiple",
+    "question": "哪些属于 Agentic RL 旨在提升的智能体核心能力？（多选）",
+    "options": [
+      {"id": "A", "text": "推理（Reasoning）"},
+      {"id": "B", "text": "工具使用（Tool Use）"},
+      {"id": "C", "text": "数据库管理（Database Management）"},
+      {"id": "D", "text": "规划（Planning）"},
+      {"id": "E", "text": "自我改进（Self-Improvement）"}
+    ],
+    "answer": "ABDE",
+    "explanation": "Agentic RL 旨在提升六大核心能力：推理、工具使用、记忆、规划、自我改进、感知。数据库管理是独立的工程领域，不是 Agentic RL 直接提升的核心能力。"
+  }
+]

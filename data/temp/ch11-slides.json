@@ -1,0 +1,40 @@
+[
+  { "type": "cover", "title": "第十一章", "subtitle": "从 SFT 到 GRPO：LLM 训练实战" },
+  { "type": "content", "title": "什么是 Agentic RL？", "content": "Agentic RL 是将 LLM 作为可学习策略，嵌入到智能体的感知-决策-执行循环中，通过强化学习优化智能体在多步任务中的表现。\n\n与传统 SFT 不同，Agentic RL 让模型通过试错来优化推理策略，从而超越训练数据的质量。\n\n核心区别：\n• 任务性质：从单轮对话优化扩展到多步序贯决策\n• 状态空间：从静态提示扩展到动态演化的环境状态\n• 行动空间：从纯文本生成扩展到文本+工具+环境操作" },
+  { "type": "content", "title": "从 SFT 到 GRPO 的演进", "content": "LLM 训练方法的演进路径：\n\n**SFT（监督微调）**：在标注数据上学习基础格式和推理模式。简单直接，但对齐能力有限。\n\n**RLHF（基于人类反馈的强化学习）**：训练奖励模型模拟人类偏好，使用 PPO 优化策略。效果好但流程复杂。\n\n**DPO（直接偏好优化）**：无需显式奖励模型，直接从偏好数据中优化。简化了 RLHF 流程。\n\n**GRPO（组相对策略优化）**：无需价值模型，使用组内相对奖励代替绝对奖励，专为 LLM 训练设计。" },
+  { "type": "content", "title": "MDP 框架下的 Agentic RL", "content": "强化学习以马尔可夫决策过程（MDP）为理论框架：\n\n**状态（State）**：智能体当前所处的环境状态，包含历史观察。\n\n**行动（Action）**：智能体可以执行的动作，如生成文本、调用工具。\n\n**奖励（Reward）**：环境对智能体行动的即时反馈信号。\n\n**策略（Policy）**：智能体从状态到行动的映射函数，即 LLM 本身。\n\nAgentic RL 的目标是最大化长期累积奖励，而非单步正确率。" },
+  { "type": "comparison", "title": "SFT vs RLHF vs DPO vs GRPO", "headers": ["特性", "SFT", "RLHF", "DPO", "GRPO"],
+    "rows": [
+      ["是否需要奖励模型", "否", "是", "否", "否"],
+      ["是否需要价值模型", "否", "是", "否", "否"],
+      ["训练复杂度", "低", "高", "中", "中"],
+      ["显存占用", "低", "高", "中", "中"],
+      ["对齐能力", "弱", "强", "强", "强"],
+      ["训练稳定性", "稳定", "不稳定", "较稳定", "稳定"],
+      ["数据需求", "标注数据", "人类偏好", "偏好数据", "正确答案"],
+      ["适用场景", "基础训练", "综合对齐", "偏好对齐", "推理优化"]
+    ]
+  },
+  { "type": "animation", "title": "奖励信号反馈环", "animation": "ch11-rl-feedback" },
+  { "type": "content", "title": "数据集：GSM8K 数学推理", "content": "GSM8K（Grade School Math 8K）是评估 LLM 推理能力的标准数据集。\n\n**数据统计**：\n• 训练样本：7,473 个\n• 测试样本：1,319 个\n• 难度：小学数学水平（2-8 年级）\n• 题型：应用题，需要 2-8 步推理\n\n**为何选择数学推理**：\n• 有明确的正确答案，可自动评估\n• 需要多步推理，是典型的多步决策场景\n• 学到的推理能力可以迁移到其他领域" },
+  { "type": "content", "title": "数据格式转换", "content": "不同训练方法需要不同的数据格式：\n\n**原始格式**：包含 question 和 answer（含解题步骤），适合人类阅读。\n\n**SFT 格式**：将问题转换为对话格式的 prompt，将完整解答作为 completion，让模型学习输出格式和推理模式。\n\n**RL 格式**：只提供问题和正确答案（ground_truth），不提供解题过程。模型需要自己生成完整的推理过程，迫使模型学会自主推理。\n\n[提示] RL 格式的关键在于 prompt 与 SFT 相同，但 ground_truth 只包含最终答案，用于计算奖励。" },
+  { "type": "content", "title": "奖励函数设计", "content": "奖励函数是强化学习的核心，定义了什么是好的行为。HelloAgents 提供三种内置奖励函数：\n\n**准确率奖励（AccuracyReward）**：答案正确得 1 分，错误得 0 分。简单直接，但奖励稀疏。\n\n**长度惩罚（LengthPenaltyReward）**：鼓励模型生成简洁答案。公式：R = 1 - α × max(0, len - target)，仅在答案正确时应用。\n\n**步骤奖励（StepReward）**：鼓励清晰的推理步骤。每个检测到的步骤给予额外奖励。\n\n[建议] 实际应用中通常组合多种奖励函数以平衡不同目标。" },
+  { "type": "concepts", "title": "训练流程核心概念", "items": [
+    { "icon": "🎯", "title": "SFT", "description": "监督微调，在标注数据上学习任务格式和基础推理能力，是强化学习训练的基础" },
+    { "icon": "🔄", "title": "PPO", "description": "近端策略优化，通过限制策略更新幅度保证训练稳定性，但需要价值模型" },
+    { "icon": "⚡", "title": "GRPO", "description": "组相对策略优化，使用组内相对奖励代替价值函数，简化训练流程" },
+    { "icon": "📊", "title": "KL 散度惩罚", "description": "防止策略偏离参考模型太远，避免遗忘 SFT 阶段学到的知识" },
+    { "icon": "🔧", "title": "LoRA", "description": "低秩适配，只训练少量额外参数，大幅降低显存占用和训练时间" }
+  ] },
+  { "type": "content", "title": "为什么需要 SFT？", "content": "直接进行强化学习往往会失败，因为模型连基本的输出格式都不懂。\n\n**预训练模型的局限**：\n• 输出格式是自由文本，缺乏结构化\n• 不知道什么是好的推理过程\n• 无法提取有效答案\n\n**SFT 的作用**：\n• 学习输出格式（如 Step 1、Final Answer 标记）\n• 建立基线推理能力\n• 为强化学习提供合理的起点\n• 减少探索空间，RL 不需要从零开始" },
+  { "type": "content", "title": "LoRA：参数高效微调", "content": "LoRA（Low-Rank Adaptation）通过低秩分解大幅减少训练参数：\n\n**原理**：假设模型微调时的参数变化 ΔW 可分解为两个低秩矩阵的乘积：ΔW = BA，其中 B∈R^(d×r)，A∈R^(r×k)，r << min(d,k)。\n\n**参数量对比**：对 768×768 的矩阵，原参数量 589,824，LoRA 参数量 2×768×8=12,288，减少 48 倍！\n\n**优势**：\n• 显存占用大幅降低\n• 训练速度更快\n• 防止过拟合\n• 易于部署（只需保存小量参数）" },
+  { "type": "code", "title": "简化 PPO 训练循环", "language": "python", "code": "import torch\nimport torch.nn.functional as F\n\ndef ppo_train_step(policy_model, ref_model, optimizer, batch, clip_eps=0.2):\n    \"\"\"简化 PPO 训练步骤\n    \n    Args:\n        policy_model: 当前策略模型\n        ref_model: 参考模型（冻结）\n        optimizer: 优化器\n        batch: 批次数据，包含 prompts、responses、rewards\n        clip_eps: PPO 裁剪阈值\n    \"\"\"\n    prompts, responses, rewards = batch\n    \n    # 1. 计算当前策略的 log_prob\n    current_log_probs = compute_log_probs(policy_model, prompts, responses)\n    \n    # 2. 计算参考模型的 log_prob（用于 KL 散度）\n    with torch.no_grad():\n        ref_log_probs = compute_log_probs(ref_model, prompts, responses)\n    \n    # 3. 计算比率和 KL 散度\n    ratio = torch.exp(current_log_probs - ref_log_probs)\n    kl_div = ref_log_probs - current_log_probs\n    \n    # 4. PPO 裁剪目标\n    surr1 = ratio * rewards\n    surr2 = torch.clamp(ratio, 1 - clip_eps, 1 + clip_eps) * rewards\n    pg_loss = -torch.min(surr1, surr2).mean()\n    \n    # 5. 总损失 = PPO 损失 + KL 惩罚\n    kl_coef = 0.05\n    loss = pg_loss + kl_coef * kl_div.mean()\n    \n    # 6. 反向传播\n    optimizer.zero_grad()\n    loss.backward()\n    optimizer.step()\n    \n    return loss.item()\n\ndef compute_log_probs(model, prompts, responses):\n    \"\"\"计算模型生成响应的 log 概率\"\"\"\n    # 拼接 prompt 和 response\n    input_ids = torch.cat([prompts, responses], dim=-1)\n    outputs = model(input_ids)\n    logits = outputs.logits[:, :-1, :]  # 移除最后一个 token\n    target_ids = responses[:, :-1]  # 预测下一个 token\n    return -F.cross_entropy(\n        logits.reshape(-1, logits.size(-1)),\n        target_ids.reshape(-1),\n        reduction='none'\n    ).reshape(responses.size(0), -1).sum(dim=-1)", "explanation": "简化版 PPO 训练循环。核心步骤：计算当前策略和参考模型的 log_prob，计算比率 ratio，应用 PPO 裁剪确保策略更新幅度可控，添加 KL 散度惩罚防止策略偏离参考模型太远。GRPO 在此基础上省去了价值模型，使用组内相对奖励。" },
+  { "type": "content", "title": "GRPO 训练流程", "content": "GRPO 的训练循环包括五个核心步骤：\n\n**1. 采样阶段**：对每个问题，使用当前策略生成多个答案（num_generations，典型值 4-8）。这些答案构成一个组。\n\n**2. 奖励计算**：对每个生成的答案计算奖励（准确率、长度惩罚、步骤奖励等）。\n\n**3. 相对奖励**：计算组内平均奖励，然后计算相对奖励 R_rel = R_i - R_avg。减少奖励方差，使训练更稳定。\n\n**4. 策略更新**：使用相对奖励更新策略，添加 KL 散度惩罚防止偏离参考模型。\n\n**5. 重复**：重复以上步骤直到完成所有训练轮次。" },
+  { "type": "content", "title": "KL 散度惩罚", "content": "KL 散度惩罚是 GRPO 的关键组成部分，防止策略偏离参考模型太远：\n\n**定义**：KL(P||Q) = Σ P(x) × log(P(x)/Q(x))\n\n在 GRPO 中，P 是当前策略，Q 是参考模型（即 SFT 后的模型）。\n\n**kl_coef 的选择**：\n• 太小（0.01）：策略偏离太远，可能丢失 SFT 学到的格式知识\n• 太大（0.5）：策略更新受限，学习缓慢\n• 建议（0.05-0.1）：平衡探索和稳定性\n\n[警告] KL 散度过大（>0.5）说明策略偏离太远，需要增大 kl_coef 或降低学习率。" },
+  { "type": "content", "title": "模型评估与分析", "content": "训练完成后需要从多维度评估模型性能：\n\n**准确性指标**：\n• 准确率（Accuracy）：答案完全正确的比例\n• Top-K 准确率：生成 K 个答案，一个正确即算对\n• 数值误差：预测值与真实值的差距\n\n**效率指标**：\n• 平均长度：生成答案的平均 token 数，影响推理成本\n• 推理步骤数：推理过程中的步骤数量\n• 推理时间：生成一个答案的耗时\n\n**质量指标**：\n• 格式正确率：答案是否符合预期格式\n• 推理连贯性：步骤之间是否逻辑连贯" },
+  { "type": "content", "title": "错误分析", "content": "深入分析模型错误类型，指导后续改进：\n\n**计算错误（42.1%）**：推理步骤正确但数值计算错误。解决方案：使用计算器工具或增强数值推理训练。\n\n**推理错误（23.7%）**：推理逻辑错误，解题思路不对。解决方案：增加多步推理训练数据。\n\n**理解错误（28.9%）**：没有正确理解问题。解决方案：增强语言理解能力训练。\n\n**格式错误（5.3%）**：答案正确但格式不符合要求。解决方案：SFT 阶段加强格式约束。\n\n[提示] 这是一个持续迭代的过程：训练 → 评估 → 分析 → 改进 → 重新训练。" },
+  { "type": "content", "title": "超参数调优", "content": "系统调优超参数是提升模型性能的关键：\n\n**网格搜索**：遍历所有参数组合，找到全局最优。简单但计算成本高。\n\n**随机搜索**：随机采样参数组合，效率更高。适合参数空间较大的情况。\n\n**贝叶斯优化**：使用概率模型指导搜索，样本效率高。可使用 Optuna 库实现。\n\n**关键调优参数**：\n• 学习率（1e-6 ~ 1e-4）：GRPO 通常比 SFT 小\n• LoRA 秩（4-64）：越大表达能力越强\n• kl_coef（0.01-0.5）：控制策略偏离程度\n• num_generations（4-8）：组内采样数" },
+  { "type": "content", "title": "分布式训练与部署", "content": "当数据量和模型规模增大时，需要分布式训练：\n\n**方案选择**：\n• 单机多卡（2-8卡）：使用 DDP，简单高效\n• 大模型（>7B）：使用 DeepSpeed ZeRO-2/3\n• 多节点集群：DeepSpeed ZeRO-3 + Offload\n\n**生产部署**：\n• LoRA 权重合并到基础模型\n• 8-bit 量化减少显存占用\n• FastAPI 创建推理服务\n• 使用 vLLM 等推理加速框架" },
+  { "type": "content", "title": "本章小结", "content": "**Agentic RL 的本质**：将 LLM 作为可学习策略，嵌入智能体循环，通过强化学习优化多步任务表现。\n\n**训练流程三阶段**：\n1. 预训练 → 在大规模文本上学习语言知识\n2. SFT → 学习任务格式和基础推理能力\n3. RL（GRPO）→ 通过试错优化推理策略\n\n**六大核心能力提升**：推理、工具使用、记忆、规划、自我改进、感知\n\n**关键经验**：\n• 从小规模开始快速迭代\n• 组合奖励函数平衡多个目标\n• 监控 KL 散度防止策略偏离\n• 系统地调优超参数" },
+  { "type": "quiz", "title": "知识测验" }
+]

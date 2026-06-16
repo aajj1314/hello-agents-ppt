@@ -1,0 +1,95 @@
+[
+  {
+    "id": "ch12-q1",
+    "type": "single",
+    "question": "BFCL 基准主要评估智能体的什么能力？",
+    "options": [
+      {"id": "A", "text": "数学推理能力"},
+      {"id": "B", "text": "函数调用（工具调用）能力"},
+      {"id": "C", "text": "文本生成质量"},
+      {"id": "D", "text": "多模态理解能力"}
+    ],
+    "answer": "B",
+    "explanation": "BFCL（Berkeley Function Calling Leaderboard）由 UC Berkeley 推出，专门评估智能体的函数调用能力，涵盖 simple、multiple、parallel、irrelevance 四个类别。"
+  },
+  {
+    "id": "ch12-q2",
+    "type": "single",
+    "question": "BFCL 使用什么算法来匹配函数调用？",
+    "options": [
+      {"id": "A", "text": "正则表达式匹配"},
+      {"id": "B", "text": "字符串精确匹配"},
+      {"id": "C", "text": "AST 匹配（抽象语法树匹配）"},
+      {"id": "D", "text": "语义相似度匹配"}
+    ],
+    "answer": "C",
+    "explanation": "BFCL 使用 AST 匹配（Abstract Syntax Tree Matching）算法，将函数调用解析为语法树后比较树的结构和节点值，可以忽略参数顺序并识别等价表达式，比字符串匹配更智能。"
+  },
+  {
+    "id": "ch12-q3",
+    "type": "single",
+    "question": "GAIA 基准使用什么评估算法？",
+    "options": [
+      {"id": "A", "text": "BLEU 分数"},
+      {"id": "B", "text": "ROUGE 分数"},
+      {"id": "C", "text": "准精确匹配（Quasi Exact Match）"},
+      {"id": "D", "text": "Perplexity"}
+    ],
+    "answer": "C",
+    "explanation": "GAIA 使用准精确匹配（Quasi Exact Match）算法，先对答案进行归一化处理（移除逗号、单位符号、冠词等），然后进行精确匹配。根据不同答案类型（数字、字符串、列表）应用不同的归一化规则。"
+  },
+  {
+    "id": "ch12-q4",
+    "type": "judge",
+    "question": "评估准确率越高，说明智能体在所有方面都表现优秀。",
+    "answer": false,
+    "explanation": "准确率只是评估的一个维度，高准确率不代表智能体在鲁棒性、效率、推理质量等其他维度也表现优秀。全面的评估应该从多个维度综合考虑，如准确率、鲁棒性、工具调用率、任务完成率、推理能力和效率。"
+  },
+  {
+    "id": "ch12-q5",
+    "type": "single",
+    "question": "在数据生成质量评估中，理想的 Win Rate 应该在什么水平？",
+    "options": [
+      {"id": "A", "text": "100%（生成题目完全胜出）"},
+      {"id": "B", "text": "0%（生成题目完全不如真题）"},
+      {"id": "C", "text": "50% 左右（生成题目与真题质量相当）"},
+      {"id": "D", "text": "25% 左右"}
+    ],
+    "answer": "C",
+    "explanation": "Win Rate 通过成对对比评估生成题目与真题的质量。理想情况下 Win Rate 在 50% 左右，说明生成题目的质量接近真题。如果显著低于 50% 则生成策略需要优化。"
+  },
+  {
+    "id": "ch12-q6",
+    "type": "multiple",
+    "question": "LLM Judge 评估 AIME 数学题目时，从哪些维度进行评分？（多选）",
+    "options": [
+      {"id": "A", "text": "正确性（Correctness）"},
+      {"id": "B", "text": "清晰度（Clarity）"},
+      {"id": "C", "text": "难度匹配（Difficulty Match）"},
+      {"id": "D", "text": "完整性（Completeness）"},
+      {"id": "E", "text": "运行速度（Execution Speed）"}
+    ],
+    "answer": "ABCD",
+    "explanation": "LLM Judge 从四个维度评分：正确性（数学逻辑是否正确）、清晰度（问题表述和解答是否易懂）、难度匹配（是否符合 AIME 标准难度）、完整性（解答步骤是否完整）。运行速度不是 LLM Judge 的评估维度。"
+  },
+  {
+    "id": "ch12-q7",
+    "type": "single",
+    "question": "GAIA 基准要求最终答案的格式是什么？",
+    "options": [
+      {"id": "A", "text": "Answer: [答案]"},
+      {"id": "B", "text": "FINAL ANSWER: [答案]"},
+      {"id": "C", "text": "[答案]"},
+      {"id": "D", "text": "Result: [答案]"}
+    ],
+    "answer": "B",
+    "explanation": "GAIA 要求模型输出以 FINAL ANSWER: [答案] 的格式给出答案。对于数字类型的答案，不使用逗号分隔符和单位符号；对于字符串类型的答案，不使用冠词和缩写。"
+  },
+  {
+    "id": "ch12-q8",
+    "type": "judge",
+    "question": "BFCL 只支持评估 simple_python 类别，无法评估其他编程语言的函数调用。",
+    "answer": false,
+    "explanation": "BFCL v4 支持多个类别，包括 simple_python、simple_java、simple_javascript、multiple、parallel、irrelevance 等。simple_python 只是其中一个基础类别。"
+  }
+]

@@ -5,65 +5,1034 @@
       "title": "初识智能体",
       "subtitle": "智能体定义、类型与架构",
       "slides": [
-        { "type": "cover", "title": "第一章", "subtitle": "初识智能体" },
-        { "type": "content", "title": "什么是智能体？", "content": "智能体（Agent）是能够感知环境、进行推理决策、采取行动以实现目标的自主实体。它不仅仅是一段程序，而是一个具有感知-推理-行动闭环的智能系统。" },
-        { "type": "content", "title": "智能体的核心特征", "content": "• 自主性（Autonomy）：无需持续人类干预\n• 反应性（Reactivity）：能感知并响应环境变化\n• 主动性（Pro-activeness）：主动追求目标\n• 社会性（Social Ability）：与其他智能体或人类交互" },
-        { "type": "content", "title": "智能体的发展历程", "content": "1950s → 简单反射型智能体\n1970s → 基于模型的智能体\n1980s → 基于目标和效用的智能体\n1990s → 学习型智能体与多智能体系统\n2020s → LLM驱动的智能体革命" },
-        { "type": "content", "title": "智能体的类型", "content": "简单反射型 → 基于模型的反射型 → 基于目标的智能体 → 基于效用的智能体 → 学习型智能体\n\n复杂度递增，智能程度也随之提升" },
-        { "type": "animation", "title": "智能体架构", "animation": "ch1-agent-types" },
-        { "type": "content", "title": "智能体 vs 传统程序", "content": "传统程序：\n输入 → 固定处理 → 输出\n完全确定性，无自主决策\n\n智能体：\n持续感知 → 推理决策 → 行动 → 学习\n具有自主性和适应性" },
-        { "type": "content", "title": "智能体的应用场景", "content": "• 智能客服：自动回答用户问题\n• 自动驾驶：感知路况并做出决策\n• 金融交易：根据市场数据进行投资\n• 教育辅导：个性化学习路径规划\n• 游戏NPC：具有自主行为的虚拟角色" },
-        { "type": "content", "title": "智能体的核心组件", "content": "感知模块（Perception）：获取环境信息\n推理模块（Reasoning）：决策与规划\n行动模块（Action）：执行具体操作\n学习模块（Learning）：从经验中学习" },
-        { "type": "code", "title": "简单智能体示例", "language": "python", "code": "class SimpleAgent:\n    def __init__(self):\n        self.state = {}\n        self.memory = []\n    \n    def perceive(self, observation):\n        \"\"\"感知环境\"\"\"\n        self.state.update(observation)\n        self.memory.append(observation)\n    \n    def think(self):\n        \"\"\"推理决策\"\"\"\n        # 基于当前状态和历史记忆进行推理\n        pass\n    \n    def act(self):\n        \"\"\"采取行动\"\"\"\n        return self.decide_action()\n    \n    def learn(self, reward):\n        \"\"\"从反馈中学习\"\"\"\n        pass" },
-        { "type": "content", "title": "本章小结", "content": "智能体是具有感知-推理-行动能力的自主实体\n五种类型：简单反射型、基于模型、基于目标、基于效用、学习型\n智能体与传统程序的核心区别在于自主性和适应性\n智能体由感知、推理、行动、学习四大组件构成" },
-        { "type": "quiz", "title": "知识测验" }
+        {
+          "type": "cover",
+          "title": "第一章",
+          "subtitle": "初识智能体"
+        },
+        {
+          "type": "content",
+          "title": "什么是智能体？",
+          "content": "智能体（Agent）是能够感知环境、进行推理决策、采取行动以实现目标的自主实体。它不仅仅是一段程序，而是一个具有感知-推理-行动闭环的智能系统。"
+        },
+        {
+          "type": "content",
+          "title": "智能体的核心特征",
+          "content": "• 自主性（Autonomy）：无需持续人类干预\n• 反应性（Reactivity）：能感知并响应环境变化\n• 主动性（Pro-activeness）：主动追求目标\n• 社会性（Social Ability）：与其他智能体或人类交互"
+        },
+        {
+          "type": "content",
+          "title": "智能体的发展历程",
+          "content": "1950s → 简单反射型智能体\n1970s → 基于模型的智能体\n1980s → 基于目标和效用的智能体\n1990s → 学习型智能体与多智能体系统\n2020s → LLM驱动的智能体革命"
+        },
+        {
+          "type": "content",
+          "title": "智能体的类型",
+          "content": "简单反射型 → 基于模型的反射型 → 基于目标的智能体 → 基于效用的智能体 → 学习型智能体\n\n复杂度递增，智能程度也随之提升"
+        },
+        {
+          "type": "animation",
+          "title": "智能体架构",
+          "animation": "ch1-agent-types"
+        },
+        {
+          "type": "content",
+          "title": "智能体 vs 传统程序",
+          "content": "传统程序：\n输入 → 固定处理 → 输出\n完全确定性，无自主决策\n\n智能体：\n持续感知 → 推理决策 → 行动 → 学习\n具有自主性和适应性"
+        },
+        {
+          "type": "content",
+          "title": "智能体的应用场景",
+          "content": "• 智能客服：自动回答用户问题\n• 自动驾驶：感知路况并做出决策\n• 金融交易：根据市场数据进行投资\n• 教育辅导：个性化学习路径规划\n• 游戏NPC：具有自主行为的虚拟角色"
+        },
+        {
+          "type": "content",
+          "title": "智能体的核心组件",
+          "content": "感知模块（Perception）：获取环境信息\n推理模块（Reasoning）：决策与规划\n行动模块（Action）：执行具体操作\n学习模块（Learning）：从经验中学习"
+        },
+        {
+          "type": "code",
+          "title": "简单智能体示例",
+          "language": "python",
+          "code": "class SimpleAgent:\n    def __init__(self):\n        self.state = {}\n        self.memory = []\n    \n    def perceive(self, observation):\n        \"\"\"感知环境\"\"\"\n        self.state.update(observation)\n        self.memory.append(observation)\n    \n    def think(self):\n        \"\"\"推理决策\"\"\"\n        # 基于当前状态和历史记忆进行推理\n        pass\n    \n    def act(self):\n        \"\"\"采取行动\"\"\"\n        return self.decide_action()\n    \n    def learn(self, reward):\n        \"\"\"从反馈中学习\"\"\"\n        pass"
+        },
+        {
+          "type": "content",
+          "title": "本章小结",
+          "content": "智能体是具有感知-推理-行动能力的自主实体\n五种类型：简单反射型、基于模型、基于目标、基于效用、学习型\n智能体与传统程序的核心区别在于自主性和适应性\n智能体由感知、推理、行动、学习四大组件构成"
+        },
+        {
+          "type": "quiz",
+          "title": "知识测验"
+        }
       ],
       "hasAnimation": true,
       "hasQuiz": true,
       "icon": "🤖"
     },
     {
+      "id": "ch2",
+      "title": "智能体发展史",
+      "subtitle": "从符号主义到 LLM 驱动的智能体演进",
+      "icon": "📜",
+      "estimatedMinutes": 30,
+      "tags": [
+        "历史",
+        "演进",
+        "基础"
+      ],
+      "slides": [
+        {
+          "type": "cover",
+          "title": "第二章",
+          "subtitle": "智能体发展史"
+        },
+        {
+          "type": "content",
+          "title": "本章概览",
+          "content": "智能体发展史经历了三次关键范式跃迁：\n\n• **符号主义**（1950s-1980s）：智能 = 符号操作 + 逻辑推理\n• **统计学习与联结主义**（1980s-2010s）：智能 = 从数据中学习模式\n• **深度学习与 LLM Agent**（2010s至今）：智能 = 大规模预训练 + 推理 + 工具使用\n\n[提示] 理解这一演进历程有助于把握现代智能体架构的设计思想。"
+        },
+        {
+          "type": "content",
+          "title": "符号主义与物理符号系统假说",
+          "content": "**符号主义（Symbolicism）**，又称逻辑AI或传统AI，是人工智能的第一个重要范式。其理论基础是1976年纽厄尔（Newell）和西蒙（Simon）提出的**物理符号系统假说（Physical Symbol System Hypothesis, PSSH）**。\n\n• **充分性论断**：任何物理符号系统都具备产生通用智能行为的充分手段\n• **必要性论断**：任何展现通用智能行为的系统，其本质必然是一个物理符号系统\n\n这一假说将智能简化为：智能 = 符号的计算与处理。\n\n[提示] 整个符号主义时代的研究几乎都在PSSH指引下展开。"
+        },
+        {
+          "type": "content",
+          "title": "专家系统（Expert System）",
+          "content": "专家系统是符号主义最成功的应用，通过模拟人类专家知识来解决特定领域问题。\n\n**两大核心组件**\n\n**知识库（Knowledge Base）**\n• 使用产生式规则：`IF 条件 THEN 结论`\n• 例如：IF 发烧 AND 咳嗽 THEN 可能患有呼吸道感染\n\n**推理机（Inference Engine）**\n• **正向链（Forward Chaining）**：数据驱动，从事实到结论\n• **反向链（Backward Chaining）**：目标驱动，从假设到证据\n\n[提示] MYCIN系统使用反向链推理进行细菌感染诊断，其知识库包含约600条规则。"
+        },
+        {
+          "type": "code",
+          "title": "专家系统推理引擎示例",
+          "language": "python",
+          "code": "class ExpertSystem:\n    \"\"\"简化的专家系统推理引擎\"\"\"\n    def __init__(self):\n        self.rules = []  # (条件列表, 结论)\n        self.facts = set()\n\n    def add_rule(self, conditions, conclusion):\n        self.rules.append((conditions, conclusion))\n\n    def forward_chain(self):\n        \"\"\"正向链：从已知事实推导新结论\"\"\"\n        changed = True\n        while changed:\n            changed = False\n            for conditions, conclusion in self.rules:\n                if all(c in self.facts for c in conditions):\n                    if conclusion not in self.facts:\n                        self.facts.add(conclusion)\n                        changed = True\n                        print(f\"推导: {conclusion}\")\n        return self.facts\n\n    def backward_chain(self, goal):\n        \"\"\"反向链：从目标出发寻找证据\"\"\"\n        if goal in self.facts:\n            return True\n        for conditions, conclusion in self.rules:\n            if conclusion == goal:\n                if all(self.backward_chain(c) for c in conditions):\n                    self.facts.add(goal)\n                    return True\n        return False\n\n# MYCIN 风格规则\nmycin = ExpertSystem()\nmycin.add_rule(['gram_positive', 'coccus'], 'staphylococcus')\nmycin.add_rule(['staphylococcus'], 'use_vancomycin')\nmycin.facts.update(['gram_positive', 'coccus'])\nprint(mycin.forward_chain())",
+          "explanation": "该代码展示了专家系统的两种推理策略。正向链从已知事实出发不断推导新结论；反向链从诊断目标递归寻找支持证据。MYCIN正是使用反向链从“确定致病菌”这一目标出发，逐步推导需要的证据。"
+        },
+        {
+          "type": "content",
+          "title": "SHRDLU：积木世界的智能体",
+          "content": "由威诺格拉德（Winograd）于1968-1970年开发的SHRDLU，是首个将语言理解、推理规划与行动记忆集成的综合智能体。\n\n**里程碑意义**\n• **自然语言理解**：解析复杂指令，含指代消解和上下文记忆\n• **规划与行动**：自主规划动作序列完成目标\n• **记忆与问答**：记住环境和行为历史，回答元问题\n\n**示例**：用户说“把蓝色积木放到红色积木上”，若红色积木上已有其他积木，系统会规划“先移开，再放置”的动作序列。\n\n[提示] SHRDLU是“感知-思考-行动”闭环的早期典范。"
+        },
+        {
+          "type": "content",
+          "title": "符号主义面临的挑战",
+          "content": "符号主义在走向开放世界时遇到三大根本性难题：\n\n**1. 知识获取瓶颈（Knowledge Acquisition Bottleneck）**\n• 专家知识需人工提取编码，成本高、难规模化\n• 许多人类知识是内隐的，无法清晰表达为IF-THEN规则\n\n**2. 常识问题（Common-sense Problem）**\n• 系统缺乏基本的常识背景（如“水是湿的”）\n• Cyc项目历时数十年仍未解决\n\n**3. 框架问题与脆弱性（Frame Problem & Brittleness）**\n• 动态世界中高效判断未变化的事物是逻辑难题\n• 遇到规则之外的微小变化便完全失灵"
+        },
+        {
+          "type": "timeline",
+          "title": "智能体发展关键节点",
+          "items": [
+            {
+              "year": "1950",
+              "title": "图灵测试",
+              "description": "图灵提出“机器能否思考”的判定标准"
+            },
+            {
+              "year": "1956",
+              "title": "达特茅斯会议",
+              "description": "AI学科正式诞生，符号主义兴起"
+            },
+            {
+              "year": "1966",
+              "title": "ELIZA",
+              "description": "首个对话程序，基于模式匹配的聊天机器人"
+            },
+            {
+              "year": "1980s",
+              "title": "专家系统黄金时代",
+              "description": "MYCIN、XCON等实现商业化成功"
+            },
+            {
+              "year": "1997",
+              "title": "Deep Blue",
+              "description": "击败国际象棋世界冠军卡斯帕罗夫"
+            },
+            {
+              "year": "2016",
+              "title": "AlphaGo",
+              "description": "击败围棋世界冠军李世石，强化学习的里程碑"
+            },
+            {
+              "year": "2017",
+              "title": "Transformer",
+              "description": "“Attention Is All You Need”，LLM时代基石"
+            },
+            {
+              "year": "2022",
+              "title": "ChatGPT",
+              "description": "LLM驱动的对话智能体进入大众视野"
+            },
+            {
+              "year": "2023",
+              "title": "AutoGPT",
+              "description": "自主LLM Agent框架兴起"
+            }
+          ]
+        },
+        {
+          "type": "animation",
+          "title": "智能体发展史交互时间线",
+          "animation": "ch2-history-timeline"
+        },
+        {
+          "type": "content",
+          "title": "ELIZA：最早的聊天机器人",
+          "content": "ELIZA由魏泽鲍姆（Weizenbaum）于1966年开发。最著名的脚本DOCTOR模拟了一位罗杰斯学派心理治疗师。\n\n**核心机制**\n1. **关键词识别与排序**：设置关键词优先级\n2. **分解规则**：用带通配符的模式捕获句子成分\n3. **重组规则**：从模板中随机选择生成回应\n4. **代词转换**：I→you, my→your以维持对话连贯\n\n**“ELIZA效应”**：许多用户相信ELIZA能真正理解自己，尽管它仅执行机械的符号操作。魏泽鲍姆的设计初衷正是要证明这种“智能”的假象。"
+        },
+        {
+          "type": "code",
+          "title": "ELIZA 核心逻辑 Python 实现",
+          "language": "python",
+          "code": "import re\nimport random\n\n# 规则库：模式 -> 响应模板列表\nrules = [\n    (r'I need (.*)', [\n        \"Why do you need {0}?\",\n        \"Would it really help you to get {0}?\"\n    ]),\n    (r'I am (.*)', [\n        \"Did you come to me because you are {0}?\",\n        \"How long have you been {0}?\"\n    ]),\n    (r'.* mother .*', [\n        \"Tell me more about your mother.\"\n    ]),\n    (r'.* father .*', [\n        \"Tell me more about your father.\"\n    ]),\n    (r'.*', [\n        \"Please tell me more.\",\n        \"Can you elaborate on that?\"\n    ])\n]\n\npronoun_swap = {\n    \"i\": \"you\", \"you\": \"i\", \"me\": \"you\",\n    \"my\": \"your\", \"am\": \"are\", \"was\": \"were\"\n}\n\ndef swap_pronouns(phrase):\n    words = phrase.lower().split()\n    return \" \".join(pronoun_swap.get(w, w) for w in words)\n\ndef respond(user_input):\n    for pattern, responses in rules:\n        match = re.search(pattern, user_input, re.IGNORECASE)\n        if match:\n            captured = match.group(1) if match.groups() else ''\n            return random.choice(responses).format(\n                swap_pronouns(captured))\n    return random.choice(rules[-1][1])\n\n# 测试对话\nprint(\"Therapist:\", respond(\"I am feeling sad today.\"))\nprint(\"Therapist:\", respond(\"My mother is not happy.\"))\n# 输出:\n# Therapist: How long have you been feeling sad today?\n# Therapist: Tell me more about your mother.",
+          "explanation": "该实现展示了ELIZA的核心机制：通过正则表达式匹配用户输入中的关键词，从响应模板库中随机选择并生成回应。虽然代码仅有数十行，但“ELIZA效应”表明巧妙的对话策略足以产生智能的幻觉。这也印证了符号主义穷举式方法的根本局限。"
+        },
+        {
+          "type": "content",
+          "title": "规则驱动系统的根本局限",
+          "content": "通过ELIZA的实践可总结规则驱动系统的三大局限：\n\n**缺乏语义理解**\n• 面对“I am not happy”仍会匹配`I am (.*)`规则\n• 无法理解否定词、修饰语等语言结构\n\n**无状态性（Stateless）**\n• 每次回应仅基于当前单句输入\n• 无法进行连贯的多轮对话\n\n**扩展性问题**\n• 增加规则导致组合爆炸（Combinatorial Explosion）\n• 规则间冲突与优先级管理极其复杂\n\n[警告] 这些局限正是符号主义理论挑战的直接印证：穷举式方法在真实世界的无限可能面前注定不可扩展。系统没有真正的理解，只是在执行符号操作。"
+        },
+        {
+          "type": "content",
+          "title": "马文·明斯基的心智社会",
+          "content": "面对符号主义的困境，马文·明斯基（Marvin Minsky）在《心智社会》（The Society of Mind, 1986）中提出革命性观点：\n\n> “The power of intelligence stems from our vast diversity, not from any single, perfect principle.”\n\n**核心思想**\n智能并非来自单一完美的逻辑系统，而是从大量简单“智能体”（Agent）之间的局部交互中**涌现**（Emergence）出来的。例如：\n\n• **LINE-FINDER**：负责识别线条的简单智能体\n• **GRASP**：负责抓握的简单智能体\n• **BUILD-TOWER**：多个智能体协作完成搭建积木塔\n\n[提示] 这一思想为分布式AI和多智能体系统（MAS）奠定了概念基础。"
+        },
+        {
+          "type": "concepts",
+          "title": "智能体的三大思想流派",
+          "items": [
+            {
+              "icon": "🔣",
+              "title": "符号主义（Symbolicism）",
+              "description": "代表人物：西蒙、明斯基。核心主张：智能=符号操作与逻辑推理。经典成果：专家系统（MYCIN）、SHRDLU、Deep Blue。局限：知识获取瓶颈、系统脆弱性。"
+            },
+            {
+              "icon": "🧠",
+              "title": "联结主义（Connectionism）",
+              "description": "代表人物：辛顿（Hinton）。核心主张：模拟神经网络，从数据中学习模式。关键突破：反向传播算法、词嵌入。现代成果：Transformer、GPT等LLM。"
+            },
+            {
+              "icon": "🎮",
+              "title": "行为主义（Behaviorism）",
+              "description": "现代化身：强化学习（Reinforcement Learning, RL）。核心主张：通过与环境交互和试错学习最优策略。经典成就：TD-Gammon、AlphaGo。"
+            }
+          ]
+        },
+        {
+          "type": "content",
+          "title": "联结主义：学习范式的诞生",
+          "content": "**联结主义（Connectionism）** 是对符号主义局限性的直接回应，灵感来源于对生物大脑的模拟。\n\n**核心思想**\n• **分布式表示**：知识以连接权重的形式分布式存储在神经元之间\n• **简单处理单元**：每个神经元只执行加权求和+激活函数\n• **学习调整权重**：通过反向传播算法自动迭代优化\n\n**关键转折**：智能体不再是被动执行规则的逻辑推理机，而是能通过经验自我优化的适应性系统。\n\n[成功] 深度学习在21世纪的成功，为智能体赋予了强大的感知和模式识别能力，这是符号主义时代难以想象的。"
+        },
+        {
+          "type": "content",
+          "title": "基于强化学习的智能体",
+          "content": "**强化学习（Reinforcement Learning, RL）** 专注于解决序贯决策问题。\n\n**核心框架**：智能体（Agent）↔ 环境（Environment）\n• **状态（State, S）**：环境的当前描述\n• **行动（Action, A）**：智能体可执行的操作\n• **奖励（Reward, R）**：环境对行动的反馈信号\n• **策略（Policy, π）**：状态到行动的映射\n\n**学习循环**：\n1. 观察状态 St\n2. 根据策略选择行动 At\n3. 获得奖励 Rt+1，进入新状态 St+1\n4. 更新策略\n\n[提示] AlphaGo通过数百万次自我对弈、从零开始学习围棋策略，是RL最经典的案例。"
+        },
+        {
+          "type": "comparison",
+          "title": "三种范式对比",
+          "headers": [
+            "维度",
+            "符号主义",
+            "联结主义/RL",
+            "LLM Agent"
+          ],
+          "rows": [
+            [
+              "知识来源",
+              "人工编码规则",
+              "从数据中学习",
+              "大规模预训练 + 工具"
+            ],
+            [
+              "推理方式",
+              "逻辑推导",
+              "模式匹配/策略搜索",
+              "自回归生成 + 调用工具"
+            ],
+            [
+              "优势",
+              "可解释性强",
+              "泛化、适应性强",
+              "灵活通用，可使用工具"
+            ],
+            [
+              "局限",
+              "知识瓶颈、脆弱",
+              "需大量数据/交互",
+              "幻觉、知识截止"
+            ],
+            [
+              "代表系统",
+              "MYCIN, Deep Blue",
+              "CNN, AlphaGo",
+              "ChatGPT, AutoGPT"
+            ]
+          ]
+        },
+        {
+          "type": "content",
+          "title": "预训练-微调范式",
+          "content": "**预训练-微调（Pre-training, Fine-tuning）范式**彻底改变了NLP的面貌：\n\n**预训练阶段**\n• 在海量通用文本数据上通过**自监督学习**训练\n• 常见目标：预测下一个词（Next Token Prediction）\n• 学习语言规律、语法结构、事实知识\n\n**微调阶段**\n• 用少量标注数据适配特定下游任务\n\n**关键突破**：解决了符号主义时代最棘手的“知识获取瓶颈”——知识不再需要人工编码，而是从数据中自动习得。\n\n[成功] 当模型规模跨越阈值后，展现出令人惊叹的**涌现能力**（Emergent Abilities）。"
+        },
+        {
+          "type": "content",
+          "title": "LLM 驱动智能体的核心架构",
+          "content": "现代LLM驱动智能体遵循**感知-思考-行动**循环：\n\n**感知（Perception）**\n• 从环境接收原始输入（用户指令、API数据、环境状态）\n\n**思考（Thought）**\n• **规划模块**：通过反思与自我批判将目标分解为可执行步骤\n• **LLM核心**：深度推理 + 记忆交互 → 决策（工具调用）\n\n**行动（Action）**\n• **执行模块**：调用工具（代码执行、搜索、API等）\n• **反馈循环**：工具结果和环境新状态 → 新一轮感知\n\n[提示] 历史上各种技术思想（符号推理、学习、分布式协作）在现代Agent架构中实现了技术融合。"
+        },
+        {
+          "type": "content",
+          "title": "AI Agent 技术栈概览",
+          "content": "得益于LLM的突破，智能体技术栈呈现出前所未有的活力和多样性：\n\n**模型层**\n• 闭源大模型：GPT-5, Claude 4, Gemini 2.5\n• 开源模型：Llama 4, Qwen, Mistral\n\n**框架与工具层**\n• Agent框架：LangChain, CrewAI, AutoGPT\n• 工具协议：MCP（Model Context Protocol）\n\n**记忆与检索层**\n• 向量数据库：FAISS, Milvus, Chroma\n• RAG（检索增强生成）\n\n**应用层**\n• 自动化工作流、客服系统、代码助手\n\n[提示] Letta公司的AI Agent技术栈图为模型选型提供了有价值的参考。"
+        },
+        {
+          "type": "content",
+          "title": "中英术语对照",
+          "content": "| 中文 | English |\n|------|---------|\n| 符号主义 | Symbolicism |\n| 物理符号系统假说 | Physical Symbol System Hypothesis (PSSH) |\n| 专家系统 | Expert System |\n| 产生式规则 | Production Rules |\n| 正向链 / 反向链 | Forward / Backward Chaining |\n| 知识获取瓶颈 | Knowledge Acquisition Bottleneck |\n| 框架问题 | Frame Problem |\n| 心智社会 | Society of Mind |\n| 涌现 | Emergence |\n| 联结主义 | Connectionism |\n| 强化学习 | Reinforcement Learning (RL) |\n| 预训练 | Pre-training |\n| 涌现能力 | Emergent Abilities |\n| 思维链 | Chain-of-Thought (CoT) |"
+        },
+        {
+          "type": "content",
+          "title": "本章小结",
+          "content": "• 符号主义通过“知识+推理”模拟智能，验证了PSSH理论，但面临知识获取瓶颈和脆弱性问题\n• 明斯基的“心智社会”理论揭示了复杂智能可以从简单局部交互中涌现\n• 联结主义赋予感知能力，强化学习赋予决策能力，预训练赋予世界知识\n• 现代LLM Agent实现了历史上多种技术思想的大融合：Agent = 模型 + 工具 + 记忆 + 规划\n• 核心教训：可学习 > 硬编码，通用 > 专用\n• 理解发展史有助于把握技术选型背后的深层原因与历史必然性"
+        },
+        {
+          "type": "quiz",
+          "title": "知识测验"
+        }
+      ],
+      "hasAnimation": true,
+      "hasQuiz": true
+    },
+    {
+      "id": "ch3",
+      "title": "大语言模型基础",
+      "subtitle": "Transformer、提示工程与主流模型",
+      "icon": "🧠",
+      "estimatedMinutes": 35,
+      "tags": [
+        "LLM",
+        "Transformer",
+        "基础"
+      ],
+      "slides": [
+        {
+          "type": "cover",
+          "title": "第三章",
+          "subtitle": "大语言模型基础"
+        },
+        {
+          "type": "content",
+          "title": "本章概述",
+          "content": "大语言模型（Large Language Model, LLM）是现代智能体的核心“大脑”。本章将深入探讨：\n\n• **模型演进**：从N-gram、RNN到Transformer架构\n• **核心原理**：自注意力机制、多头注意力、位置编码\n• **交互方式**：提示工程、采样参数、文本分词\n• **模型生态**：主流模型对比、缩放法则、幻觉与局限\n\n[提示] 深入理解LLM原理是构建可靠智能体的基础。"
+        },
+        {
+          "type": "content",
+          "title": "语言模型与 N-gram",
+          "content": "**语言模型（Language Model, LM）** 的核心任务是计算一个词序列出现的概率。\n\n**N-gram模型**基于**马尔可夫假设**：一个词的出现概率只与它前面有限的N-1个词有关。\n\n**Bigram示例**（N=2）：\n`P(agent learns) = P(agent) × P(learns|agent)`\n\n条件概率通过**最大似然估计**计算：\n`P(learns|agent) = Count(agent, learns) / Count(agent)`\n\n**两大局限**\n• **数据稀疏性（Sparsity）**：未出现的词序列概率为0\n• **泛化能力差**：无法理解“agent”和“robot”的语义相似性"
+        },
+        {
+          "type": "code",
+          "title": "Bigram 概率计算",
+          "language": "python",
+          "code": "import collections\n\n# 迷你语料库\ncorpus = \"datawhale agent learns datawhale agent works\"\ntokens = corpus.split()\ntotal_tokens = len(tokens)\n\n# P(datawhale) = 2/6\np_datawhale = tokens.count('datawhale') / total_tokens\nprint(f\"P(datawhale) = {p_datawhale:.3f}\")\n\n# 计算 Bigram 频率\nbigrams = zip(tokens, tokens[1:])\nbigram_counts = collections.Counter(bigrams)\n\n# P(agent | datawhale) = 2 / 2\np_agent_given_dw = (\n    bigram_counts[('datawhale', 'agent')]\n    / tokens.count('datawhale'))\nprint(f\"P(agent|datawhale) = {p_agent_given_dw:.3f}\")\n\n# P(learns | agent) = 1 / 2\np_learns_given_agent = (\n    bigram_counts[('agent', 'learns')]\n    / tokens.count('agent'))\nprint(f\"P(learns|agent) = {p_learns_given_agent:.3f}\")\n\n# 句子概率\np = p_datawhale * p_agent_given_dw * p_learns_given_agent\nprint(f\"P('datawhale agent learns') = {p:.3f}\")\n# 输出: 0.333 * 1.000 * 0.500 = 0.167",
+          "explanation": "该代码演示了Bigram语言模型的核心计算过程：先计算词的边际概率，再计算条件概率，通过链式法则连乘得到句子概率。当N-gram训练数据中未出现的词组合被分配概率0时，就体现了数据稀疏性问题。"
+        },
+        {
+          "type": "content",
+          "title": "神经网络语言模型与词嵌入",
+          "content": "2003年Bengio等人提出**前馈神经网络语言模型**，引入**词嵌入（Word Embedding）** 概念。\n\n**核心思想**\n• 创建一个高维连续向量空间，每个词映射为一个向量\n• 语义相近的词在空间中位置相近\n\n**词向量的语义类比**\n`vector('King') - vector('Man') + vector('Woman') ≈ vector('Queen')`\n\n这证明了词嵌入能够学习到“性别”、“皇室”这类抽象概念。\n\n**余弦相似度（Cosine Similarity）**：\n`cos(A,B) = (A·B) / (|A| × |B|)`\n\n[成功] 词嵌入彻底解决了N-gram的泛化能力差的问题。"
+        },
+        {
+          "type": "content",
+          "title": "RNN 与 LSTM",
+          "content": "**循环神经网络（Recurrent Neural Network, RNN）** 通过**隐藏状态（Hidden State）** 打破固定上下文窗口限制。\n\n**RNN的局限——长期依赖问题**\n• 序列越长，反向传播梯度越容易消失/爆炸\n• 模型无法有效学习早期信息对后期输出的影响\n\n**长短时记忆网络（Long Short-Term Memory, LSTM）**\n• **细胞状态（Cell State）**：独立的信息通路\n• **门控机制（Gating Mechanism）**：\n  - 遗忘门（Forget Gate）：丢弃不重要信息\n  - 输入门（Input Gate）：存入新信息\n  - 输出门（Output Gate）：输出相关信息\n\n[提示] LSTM缓解了长期依赖问题，但串行计算的本质使其无法大规模并行。"
+        },
+        {
+          "type": "content",
+          "title": "Transformer 架构总览",
+          "content": "2017年Google团队发表 **“Attention Is All You Need”**，提出Transformer架构，完全抛弃循环结构，依赖注意力机制实现真正意义上的并行计算。\n\n**Encoder-Decoder 结构**\n\n• **编码器（Encoder）**：理解整个输入序列\n  - 自注意力 → 前馈网络 → 层归一化（×N层）\n\n• **解码器（Decoder）**：逐词生成目标序列\n  - 掩码自注意力 → 交叉注意力 → 前馈网络（×N层）\n\n**四大核心创新**\n1. 自注意力机制（Self-Attention）\n2. 多头注意力（Multi-Head Attention）\n3. 位置编码（Positional Encoding）\n4. 残差连接与层归一化（Residual + LayerNorm）"
+        },
+        {
+          "type": "content",
+          "title": "自注意力机制（Self-Attention）",
+          "content": "自注意力机制为每个词元引入三个可学习的角色：\n\n• **查询（Query, Q）**：代表当前词元，主动查询其他词元\n• **键（Key, K）**：可被查询的“标签”或“索引”\n• **值（Value, V）**：词元本身的“内容”或“信息”\n\n**计算步骤**\n1. 通过权重矩阵Wq, Wk, Wv计算Q, K, V\n2. 计算注意力得分：`Scores = QKᵀ`\n3. 缩放与归一化：`Scores / √d_k` → Softmax\n4. 加权求和：注意力权重 × V\n\n**核心公式**\n`Attention(Q,K,V) = softmax(QKᵀ / √(d_k)) × V`\n\n[成功] 这一机制让模型能同时关注序列中的所有位置，实现全局上下文建模。"
+        },
+        {
+          "type": "content",
+          "title": "多头注意力（Multi-Head Attention）",
+          "content": "单头注意力只能关注一种关联关系，但语言中的关系是复杂多样的。多头注意力让模型从不同角度审视序列。\n\n**工作原理**\n1. 将Q, K, V在维度上切分成h份（h为“头数”）\n2. 每一份独立进行单头注意力计算\n3. 将h个输出拼接后通过线性变换整合\n\n这相当于让h个不同的“专家”从不同角度审视句子，每个专家捕捉一种特征关系。\n\n**数学表达**\n`MultiHead(Q,K,V) = Concat(head₁, ..., head_h) × Wᵥ`\n其中 `head_i = Attention(QWq_i, KWk_i, VWv_i)`\n\n[提示] 这种设计让模型能共同关注来自不同位置、不同表示子空间的信息。"
+        },
+        {
+          "type": "code",
+          "title": "多头注意力 PyTorch 实现",
+          "language": "python",
+          "code": "import torch\nimport torch.nn as nn\nimport math\n\nclass MultiHeadAttention(nn.Module):\n    def __init__(self, d_model, num_heads):\n        super().__init__()\n        assert d_model % num_heads == 0\n        self.d_model = d_model\n        self.num_heads = num_heads\n        self.d_k = d_model // num_heads\n        self.W_q = nn.Linear(d_model, d_model)\n        self.W_k = nn.Linear(d_model, d_model)\n        self.W_v = nn.Linear(d_model, d_model)\n        self.W_o = nn.Linear(d_model, d_model)\n\n    def scaled_dot_product_attention(self, Q, K, V, mask=None):\n        # Q, K, V shape: (batch, heads, seq, d_k)\n        scores = torch.matmul(Q, K.transpose(-2, -1))\n        scores = scores / math.sqrt(self.d_k)\n        if mask is not None:\n            scores = scores.masked_fill(mask == 0, -1e9)\n        attn_weights = torch.softmax(scores, dim=-1)\n        return torch.matmul(attn_weights, V)\n\n    def split_heads(self, x):\n        b, s, d = x.size()\n        return (x.view(b, s, self.num_heads, self.d_k)\n                .transpose(1, 2))\n\n    def forward(self, Q, K, V, mask=None):\n        Q = self.split_heads(self.W_q(Q))\n        K = self.split_heads(self.W_k(K))\n        V = self.split_heads(self.W_v(V))\n        attn = self.scaled_dot_product_attention(Q, K, V, mask)\n        # 合并多头: (b, h, s, d_k) -> (b, s, d_model)\n        b, h, s, dk = attn.size()\n        attn = attn.transpose(1, 2).contiguous()\n        attn = attn.view(b, s, self.d_model)\n        return self.W_o(attn)",
+          "explanation": "该代码实现了Transformer核心模块——多头注意力机制。它将Q/K/V分成多个头（head）分别计算缩放点积注意力，然后拼接整合。这种设计让模型能在不同表示子空间中捕捉不同类型的关联关系，是Transformer成功的关键。"
+        },
+        {
+          "type": "content",
+          "title": "位置编码与残差连接",
+          "content": "**位置编码（Positional Encoding）**\n\n自注意力本身不包含位置信息，“agent learns”和“learns agent”对它完全等价。位置编码通过在词向量上叠加位置向量来解决此问题。\n\n使用正弦和余弦函数生成：\n`PE(pos, 2i) = sin(pos / 10000^(2i/d_model))`\n`PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))`\n\n**残差连接与层归一化（Add & Norm）**\n\n• **残差连接**：`output = Sublayer(x) + x`，解决深层网络梯度消失\n• **层归一化**：每层输入归一化为均值0、方差1，加速收敛\n\n[提示] 这些设计共同保证了深层Transformer网络的稳定训练，使模型能扩展到数十甚至数百层。"
+        },
+        {
+          "type": "content",
+          "title": "Decoder-Only 架构与自回归生成",
+          "content": "OpenAI在开发GPT系列时提出：语言的核心任务就是预测下一个最可能的词。\n\n**Decoder-Only架构**：完全抛弃编码器，只保留解码器，专注“预测下一个词”。\n\n**自回归（Autoregressive）生成**\n1. 输入起始文本 “Datawhale Agent is”\n2. 模型预测 “a”\n3. 将“a”追加到输入末尾，形成新输入\n4. 继续预测”powerful”，重复直到结束\n\n**掩码自注意力（Masked Self-Attention）**\n• Softmax之前将未来位置的分数设为-∞\n• 保证模型只能看到已生成的内容\n\n**优势**：训练目标统一、结构简易扩展、天然适合生成任务"
+        },
+        {
+          "type": "animation",
+          "title": "注意力权重热图",
+          "animation": "ch3-attention"
+        },
+        {
+          "type": "content",
+          "title": "提示工程：采样参数",
+          "content": "**Temperature（温度）**：控制输出随机性\n• 低（0~0.3）：精准、确定 → 事实问答、代码生成\n• 中（0.3~0.7）：平衡、自然 → 日常对话、常规创作\n• 高（0.7~2）：创新、发散 → 诗歌、头脑风暴\n\n**Top-k 采样**：只保留概率最高的k个候选token\n• k=1 退化为贪心采样\n\n**Top-p 采样（核采样）**：保留累积概率达阈值p的最小候选集\n• 相对Top-k动态适应不同分布的长尾特性\n\n**协作优先级**：温度调整 → Top-k → Top-p\n\n[警告] 温度设为0时Top-k和Top-p将失去作用。"
+        },
+        {
+          "type": "content",
+          "title": "零样本、少样本与思维链",
+          "content": "**零样本（Zero-shot Prompting）**\n直接下达指令，不给示例，依赖预训练学到的泛化能力。\n例：`文本：课程非常棒！情感：` → 模型输出“正面”\n\n**少样本（Few-shot Prompting）**\n提供多个示例让模型理解任务格式和边界。\n例：依次给出正面、负面、中性示例后让模型分类新文本\n\n**思维链（Chain-of-Thought, CoT）**\n引导模型逐步思考，显著提升推理能力：\n`请一步一步地思考并解答。`\n\n[成功] CoT使模型在算术、逻辑推理等复杂任务上的准确性大幅提升。\n\n**指令调优（Instruction Tuning）**\n使用“指令-回答”数据微调后，模型能更好地理解并遵循人类指令。"
+        },
+        {
+          "type": "comparison",
+          "title": "主流大语言模型对比",
+          "headers": [
+            "维度",
+            "闭源模型",
+            "开源模型"
+          ],
+          "rows": [
+            [
+              "代表",
+              "GPT-5, Claude 4, Gemini 2.5",
+              "Llama 4, Qwen, Mistral"
+            ],
+            [
+              "性能",
+              "领先，最前沿能力",
+              "接近闭源，持续追赶"
+            ],
+            [
+              "成本",
+              "API按Token计费",
+              "自备硬件，无API费用"
+            ],
+            [
+              "部署",
+              "开箱即用，无需运维",
+              "本地部署，数据不离开"
+            ],
+            [
+              "可控性",
+              "受服务商条款限制",
+              "完全自主控制"
+            ],
+            [
+              "定制化",
+              "有限（Prompt/微调）",
+              "可任意微调修改"
+            ],
+            [
+              "上下文",
+              "较大（128K~1M Token）",
+              "差异大（8K~1M Token）"
+            ],
+            [
+              "生态",
+              "成熟稳定，文档完善",
+              "社区活跃，工具丰富"
+            ]
+          ]
+        },
+        {
+          "type": "content",
+          "title": "文本分词（Tokenization）",
+          "content": "将文本转换为模型能处理的数字序列的过程称为**分词**。\n\n**三种策略对比**\n\n**按词分词**\n• 词表爆炸，存在未登录词（OOV）问题\n• “look”、”looks”、”looking”被视为三个完全不同的词元\n\n**按字符分词**\n• 词表极小，无OOV问题\n• 单个字符无独立语义，学习效率低\n\n**子词分词（Subword Tokenization）** ✔ 现代LLM标准\n• 常见词保留为完整词元，不常见词拆分为有意义的子词\n• 例：“Tokenization” → [“Token”, “ization”]\n• **BPE**（GPT系列使用）、**WordPiece**（BERT使用）、**SentencePiece**（Llama使用）"
+        },
+        {
+          "type": "code",
+          "title": "BPE（字节对编码）算法",
+          "language": "python",
+          "code": "import re, collections\n\ndef get_stats(vocab):\n    \"\"\"统计相邻词元对频率\"\"\"\n    pairs = collections.defaultdict(int)\n    for word, freq in vocab.items():\n        symbols = word.split()\n        for i in range(len(symbols) - 1):\n            pairs[symbols[i], symbols[i+1]] += freq\n    return pairs\n\ndef merge_vocab(pair, v_in):\n    \"\"\"合并最高频词元对\"\"\"\n    v_out = {}\n    bigram = re.escape(' '.join(pair))\n    p = re.compile(r'(?<!\\S)' + bigram + r'(?!\\S)')\n    for word in v_in:\n        w_out = p.sub(''.join(pair), word)\n        v_out[w_out] = v_in[word]\n    return v_out\n\n# 迷你语料库（</w>表示词尾）\nvocab = {'h u g </w>': 1, 'p u g </w>': 1,\n         'p u n </w>': 1, 'b u n </w>': 1}\n\nfor i in range(4):\n    pairs = get_stats(vocab)\n    if not pairs:\n        break\n    best = max(pairs, key=pairs.get)\n    vocab = merge_vocab(best, vocab)\n    print(f\"第{i+1}次合并: {best} -> {''.join(best)}\")\n# 输出:\n# 第1次合并: ('u', 'g') -> ug\n# 第2次合并: ('ug', '</w>') -> ug</w>\n# 第3次合并: ('u', 'n') -> un\n# 第4次合并: ('un', '</w>') -> un</w>",
+          "explanation": "BPE是一种贪心算法，通过迭代合并语料库中出现频率最高的相邻词元对来构建词表。GPT系列模型采用此算法。它平衡了词表大小和语义表达能力，使模型能通过组合子词来理解和生成新词。"
+        },
+        {
+          "type": "content",
+          "title": "分词器对开发者的实践意义",
+          "content": "理解分词原理直接关系到智能体的性能、成本和稳定性：\n\n**上下文窗口限制**\n• 模型上下文窗口以Token数量计算，而非字符数\n• 同样一段话在中文和英文下Token数可能相差巨大\n\n**API成本控制**\n• 大多数模型API按Token计费\n• 了解文本的分词方式是预估成本的关键\n\n**常见陷阱**\n• `2 + 2` 和 `2+2` 可能因分词不同导致模型表现截然不同\n• 首字母大小写不同可能产生不同的Token序列\n• 设计提示词和解析输出时需考虑这些陷阱\n\n[警告] 忽视分词细节可能导致智能体行为异常或成本超预期。"
+        },
+        {
+          "type": "content",
+          "title": "调用开源大语言模型（HuggingFace）",
+          "content": "使用Hugging Face Transformers库在本地调用开源模型：\n\n**安装**：`pip install transformers torch`\n\n**选择模型**：`Qwen/Qwen1.5-0.5B-Chat`（约5亿参数，适合本地部署）\n\n**使用流程**：\n1. 使用 `AutoTokenizer` 加载分词器\n2. 使用 `AutoModelForCausalLM` 加载模型\n3. 通过 `apply_chat_template` 格式化对话输入\n4. 调用 `tokenizer` 编码为Token ID\n5. 调用 `model.generate()` 生成回答\n6. 使用 `tokenizer.decode()` 解码为文本\n\n[提示] 对于需要处理敏感数据或离线运行的场景，本地部署是重要选择。"
+        },
+        {
+          "type": "code",
+          "title": "HuggingFace Transformers 调用示例",
+          "language": "python",
+          "code": "from transformers import AutoModelForCausalLM, AutoTokenizer\nimport torch\n\n# 1. 加载模型和分词器\nmodel_id = \"Qwen/Qwen1.5-0.5B-Chat\"\ndevice = \"cuda\" if torch.cuda.is_available() else \"cpu\"\ntokenizer = AutoTokenizer.from_pretrained(model_id)\nmodel = AutoModelForCausalLM.from_pretrained(\n    model_id).to(device)\n\n# 2. 准备对话\nmessages = [\n    {\"role\": \"system\",\n     \"content\": \"You are a helpful assistant.\"},\n    {\"role\": \"user\",\n     \"content\": \"你好，请介绍你自己。\"}\n]\n\n# 3. 格式化并编码\ntext = tokenizer.apply_chat_template(\n    messages, tokenize=False,\n    add_generation_prompt=True)\ninputs = tokenizer([text], return_tensors=\"pt\").to(device)\n\n# 4. 生成\nout = model.generate(\n    inputs.input_ids, max_new_tokens=512)\n\n# 5. 解码\nresponse = tokenizer.decode(\n    out[0][inputs.input_ids.shape[1]:],\n    skip_special_tokens=True)\nprint(response)\n# 输出: 我叫通义千问，是由阿里云研发的预训练语言模型...",
+          "explanation": "该代码展示了使用HuggingFace Transformers库在本地部署并调用开源大语言模型的完整流程。关键步骤包括加载模型和分词器、使用聊天模板格式化输入、编码为Token ID、生成回答、解码输出。这是构建本地智能体系统的基础能力。"
+        },
+        {
+          "type": "content",
+          "title": "模型选型的关键考量",
+          "content": "选择模型不是简单地追求“最大、最强”，而是在多个维度间权衡：\n\n1. **性能与能力**：不同模型擅长不同任务\n2. **成本**：API调用费用 vs 本地部署硬件成本\n3. **速度（延迟）**：实时交互应用需要低延迟\n4. **上下文窗口**：长文档分析需要大窗口（128K+）\n5. **部署方式**：API便捷 vs 本地部署数据隐私\n6. **生态与工具链**：社区支持、教程、兼容框架\n7. **可微调性**：是否需要定制化训练\n8. **安全性与伦理**：偏见、毒性、幻觉表现\n\n[提示] 可参考LMSys Chatbot Arena排行榜评估模型综合能力。"
+        },
+        {
+          "type": "content",
+          "title": "缩放法则与涌现能力",
+          "content": "**缩放法则（Scaling Laws）** 揭示了模型性能与参数量、数据量、计算量之间可预测的幂律关系。\n\n**关键发现**\n• 持续、按比例增加三要素，性能平滑提升\n• **Chinchilla定律**（2022）：参数量和训练数据量存在最优配比\n  - 70B参数的Chinchilla用4倍于GPT-3的数据训练，性能反超\n\n**涌现能力（Emergent Abilities）**\n当模型规模达到阈值后，突然展现出全新能力：\n• **上下文学习**：提供几个示例即能完成新任务\n• **思维链推理**：通过逐步推理提升准确性\n• **指令遵循**：理解和执行复杂人类指令\n\n[提示] 选择足够大规模的模型是实现复杂自主决策能力的前提。"
+        },
+        {
+          "type": "content",
+          "title": "模型幻觉与局限性",
+          "content": "**模型幻觉（Hallucination）** 指LLM生成与事实不符的内容：\n• **事实性幻觉**：生成不存在的事实或实体\n• **忠实性幻觉**：未能忠实反映源文本含义\n• **内在幻觉**：与输入信息直接矛盾\n\n**其他局限**\n• **知识截止**：训练数据收集日期后的事件无法感知\n• **偏见**：训练数据中的人类偏见被模型吸收和放大\n\n**缓解策略**\n1. **检索增强生成（RAG）**：从外部知识库检索相关信息作为上下文\n2. **多步推理与验证**：分步骤推理并自我检查\n3. **外部工具调用**：搜索引擎、计算器获取实时信息\n4. **RLHF**：通过人类反馈强化学习与意图对齐\n\n[提示] 构建可靠智能体必须设计验证机制以规避幻觉。"
+        },
+        {
+          "type": "content",
+          "title": "本章小结",
+          "content": "• 语言模型从N-gram演进到Transformer，自注意力机制实现了并行化全局上下文建模\n• Decoder-Only架构通过“预测下一个词”的统一范式开启了LLM时代\n• 提示工程（Zero-shot/Few-shot/CoT）和采样参数（Temperature/Top-k/Top-p）是引导模型的关键工具\n• 子词分词（BPE/WordPiece/SentencePiece）平衡了词表大小和语义表达能力\n• 缩放法则揭示了性能与规模的可预测关系，涌现能力让大模型具备独特的高级推理能力\n• 幻觉是LLM的重要局限，RAG和外部工具调用是构建可靠智能体的必要设计"
+        },
+        {
+          "type": "quiz",
+          "title": "知识测验"
+        }
+      ],
+      "hasAnimation": true,
+      "hasQuiz": true
+    },
+    {
       "id": "ch4",
       "title": "智能体经典范式构建",
       "subtitle": "ReAct、Plan-and-Solve、Reflection",
       "slides": [
-        { "type": "cover", "title": "第四章", "subtitle": "智能体经典范式构建" },
-        { "type": "content", "title": "为什么需要范式？", "content": "范式为智能体的思考与行动提供了结构化的框架，帮助LLM更好地推理和决策。没有范式的LLM可能会产生幻觉，无法有效利用工具。" },
-        { "type": "content", "title": "什么是 ReAct？", "content": "ReAct = Reasoning + Acting\n\n这是一种将推理（Thought）与行动（Action）紧密结合的范式。智能体在思考后执行操作，从操作结果中观察（Observation），再基于观察继续思考。" },
-        { "type": "animation", "title": "ReAct 循环演示", "animation": "ch4-react-loop" },
-        { "type": "content", "title": "ReAct 的核心优势", "content": "• 透明性：每一步思考和行动都可见\n• 可调试：便于追踪问题和改进\n• 高效性：通过工具调用获取真实信息\n• 抗幻觉：基于真实观察而非凭空想象" },
-        { "type": "content", "title": "ReAct 在现实中的应用", "content": "案例：智能客服助手\n1. 用户问：今天北京天气如何？\n2. Thought：需要查询实时天气\n3. Action：调用天气API\n4. Observation：北京今天多云，25°C\n5. Thought：已获取信息，整理回答\n6. Action：生成自然语言回复" },
-        { "type": "content", "title": "Plan-and-Solve 范式", "content": "Plan-and-Solve = Planning + Execution\n\n先制定详细计划，再逐步执行。适合需要多步骤解决的复杂任务。\n\n流程：\n1. 分析问题\n2. 制定计划\n3. 执行步骤\n4. 验证结果" },
-        { "type": "content", "title": "Reflection 范式", "content": "Reflection = Self-Evaluation + Improvement\n\n让智能体具备自我反思能力。通过评估和修正来优化结果。\n\n流程：\n1. 生成初步答案\n2. 自我评估质量\n3. 发现问题和不足\n4. 修正和改进\n5. 生成最终答案" },
-        { "type": "content", "title": "三种范式对比", "content": "| 范式 | 特点 | 适用场景 |\n|------|------|----------|\n| ReAct | 边思考边行动 | 动态环境、需要实时信息 |\n| Plan-and-Solve | 先规划后执行 | 结构化任务、流程明确 |\n| Reflection | 自我修正优化 | 需要迭代改进的场景 |" },
-        { "type": "content", "title": "范式选择指南", "content": "选择哪种范式取决于任务类型：\n• 需要实时数据 → ReAct\n• 步骤明确的任务 → Plan-and-Solve\n• 需要高质量输出 → Reflection\n• 复杂任务 → 组合使用多种范式" },
-        { "type": "code", "title": "ReAct 完整实现", "language": "python", "code": "class ReActAgent:\n    def __init__(self, llm, tools):\n        self.llm = llm\n        self.tools = tools\n        self.memory = []\n    \n    def think(self, query):\n        \"\"\"生成思考\"\"\"\n        prompt = f\"根据问题和记忆，生成下一步思考：\\n\"\n        prompt += f\"问题：{query}\\n\"\n        prompt += f\"记忆：{self.memory}\\n\"\n        return self.llm.generate(prompt)\n    \n    def act(self, thought):\n        \"\"\"执行行动\"\"\"\n        # 解析思考，选择合适的工具\n        for tool in self.tools:\n            if tool.name in thought:\n                return tool.execute(thought)\n        return None\n    \n    def run(self, query, max_steps=5):\n        for step in range(max_steps):\n            thought = self.think(query)\n            action = self.act(thought)\n            observation = action.result if action else \"无结果\"\n            self.memory.append((thought, action, observation))\n            if self.is_complete(observation):\n                break\n        return self.generate_answer()" },
-        { "type": "content", "title": "本章小结", "content": "ReAct：将推理与行动结合，形成 Thought-Action-Observation 循环\nPlan-and-Solve：先制定计划再执行，适合结构化任务\nReflection：自我评估和修正，提升输出质量\n根据任务类型选择合适的范式，复杂任务可组合使用" },
-        { "type": "quiz", "title": "知识测验" }
+        {
+          "type": "cover",
+          "title": "第四章",
+          "subtitle": "智能体经典范式构建"
+        },
+        {
+          "type": "content",
+          "title": "为什么需要范式？",
+          "content": "范式为智能体的思考与行动提供了结构化的框架，帮助LLM更好地推理和决策。没有范式的LLM可能会产生幻觉，无法有效利用工具。"
+        },
+        {
+          "type": "content",
+          "title": "什么是 ReAct？",
+          "content": "ReAct = Reasoning + Acting\n\n这是一种将推理（Thought）与行动（Action）紧密结合的范式。智能体在思考后执行操作，从操作结果中观察（Observation），再基于观察继续思考。"
+        },
+        {
+          "type": "animation",
+          "title": "ReAct 循环演示",
+          "animation": "ch4-react-loop"
+        },
+        {
+          "type": "content",
+          "title": "ReAct 的核心优势",
+          "content": "• 透明性：每一步思考和行动都可见\n• 可调试：便于追踪问题和改进\n• 高效性：通过工具调用获取真实信息\n• 抗幻觉：基于真实观察而非凭空想象"
+        },
+        {
+          "type": "content",
+          "title": "ReAct 在现实中的应用",
+          "content": "案例：智能客服助手\n1. 用户问：今天北京天气如何？\n2. Thought：需要查询实时天气\n3. Action：调用天气API\n4. Observation：北京今天多云，25°C\n5. Thought：已获取信息，整理回答\n6. Action：生成自然语言回复"
+        },
+        {
+          "type": "content",
+          "title": "Plan-and-Solve 范式",
+          "content": "Plan-and-Solve = Planning + Execution\n\n先制定详细计划，再逐步执行。适合需要多步骤解决的复杂任务。\n\n流程：\n1. 分析问题\n2. 制定计划\n3. 执行步骤\n4. 验证结果"
+        },
+        {
+          "type": "content",
+          "title": "Reflection 范式",
+          "content": "Reflection = Self-Evaluation + Improvement\n\n让智能体具备自我反思能力。通过评估和修正来优化结果。\n\n流程：\n1. 生成初步答案\n2. 自我评估质量\n3. 发现问题和不足\n4. 修正和改进\n5. 生成最终答案"
+        },
+        {
+          "type": "content",
+          "title": "三种范式对比",
+          "content": "| 范式 | 特点 | 适用场景 |\n|------|------|----------|\n| ReAct | 边思考边行动 | 动态环境、需要实时信息 |\n| Plan-and-Solve | 先规划后执行 | 结构化任务、流程明确 |\n| Reflection | 自我修正优化 | 需要迭代改进的场景 |"
+        },
+        {
+          "type": "content",
+          "title": "范式选择指南",
+          "content": "选择哪种范式取决于任务类型：\n• 需要实时数据 → ReAct\n• 步骤明确的任务 → Plan-and-Solve\n• 需要高质量输出 → Reflection\n• 复杂任务 → 组合使用多种范式"
+        },
+        {
+          "type": "code",
+          "title": "ReAct 完整实现",
+          "language": "python",
+          "code": "class ReActAgent:\n    def __init__(self, llm, tools):\n        self.llm = llm\n        self.tools = tools\n        self.memory = []\n    \n    def think(self, query):\n        \"\"\"生成思考\"\"\"\n        prompt = f\"根据问题和记忆，生成下一步思考：\\n\"\n        prompt += f\"问题：{query}\\n\"\n        prompt += f\"记忆：{self.memory}\\n\"\n        return self.llm.generate(prompt)\n    \n    def act(self, thought):\n        \"\"\"执行行动\"\"\"\n        # 解析思考，选择合适的工具\n        for tool in self.tools:\n            if tool.name in thought:\n                return tool.execute(thought)\n        return None\n    \n    def run(self, query, max_steps=5):\n        for step in range(max_steps):\n            thought = self.think(query)\n            action = self.act(thought)\n            observation = action.result if action else \"无结果\"\n            self.memory.append((thought, action, observation))\n            if self.is_complete(observation):\n                break\n        return self.generate_answer()"
+        },
+        {
+          "type": "content",
+          "title": "本章小结",
+          "content": "ReAct：将推理与行动结合，形成 Thought-Action-Observation 循环\nPlan-and-Solve：先制定计划再执行，适合结构化任务\nReflection：自我评估和修正，提升输出质量\n根据任务类型选择合适的范式，复杂任务可组合使用"
+        },
+        {
+          "type": "quiz",
+          "title": "知识测验"
+        }
       ],
       "hasAnimation": true,
       "hasQuiz": true,
       "icon": "🔄"
     },
     {
+      "id": "ch5",
+      "title": "低代码平台搭建",
+      "subtitle": "Coze、Dify 与 FastGPT 实战",
+      "icon": "🧩",
+      "estimatedMinutes": 25,
+      "tags": [
+        "低代码",
+        "Coze",
+        "Dify"
+      ],
+      "slides": [
+        {
+          "type": "cover",
+          "title": "第五章",
+          "subtitle": "低代码平台搭建"
+        },
+        {
+          "type": "content",
+          "title": "从手写代码到平台化开发",
+          "content": "在前一章中，我们通过编写 Python 代码从零实现了 ReAct、Plan-and-Solve 等经典智能体工作流。然而，对于快速发展的领域而言，纯代码的开发模式并非总是最高效的选择，尤其是在需要快速验证想法或非专业开发者参与构建的场景中。\n\n本章将聚焦于如何利用图形化、模块化的低代码平台，快速、直观地搭建、调试和部署智能体应用，将重心从\"实现细节\"转向\"业务逻辑\"。"
+        },
+        {
+          "type": "content",
+          "title": "为何需要低代码平台",
+          "content": "• 降低技术门槛：将复杂技术细节封装为\"节点\"或\"模块\"，拖拽即可构建工作流\n  - 产品经理、设计师、业务专家也能参与智能体创造\n\n• 提升开发效率：数小时完成原本数天的编码工作\n  - 快速验证想法、搭建原型\n\n• 可视化与可观测性：端到端看清数据如何在节点间流动\n  - 哪个环节耗时最长？哪个工具调用失败？一目了然\n\n• 标准化与最佳实践：内置 ReAct 模板、优化检索引擎、标准化的工具接入规范"
+        },
+        {
+          "type": "content",
+          "title": "低代码平台的选择",
+          "content": "当前智能体与 LLM 应用的低代码平台市场百花齐放，每个平台都有独特的定位和优势。\n\n• Coze（字节跳动）\n  - 零代码/低代码，让不具备编程背景的用户也能轻松创造\n  - 丰富的插件库，一键发布到主流平台\n\n• Dify（开源）\n  - 功能全面的 LLM 应用开发与运营平台\n  - 支持 Agent 工作流、RAG Pipeline、数据标注与微调\n\n• n8n（开源工作流自动化）\n  - 强项在于\"连接\"，数百个预置节点连接各类服务\n  - AI 能力是整体自动化链路中的一环"
+        },
+        {
+          "type": "animation",
+          "title": "低代码平台实操演示",
+          "animation": "ch5-lowcode",
+          "media": {
+            "video": "ch5/coze-demo.mp4",
+            "canvasFallback": false
+          }
+        },
+        {
+          "type": "content",
+          "title": "平台一：Coze（扣子）",
+          "content": "Coze 是字节跳动推出的 AI 智能体制作工具，以直观的可视化界面和丰富的功能模块著称。\n\n核心功能模块：\n• 工作流：关卡通关路线图，定义智能体的执行逻辑\n• 对话流：NPC 对话通关，设计多轮对话分支\n• 插件：角色技能卡，连接外部服务与数据源\n• 知识库：游戏百科全书，为智能体注入领域知识\n• 发布管理：一键发布到微信、飞书、豆包等平台\n\n总结：模型决定智能体的下限，资源库和插件决定智能体的上限。"
+        },
+        {
+          "type": "content",
+          "title": "案例：每日 AI 简报助手",
+          "content": "构建\"每日 AI 简报\"智能体，自动化从多个信息源抓取当日 AI 头条。\n\n步骤一：添加并配置信息源插件\n• RSS 插件订阅 36氪、虎嗅、it之家、InfoQ\n• GitHub 插件追踪开源项目（q:AI, per_page:10, sort:updated）\n• arXiv 插件获取学术论文（count:5, search_query:AI）\n\n步骤二：设定智能体角色与提示词\n• 角色设定：资深科技媒体编辑\n• 系统提示：定义行为准则和输出格式规范\n• 用户提示：定义具体任务指令和数据来源\n\n步骤三：测试、调试与多渠道发布\n• 运行预览 → 检查格式 → 调整提示词\n• 一键发布到微信、豆包、飞书等平台"
+        },
+        {
+          "type": "content",
+          "title": "Coze 的优势与局限性",
+          "content": "优势：\n• 强大的插件生态系统\n• 直观的可视化编排界面\n• 灵活的提示词控制与管理\n• 便捷的多平台部署（微信、飞书、豆包等）\n• 丰富的社区模板和智能体市场\n\n局限性：\n• 不支持 MCP 协议（开发中）\n• 部分插件配置复杂度高（需 API Key）\n• 工作流编排需一定 JS/Python 基础\n• 导出格式为 ZIP，非标准 JSON\n• 复杂逻辑的灵活度有限"
+        },
+        {
+          "type": "content",
+          "title": "平台二：Dify",
+          "content": "Dify 是一个开源的大语言模型应用开发平台，融合 BaaS 和 LLMOps 理念。\n\n核心特点：\n• 分层模块化架构：数据层、开发层、编排层、基础层\n• 模型高度中立：支持 GPT、Deepseek、Llama 等，以及任何兼容 OpenAI API 的模型\n• 本地部署（Docker Compose）+ 云端部署\n• Marketplace 插件生态（8677+ 插件）\n  - 模型、工具、智能体策略、扩展、捆绑包\n\n适用人群：\n• 有一定技术背景的开发者\n• 需要构建可扩展企业级 AI 应用的团队"
+        },
+        {
+          "type": "content",
+          "title": "案例：超级智能体个人助手",
+          "content": "使用 Dify 构建功能全面的超级智能体个人助手，涵盖多个场景：\n\n1. 日常生活问答：基础对话模块，配置 LLM 和时间工具\n2. 文案优化模块：润色、修改、扩写、缩写（超过 60% 的 ChatGPT 用户使用）\n3. 多模态生成模块：豆包生图/生视频，配置图片比例和模型选择\n4. 数据查询与分析：连接数据库，生成 SQL，输出可视化图表\n5. MCP 工具集成：高德地图、饮食推荐、新闻资讯\n\n采用\"问题分类器\"进行智能路由，将不同请求分发到对应的处理模块。"
+        },
+        {
+          "type": "content",
+          "title": "Dify 的优势与局限性",
+          "content": "优势：\n• 全栈式开发体验：RAG 管道 + AI 工作流 + 模型管理\n• 低代码与高扩展性的平衡\n• 企业级安全：AES-256 加密、RBAC 权限控制、审计日志\n• 丰富的工具集成（9000+ 插件）\n• 活跃的开源社区\n\n局限性：\n• 学习曲线较陡，非技术用户入门有难度\n• 高并发场景下性能挑战（Python 后端）\n• 多模态支持以文本为主\n• 企业版定价较高\n• API 格式不兼容 OpenAI"
+        },
+        {
+          "type": "content",
+          "title": "平台三：n8n",
+          "content": "n8n 的核心身份是通用工作流自动化平台，而非纯粹的 LLM 应用构建工具。\n\n两个基本概念：\n• 节点（Node）：执行具体操作的最小单元\n  - 触发节点：启动流程（如\"收到新邮件时\"）\n  - 常规节点：处理数据和逻辑（如\"调用 OpenAI 模型\"）\n\n• 工作流（Workflow）：多个节点连接而成的自动化流程图\n  - 数据以 JSON 格式在节点间传递\n\nn8n 的真正威力：强大的\"连接\"能力，将孤立的应用程序和服务串联起来。\n\n在 n8n 中构建智能应用，LLM 是整体自动化流程中的一个（或多个）\"处理节点\"。"
+        },
+        {
+          "type": "content",
+          "title": "案例：智能邮件助手",
+          "content": "使用 n8n 构建一体化智能邮件 Agent。\n\n核心架构：接收 → AI Agent（思考 → 决策 → 工具调用）→ 回复\n\n步骤一：准备 Agent 的\"记忆\"\n• Code 节点定义知识源（工作时间、回复策略等）\n• Embeddings 节点向量化（Gemini Embedding）\n• Simple Vector Store 存入内存数据库\n\n步骤二：构建 Agent 主工作流\n• Gmail 触发器：Message Received\n• AI Agent 节点：整合 Chat Model + Memory + Tools\n• 工具：SerpAPI（搜索）+ Simple Vector Store（私有知识）\n• Gmail 发送节点：自动回复\n\n效果：智能体在非工作时间自动告知发件人，并基于公开信息提供初步答复。"
+        },
+        {
+          "type": "code",
+          "title": "Coze Bot DSL 示例",
+          "language": "yaml",
+          "code": "# Coze Bot DSL（Bot 配置文件）\nname: \"每日AI简报\"\ndescription: \"自动生成每日AI领域技术简报\"\nversion: \"1.0.0\"\n\non_trigger:\n  type: \"user_message\"\n  pattern: \"生成今日AI简报\"\n\npipeline:\n  - step: collect_news\n    plugin: rss\n    config:\n      sources:\n        - \"https://www.36kr.com/feed\"\n        - \"https://rss.huxiu.com/\"\n        - \"http://www.ithome.com/rss/\"\n        - \"https://feed.infoq.com/ai-ml-data-eng/\"\n      limit: 10\n\n  - step: collect_papers\n    plugin: arxiv\n    config:\n      search_query: \"LLM AI\"\n      count: 5\n      sort_by: \"submitted_date\"\n\n  - step: collect_projects\n    plugin: github\n    config:\n      query: \"AI\"\n      per_page: 10\n      sort: \"updated\"\n\n  - step: generate_report\n    llm: true\n    prompt: |\n      你是一位资深科技媒体编辑。\n      基于以下信息来源生成一份专业的AI日报：\n      - 新闻：{{collect_news.output}}\n      - 论文：{{collect_papers.output}}\n      - 项目：{{collect_projects.output}}\n      要求：每则标题前加Emoji，必须提供原始链接。\n\n  - step: format_output\n    template: |\n      # AI日报 | {{date}} | by@jasonhuang\n      \n      ## 🚀 AI技术新闻\n      {{generate_report.news_section}}\n      \n      ## 📚 AI学术论文\n      {{generate_report.paper_section}}\n      \n      ## 💻 AI开源项目\n      {{generate_report.project_section}}",
+          "explanation": "Coze Bot DSL 使用 YAML 格式定义智能体的完整行为，包括触发条件、多步骤编排、插件调用和 LLM 提示词配置。每个步骤的输出可作为后续步骤的输入，形成完整的数据处理流水线。"
+        },
+        {
+          "type": "comparison",
+          "title": "三大低代码平台对比",
+          "headers": [
+            "维度",
+            "Coze",
+            "Dify",
+            "n8n"
+          ],
+          "rows": [
+            [
+              "核心定位",
+              "零代码智能体构建",
+              "LLM 应用开发平台",
+              "通用工作流自动化"
+            ],
+            [
+              "技术门槛",
+              "最低（无需编程）",
+              "中等（需一定技术背景）",
+              "较高（需理解节点和流程）"
+            ],
+            [
+              "插件生态",
+              "丰富的官方插件库",
+              "8677+ 插件市场",
+              "数百个预置节点"
+            ],
+            [
+              "模型支持",
+              "内置模型，不可自由更换",
+              "高度中立，支持数十种模型",
+              "通过节点接入任意模型"
+            ],
+            [
+              "知识库",
+              "内置知识库管理",
+              "完整的 RAG Pipeline",
+              "通过 Vector Store 节点"
+            ],
+            [
+              "MCP 支持",
+              "不支持（Roadmap 中）",
+              "支持 SSE 模式 MCP",
+              "通过 HTTP 节点可间接支持"
+            ],
+            [
+              "部署方式",
+              "云平台（SaaS）",
+              "本地部署 + 云端 SaaS",
+              "私有化部署为主"
+            ],
+            [
+              "发布渠道",
+              "微信、飞书、豆包等",
+              "API 集成",
+              "通过节点连接任意系统"
+            ],
+            [
+              "最佳场景",
+              "快速原型、非技术用户",
+              "企业级应用、复杂业务",
+              "深度业务集成、自动化流程"
+            ]
+          ]
+        },
+        {
+          "type": "concepts",
+          "title": "选型决策指南",
+          "items": [
+            {
+              "icon": "🚀",
+              "title": "快速原型验证",
+              "description": "优先选择 Coze。零代码、丰富的插件生态、一键发布到主流平台，让非技术用户也能快速将创意变为现实。"
+            },
+            {
+              "icon": "🏢",
+              "title": "企业级应用",
+              "description": "优先选择 Dify。全栈式开发、企业级安全、本地部署、丰富的插件市场，适合构建可扩展的生产级应用。"
+            },
+            {
+              "icon": "🔗",
+              "title": "深度业务集成",
+              "description": "优先选择 n8n。数百个预置节点，强大的连接能力，私有化部署，适合将 AI 能力嵌入复杂的业务流程。"
+            }
+          ]
+        },
+        {
+          "type": "content",
+          "title": "混合开发：低代码 + 代码协作",
+          "content": "低代码平台并非要取代代码开发，而是提供一种互补的选择。实际项目中应根据不同阶段的需求灵活切换：\n\n• 用低代码平台快速验证想法\n• 用代码实现精细化控制\n• 用平台处理标准化流程\n• 用代码处理特殊逻辑\n\n推荐策略：\n| 阶段 | 方式 | 目的 |\n|------|------|------|\n| 原型验证 | Coze/Dify | 快速验证可行性 |\n| 核心逻辑 | Python 代码 | 精细化实现 |\n| 标准化流程 | n8n/Dify | 自动化部署 |\n| 特殊场景 | 自定义代码 | 灵活扩展 |\n\n这种\"混合开发\"思维，才是智能体工程化的最佳实践。"
+        },
+        {
+          "type": "content",
+          "title": "低代码平台最佳实践",
+          "content": "**选型建议：**\n\n• 个人项目/快速原型 → **Coze**（免费额度充足，Bot 商店生态丰富）\n• 企业知识库应用 → **Dify**（私有部署、权限管理、工作流可视化）\n• 复杂自动化流程 → **n8n**（开源自托管、300+ 集成节点）\n• 中文社区支持 → **FastGPT**（国产开源、知识库优化好）\n\n[提示] 不要锁定单一平台——先用 Coze 快速验证想法，再根据需求迁移到 Dify 或自建框架。"
+        },
+        {
+          "type": "content",
+          "title": "本章小结",
+          "content": "• 低代码平台通过图形化、模块化的方式降低技术门槛，提升开发效率\n• Coze 以零代码友好体验和丰富插件生态见长，适合快速原型验证\n• Dify 作为开源企业级平台，提供全栈式开发能力和 9000+ 插件生态\n• n8n 以强大的\"连接\"能力将 AI 嵌入复杂业务流程，支持私有化部署\n• 三个平台在核心定位、技术门槛、部署方式和适用场景上有显著差异\n• \"混合开发\"思维是智能体工程化的最佳实践"
+        },
+        {
+          "type": "quiz",
+          "title": "知识测验"
+        }
+      ],
+      "hasAnimation": true,
+      "hasQuiz": true
+    },
+    {
+      "id": "ch6",
+      "title": "框架开发实践",
+      "subtitle": "LangChain、AutoGen 与 CrewAI 横评",
+      "icon": "🔧",
+      "estimatedMinutes": 30,
+      "tags": [
+        "框架",
+        "LangChain",
+        "AutoGen"
+      ],
+      "slides": [
+        {
+          "type": "cover",
+          "title": "第六章",
+          "subtitle": "框架开发实践"
+        },
+        {
+          "type": "content",
+          "title": "从手动实现到框架开发",
+          "content": "在第四章中，我们通过编写原生代码实现了 ReAct、Plan-and-Solve 等核心工作流，对智能体的内在执行逻辑有了深刻理解。然而，当构建多个、不同类型且逻辑复杂的智能体应用时，很快会遇到瓶颈。\n\n框架的本质：提供一套经过验证的\"规范\"，将所有智能体共有的、重复性的工作进行抽象和封装——主循环、状态管理、工具调用、日志记录等——让我们专注于独特的业务逻辑。"
+        },
+        {
+          "type": "content",
+          "title": "为何需要智能体框架",
+          "content": "• 提升代码复用与开发效率\n  通用 Agent 基类封装了核心循环（Agent Loop），基于标准组件快速搭建\n\n• 实现核心组件的解耦与可扩展性\n  模型层（Model Layer）：轻松替换不同模型\n  工具层（Tool Layer）：标准化工具定义与注册\n  记忆层（Memory Layer）：切换不同记忆策略\n\n• 标准化复杂的状态管理\n  - 上下文窗口限制、历史持久化、多轮状态跟踪\n\n• 简化可观测性与调试过程\n  - 事件回调机制：on_llm_start、on_tool_end、on_agent_finish\n  - 自动触发日志记录，比手动 print 高效得多"
+        },
+        {
+          "type": "content",
+          "title": "主流框架的选型与对比",
+          "content": "智能体框架生态正在以前所未有的速度发展。LangChain 和 LlamaIndex 定义了第一代范式，新一代框架则更专注于特定领域的深层挑战。\n\n本章聚焦四个极具代表性的框架：\n\n• AutoGen：以\"对话驱动协作\"，将多智能体系统抽象为可自动进行的\"群聊\"\n\n• AgentScope：工程化优先，消息驱动架构，内置分布式部署\n\n• CAMEL：\"角色扮演\"协作，两个智能体通过 Inception Prompting 自主协作\n\n• LangGraph：将执行流程建模为有向图（Graph），天然支持循环"
+        },
+        {
+          "type": "animation",
+          "title": "框架调用栈对比",
+          "animation": "ch6-frameworks"
+        },
+        {
+          "type": "content",
+          "title": "框架一：AutoGen",
+          "content": "核心思想：通过对话实现协作。\n\n将多智能体系统抽象为一个由多个\"可对话\"智能体组成的群聊。\n\n0.7.4 版本架构革新：\n• 分层设计：autogen-core（底层）+ autogen-agentchat（高级接口）\n• 异步优先：全面转向 async/await，提升并发处理能力\n\n核心组件：\n• AssistantAgent：任务的主要解决者，封装 LLM\n• UserProxyAgent：既是用户\"代言人\"，也是\"执行器\"\n• RoundRobinGroupChat：轮询群聊，智能体按顺序发言\n• TextMentionTermination：检测关键词终止对话"
+        },
+        {
+          "type": "code",
+          "title": "AutoGen 软件开发团队",
+          "language": "python",
+          "code": "from autogen_ext.models.openai import OpenAIChatCompletionClient\nfrom autogen_agentchat.agents import AssistantAgent\nfrom autogen_agentchat.teams import RoundRobinGroupChat\nfrom autogen_agentchat.conditions import TextMentionTermination\n\n# 1. 创建模型客户端\nmodel_client = OpenAIChatCompletionClient(\n    model=\"gpt-4o\",\n    api_key=os.getenv(\"LLM_API_KEY\"),\n    base_url=os.getenv(\"LLM_BASE_URL\")\n)\n\n# 2. 定义智能体角色\nproduct_manager = AssistantAgent(\n    name=\"ProductManager\",\n    model_client=model_client,\n    system_message=\"\"\"你是一位经验丰富的产品经理。\n职责：需求分析、功能模块划分、技术选型建议。\n完成后请说\"请工程师开始实现\"。\"\"\"\n)\n\nengineer = AssistantAgent(\n    name=\"Engineer\",\n    model_client=model_client,\n    system_message=\"\"\"你是一位资深软件工程师。\n职责：编写完整代码、添加注释、处理边界情况。\n完成后请说\"请代码审查员检查\"。\"\"\"\n)\n\ncode_reviewer = AssistantAgent(\n    name=\"CodeReviewer\",\n    model_client=model_client,\n    system_message=\"\"\"你是一位代码审查专家。\n审查重点：代码质量、安全性、最佳实践。\n完成后请说\"代码审查完成，请用户代理测试\"。\"\"\"\n)\n\n# 3. 组建团队\nteam_chat = RoundRobinGroupChat(\n    participants=[product_manager, engineer, code_reviewer],\n    termination_condition=TextMentionTermination(\"TERMINATE\"),\n    max_turns=20\n)\n\n# 4. 启动协作\nasync def run_team():\n    result = await Console(team_chat.run_stream(\n        task=\"开发一个比特币价格显示应用，使用 Streamlit\"\n    ))\n    return result\n\nresult = asyncio.run(run_team())",
+          "explanation": "AutoGen 0.7.4 通过 RoundRobinGroupChat 实现多智能体轮询协作。每个 AssistantAgent 通过 System Message 定义角色和职责，TextMentionTermination 控制对话何时结束，形成完整的需求→编码→审查→验收闭环。"
+        },
+        {
+          "type": "content",
+          "title": "框架二：AgentScope",
+          "content": "由阿里巴巴达摩院开发，工程化优先的多智能体平台。\n\n核心架构：\n• 基础组件层：Message、Memory、Model API、Tool\n• 智能体基础设施层：预构建智能体、ReAct 范式、异步执行\n• 多智能体协作层：MsgHub 消息中心 + Pipeline 系统\n• 开发与部署层：AgentScope Runtime + Studio\n\n三大特色：\n1. 消息驱动架构：所有交互抽象为消息发送和接收\n   - 异步解耦、位置透明、可观测性、可靠性\n2. 智能体生命周期管理：基于 AgentBase 基类\n3. 结构化输出：通过 Pydantic 模型约束智能体行为"
+        },
+        {
+          "type": "content",
+          "title": "框架三：CAMEL",
+          "content": "核心目标：让两个智能体通过\"角色扮演\"在最少人类干预下自主协作。\n\n两大核心概念：\n• 角色扮演（Role-Playing）\n  - AI 用户：提出需求、下达指令\n  - AI 助理：执行操作、提供解决方案\n  - 角色互补且有明确定义的\"专家身份\"\n\n• 引导性提示（Inception Prompting）\n  - 明确自身角色和协作者角色\n  - 定义共同目标\n  - 设定行为约束和沟通协议\n  - 使用特定标志（如 <CAMEL_TASK_DONE>）标识完成\n\n案例：AI 心理学家 + AI 作家协作创作拖延症心理学科普电子书"
+        },
+        {
+          "type": "content",
+          "title": "框架四：LangGraph",
+          "content": "作为 LangChain 生态系统的重要扩展，将智能体的执行流程建模为状态机（State Machine），表示为有向图（Directed Graph）。\n\n三个基本构成要素：\n1. 全局状态（State）：共享的状态对象（TypedDict）\n2. 节点（Nodes）：具体的计算步骤（Python 函数）\n3. 边（Edges）：定义跳转逻辑\n   - 常规边：固定路由\n   - 条件边（Conditional Edges）：根据状态动态路由\n\n天然支持循环：通过条件边构建\"反思-修正\"循环，实现自我优化和容错。\n\n案例：三步问答助手（理解→搜索→回答），每个步骤都是一个独立节点。"
+        },
+        {
+          "type": "code",
+          "title": "LangGraph 问答助手",
+          "language": "python",
+          "code": "from typing import TypedDict, List\nfrom langgraph.graph import StateGraph, START, END\nfrom langchain_openai import ChatOpenAI\n\n# 1. 定义全局状态\nclass SearchState(TypedDict):\n    messages: List[str]\n    user_query: str\n    search_query: str\n    search_results: str\n    final_answer: str\n    step: str\n\n# 2. 定义节点\nllm = ChatOpenAI(model=\"gpt-4o-mini\", temperature=0.7)\n\ndef understand_query_node(state: SearchState) -> dict:\n    \"\"\"步骤1：理解用户意图\"\"\"\n    user_message = state[\"messages\"][-1]\n    response = llm.invoke(\n        f\"分析用户查询：'{user_message}'\\n\"\n        \"请生成最适合搜索引擎的关键词\"\n    )\n    return {\n        \"user_query\": user_message,\n        \"search_query\": response.content,\n        \"step\": \"understood\"\n    }\n\ndef search_node(state: SearchState) -> dict:\n    \"\"\"步骤2：模拟搜索\"\"\"\n    return {\n        \"search_results\": f\"搜索结果：{state['search_query']}...\",\n        \"step\": \"searched\"\n    }\n\ndef answer_node(state: SearchState) -> dict:\n    \"\"\"步骤3：生成答案\"\"\"\n    response = llm.invoke(\n        f\"基于以下搜索结果回答问题：\\n{state['search_results']}\"\n    )\n    return {\n        \"final_answer\": response.content,\n        \"step\": \"completed\"\n    }\n\n# 3. 构建图\nworkflow = StateGraph(SearchState)\nworkflow.add_node(\"understand\", understand_query_node)\nworkflow.add_node(\"search\", search_node)\nworkflow.add_node(\"answer\", answer_node)\nworkflow.add_edge(START, \"understand\")\nworkflow.add_edge(\"understand\", \"search\")\nworkflow.add_edge(\"search\", \"answer\")\nworkflow.add_edge(\"answer\", END)\n\napp = workflow.compile()\n\n# 4. 运行\nresult = app.invoke({\n    \"messages\": [\"明天北京天气如何？有合适的景点吗？\"],\n    \"user_query\": \"\", \"search_query\": \"\",\n    \"search_results\": \"\", \"final_answer\": \"\", \"step\": \"\"\n})",
+          "explanation": "LangGraph 将智能体流程显式建模为状态图。每个节点是独立函数，边（Edge）定义数据流向。条件边（Conditional Edge）可实现动态路由和循环，是构建可反思、可修正智能体的关键。"
+        },
+        {
+          "type": "comparison",
+          "title": "四大框架对比",
+          "headers": [
+            "维度",
+            "AutoGen",
+            "AgentScope",
+            "CAMEL",
+            "LangGraph"
+          ],
+          "rows": [
+            [
+              "协作模式",
+              "群聊对话驱动",
+              "消息驱动架构",
+              "角色扮演协作",
+              "状态机图结构"
+            ],
+            [
+              "控制方式",
+              "定义角色+发言顺序",
+              "消息路由+管道",
+              "Inception Prompting",
+              "显式节点+条件边"
+            ],
+            [
+              "语言支持",
+              "Python",
+              "Python",
+              "Python",
+              "Python"
+            ],
+            [
+              "分布式",
+              "不支持原生",
+              "原生支持 RPC",
+              "不支持",
+              "通过 LangServe"
+            ],
+            [
+              "循环支持",
+              "通过对话轮次",
+              "通过 Pipeline",
+              "通过对话迭代",
+              "条件边原生支持"
+            ],
+            [
+              "结构化输出",
+              "System Message",
+              "Pydantic 模型",
+              "任务完成标志",
+              "状态类型定义"
+            ],
+            [
+              "学习曲线",
+              "中等",
+              "较高",
+              "低",
+              "中等"
+            ],
+            [
+              "最佳场景",
+              "多角色对话协作",
+              "大规模生产系统",
+              "双智能体深度协作",
+              "精确流程控制"
+            ]
+          ]
+        },
+        {
+          "type": "content",
+          "title": "权衡：涌现式协作 vs 显式控制",
+          "content": "通过对四个框架的深入分析，可以提炼出设计的一个核心权衡：\n\n涌现式协作（Emergent Collaboration）\n• AutoGen 和 CAMEL 代表\n• 定义\"角色\"和\"目标\"，让行为从简单规则中\"涌现\"\n• 更贴近人类交互模式\n• 有时难以预测和调试\n\n显式控制（Explicit Control）\n• LangGraph 代表\n• 明确每个步骤和跳转条件\n• 高度可靠、可控、可观测\n• 牺牲了\"涌现\"的灵活性\n\n工程化维度——AgentScope\n• 将原型推向生产应用必须面对：并发、容错、分布式部署\n• 代表了从\"能运行\"到\"能稳定服务\"的关键跨越"
+        },
+        {
+          "type": "content",
+          "title": "框架选型建议",
+          "content": "根据应用场景选择最合适的框架：\n\n• 智能客服（高并发、低延迟）\n  → AgentScope（分布式架构、异步消息驱动）\n\n• 科研论文协作（深度讨论、自主推进）\n  → CAMEL（角色扮演、Inception Prompting）\n\n• 金融风控（严格流程、可审计）\n  → LangGraph（状态机、显式控制、可追溯）\n\n• 软件开发团队（多角色协作）\n  → AutoGen（群聊模式、角色分工）\n\n核心原则：没有\"最好\"的框架，只有\"最合适\"的框架。理解设计哲学比记住 API 更重要。"
+        },
+        {
+          "type": "content",
+          "title": "框架选型决策指南",
+          "content": "| 场景 | 推荐框架 | 原因 |\n|------|---------|------|\n| 快速搭建 RAG 应用 | LlamaIndex | 数据连接器丰富，索引开箱即用 |\n| 多步工具调用链路 | LangChain | LCEL + Agent 生态最成熟 |\n| 多 Agent 协作系统 | AutoGen | 对话驱动的多 Agent 编排 |\n| 角色扮演 Agent 团队 | CrewAI | 角色定义清晰，任务委托机制 |\n| 生产级 RAG 私有部署 | Dify | 可视化编排 + 企业功能 |\n\n[提示] 框架不是互斥的——LangChain 的检索器可以集成到 AutoGen 的 Agent 中使用。"
+        },
+        {
+          "type": "content",
+          "title": "AutoGen：多智能体对话框架",
+          "content": "微软开源的 AutoGen 以**对话**为核心抽象：\n\n• **ConversableAgent**：可对话的智能体基类\n• **AssistantAgent**：基于 LLM 的对话助手\n• **UserProxyAgent**：代表用户的代理，可执行代码\n• **GroupChat**：多 Agent 群组对话管理\n\n核心模式：\n1. 用户发出请求\n2. Assistant 生成方案\n3. UserProxy 执行代码验证\n4. 循环直到满足要求\n\n[成功] AutoGen 特别适合需要代码执行反馈的开发场景。"
+        },
+        {
+          "type": "content",
+          "title": "LlamaIndex：数据索引与检索增强",
+          "content": "LlamaIndex（原 GPT Index）专注于**数据连接**：\n\n• **文档加载**：支持 PDF、网页、数据库等 160+ 数据源\n• **索引构建**：VectorStoreIndex、TreeIndex、KeywordTableIndex\n• **查询引擎**：支持语义搜索、结构化查询、组合查询\n• **Router**：自动选择最合适的索引进行查询\n\n核心优势：对 RAG 场景的深度优化，索引结构灵活可组合。"
+        },
+        {
+          "type": "content",
+          "title": "LangChain 核心概念：Chain 与 Agent",
+          "content": "**Chain（链）：**\n将多个组件按顺序连接，前一步的输出作为后一步的输入。\n\n```python\nfrom langchain.chains import LLMChain\nchain = LLMChain(llm=llm, prompt=prompt)\nresult = chain.run(input_text)\n```\n\n**Agent（智能体）：**\nLLM 自主决定调用哪些工具、以什么顺序调用。\n\n`**Chain** = 预定义流程 | **Agent** = 动态决策`\n\n[提示] 简单任务用 Chain，复杂推理+多工具调用用 Agent。"
+        },
+        {
+          "type": "content",
+          "title": "本章小结",
+          "content": "• AutoGen：以对话驱动协作，适合多角色群聊场景\n• AgentScope：消息驱动架构，适合大规模生产级系统\n• CAMEL：角色扮演范式，适合双智能体深度协作\n• LangGraph：状态机图结构，适合精确流程控制\n• \"涌现式协作\"与\"显式控制\"是框架设计中的核心权衡\n• 深入理解框架设计哲学，比成为\"工具使用者\"更有价值"
+        },
+        {
+          "type": "quiz",
+          "title": "知识测验"
+        }
+      ],
+      "hasAnimation": true,
+      "hasQuiz": true
+    },
+    {
       "id": "ch7",
       "title": "构建你的Agent框架",
       "subtitle": "从零开始构建智能体框架",
       "slides": [
-        { "type": "cover", "title": "第七章", "subtitle": "构建你的Agent框架" },
-        { "type": "content", "title": "为什么要自己构建框架？", "content": "• 理解原理：深入理解智能体内部工作机制\n• 灵活定制：根据需求定制功能\n• 学习设计模式：掌握Agent开发的最佳实践\n• 避免过度依赖：不被特定框架束缚" },
-        { "type": "content", "title": "框架设计原则", "content": "• 模块化：每个组件职责单一\n• 可扩展：便于添加新功能\n• 可配置：支持灵活配置\n• 可测试：便于单元测试和集成测试\n• 可监控：支持日志和性能监控" },
-        { "type": "animation", "title": "框架组件架构", "animation": "ch7-framework" },
-        { "type": "content", "title": "核心组件详解 - LLM客户端", "content": "负责与大语言模型通信\n• 支持多种模型（GPT、Claude、LLaMA等）\n• 提供统一接口\n• 处理请求/响应\n• 支持流式输出" },
-        { "type": "content", "title": "核心组件详解 - 工具管理器", "content": "管理智能体可用的工具\n• 工具注册与发现\n• 参数验证\n• 调用执行\n• 结果格式化" },
-        { "type": "content", "title": "核心组件详解 - 记忆系统", "content": "存储和管理智能体的记忆\n• 短期记忆：当前上下文\n• 长期记忆：历史经验\n• 记忆检索：根据需要提取信息\n• 记忆更新：添加新信息" },
-        { "type": "content", "title": "核心组件详解 - 规划器", "content": "负责任务规划\n• 任务分解\n• 步骤排序\n• 资源分配\n• 进度跟踪" },
-        { "type": "content", "title": "核心组件详解 - 执行器", "content": "执行具体任务\n• 调用工具\n• 执行代码\n• 处理异常\n• 报告结果" },
-        { "type": "content", "title": "框架架构模式", "content": "• 管道模式：组件串联处理\n• 事件驱动：基于事件通信\n• 分层架构：按职责分层\n• 微服务：组件独立部署" },
-        { "type": "content", "title": "开发流程", "content": "1. 需求分析：确定智能体功能\n2. 架构设计：设计组件关系\n3. 组件开发：逐个实现组件\n4. 集成测试：测试组件协作\n5. 优化迭代：根据反馈改进" },
-        { "type": "code", "title": "框架核心代码", "language": "python", "code": "class AgentFramework:\n    def __init__(self, config):\n        self.config = config\n        self.llm = LLMClient(config.llm)\n        self.tools = ToolManager(config.tools)\n        self.memory = MemorySystem(config.memory)\n        self.planner = Planner(config.planner)\n        self.executor = Executor()\n        \n    def run(self, task):\n        \"\"\"执行任务\"\"\"\n        # 1. 理解任务\n        context = self.memory.retrieve(task)\n        \n        # 2. 制定计划\n        plan = self.planner.create_plan(task, context)\n        \n        # 3. 执行计划\n        results = []\n        for step in plan:\n            result = self.executor.execute(step, self.llm, self.tools)\n            self.memory.store(result)\n            results.append(result)\n            if self.planner.should_stop(result):\n                break\n        \n        # 4. 总结结果\n        return self.planner.summarize(results)\n\nclass LLMClient:\n    def __init__(self, config):\n        self.model = config.model\n        self.api_key = config.api_key\n        \n    def generate(self, prompt, max_tokens=1000):\n        # 调用LLM API\n        pass" },
-        { "type": "content", "title": "本章小结", "content": "构建框架的核心组件：LLM客户端、工具管理器、记忆系统、规划器、执行器\n设计原则：模块化、可扩展、可配置、可测试、可监控\n开发流程：需求分析→架构设计→组件开发→集成测试→优化迭代\n理解框架原理有助于更好地使用和定制智能体" },
-        { "type": "quiz", "title": "知识测验" }
+        {
+          "type": "cover",
+          "title": "第七章",
+          "subtitle": "构建你的Agent框架"
+        },
+        {
+          "type": "content",
+          "title": "为什么要自己构建框架？",
+          "content": "• 理解原理：深入理解智能体内部工作机制\n• 灵活定制：根据需求定制功能\n• 学习设计模式：掌握Agent开发的最佳实践\n• 避免过度依赖：不被特定框架束缚"
+        },
+        {
+          "type": "content",
+          "title": "框架设计原则",
+          "content": "• 模块化：每个组件职责单一\n• 可扩展：便于添加新功能\n• 可配置：支持灵活配置\n• 可测试：便于单元测试和集成测试\n• 可监控：支持日志和性能监控"
+        },
+        {
+          "type": "animation",
+          "title": "框架组件架构",
+          "animation": "ch7-framework"
+        },
+        {
+          "type": "content",
+          "title": "核心组件详解 - LLM客户端",
+          "content": "负责与大语言模型通信\n• 支持多种模型（GPT、Claude、LLaMA等）\n• 提供统一接口\n• 处理请求/响应\n• 支持流式输出"
+        },
+        {
+          "type": "content",
+          "title": "核心组件详解 - 工具管理器",
+          "content": "管理智能体可用的工具\n• 工具注册与发现\n• 参数验证\n• 调用执行\n• 结果格式化"
+        },
+        {
+          "type": "content",
+          "title": "核心组件详解 - 记忆系统",
+          "content": "存储和管理智能体的记忆\n• 短期记忆：当前上下文\n• 长期记忆：历史经验\n• 记忆检索：根据需要提取信息\n• 记忆更新：添加新信息"
+        },
+        {
+          "type": "content",
+          "title": "核心组件详解 - 规划器",
+          "content": "负责任务规划\n• 任务分解\n• 步骤排序\n• 资源分配\n• 进度跟踪"
+        },
+        {
+          "type": "content",
+          "title": "核心组件详解 - 执行器",
+          "content": "执行具体任务\n• 调用工具\n• 执行代码\n• 处理异常\n• 报告结果"
+        },
+        {
+          "type": "content",
+          "title": "框架架构模式",
+          "content": "• 管道模式：组件串联处理\n• 事件驱动：基于事件通信\n• 分层架构：按职责分层\n• 微服务：组件独立部署"
+        },
+        {
+          "type": "content",
+          "title": "开发流程",
+          "content": "1. 需求分析：确定智能体功能\n2. 架构设计：设计组件关系\n3. 组件开发：逐个实现组件\n4. 集成测试：测试组件协作\n5. 优化迭代：根据反馈改进"
+        },
+        {
+          "type": "code",
+          "title": "框架核心代码",
+          "language": "python",
+          "code": "class AgentFramework:\n    def __init__(self, config):\n        self.config = config\n        self.llm = LLMClient(config.llm)\n        self.tools = ToolManager(config.tools)\n        self.memory = MemorySystem(config.memory)\n        self.planner = Planner(config.planner)\n        self.executor = Executor()\n        \n    def run(self, task):\n        \"\"\"执行任务\"\"\"\n        # 1. 理解任务\n        context = self.memory.retrieve(task)\n        \n        # 2. 制定计划\n        plan = self.planner.create_plan(task, context)\n        \n        # 3. 执行计划\n        results = []\n        for step in plan:\n            result = self.executor.execute(step, self.llm, self.tools)\n            self.memory.store(result)\n            results.append(result)\n            if self.planner.should_stop(result):\n                break\n        \n        # 4. 总结结果\n        return self.planner.summarize(results)\n\nclass LLMClient:\n    def __init__(self, config):\n        self.model = config.model\n        self.api_key = config.api_key\n        \n    def generate(self, prompt, max_tokens=1000):\n        # 调用LLM API\n        pass"
+        },
+        {
+          "type": "content",
+          "title": "本章小结",
+          "content": "构建框架的核心组件：LLM客户端、工具管理器、记忆系统、规划器、执行器\n设计原则：模块化、可扩展、可配置、可测试、可监控\n开发流程：需求分析→架构设计→组件开发→集成测试→优化迭代\n理解框架原理有助于更好地使用和定制智能体"
+        },
+        {
+          "type": "quiz",
+          "title": "知识测验"
+        }
       ],
       "hasAnimation": true,
       "hasQuiz": true,
@@ -74,70 +1043,1404 @@
       "title": "记忆与检索",
       "subtitle": "Memory系统与RAG",
       "slides": [
-        { "type": "cover", "title": "第八章", "subtitle": "记忆与检索" },
-        { "type": "content", "title": "为什么智能体需要记忆？", "content": "• 上下文理解：记住对话历史\n• 知识积累：从经验中学习\n• 个性化：记住用户偏好\n• 长期任务：跨会话保持状态" },
-        { "type": "content", "title": "记忆的分类", "content": "• 短期记忆（STM）：当前对话上下文，容量有限，易遗忘\n• 长期记忆（LTM）：历史经验和知识，容量大，持久存储\n• 工作记忆：当前正在处理的信息" },
-        { "type": "animation", "title": "记忆系统工作流程", "animation": "ch8-memory" },
-        { "type": "content", "title": "RAG 是什么？", "content": "RAG = Retrieval-Augmented Generation\n\n检索增强生成：将外部知识库与LLM结合，实现动态知识检索。\n\n流程：\n1. 用户提问\n2. 从知识库检索相关文档\n3. 将文档作为上下文输入LLM\n4. LLM基于文档生成回答" },
-        { "type": "content", "title": "RAG 的优势", "content": "• 知识时效性：无需重新训练即可更新知识\n• 减少幻觉：基于真实文档生成回答\n• 可溯源：回答可追溯到原始文档\n• 成本效益：比微调更经济" },
-        { "type": "content", "title": "向量数据库", "content": "向量数据库是RAG的核心组件\n• 存储文档的向量表示\n• 支持相似度搜索\n• 常用数据库：Pinecone、Milvus、Weaviate、FAISS\n• 向量维度：通常几百到几千维" },
-        { "type": "content", "title": "文档处理流程", "content": "1. 文档加载：读取PDF、网页、文档等\n2. 文本分割：将长文档切分成小块\n3. 向量化：使用嵌入模型生成向量\n4. 存储：将向量存入向量数据库\n5. 检索：根据查询向量搜索相似文档" },
-        { "type": "content", "title": "检索策略", "content": "• 语义检索：基于语义相似度\n• 关键词检索：基于关键词匹配\n• 混合检索：结合语义和关键词\n• 多级检索：先粗筛再精排\n• 重排序：对检索结果重新排序" },
-        { "type": "content", "title": "RAG 进阶技巧", "content": "• 上下文压缩：精简检索到的文档\n• 查询改写：优化用户查询\n• 多轮检索：迭代式检索\n• 知识图谱：结合结构化知识\n• 实时更新：支持增量更新" },
-        { "type": "code", "title": "完整记忆系统实现", "language": "python", "code": "class MemorySystem:\n    def __init__(self, vector_db, embedding_model):\n        self.short_term = []  # 短期记忆\n        self.long_term = vector_db  # 长期记忆\n        self.embedding = embedding_model\n    \n    def add_short_term(self, info):\n        \"\"\"添加短期记忆\"\"\"\n        self.short_term.append(info)\n        if len(self.short_term) > 20:\n            self.short_term.pop(0)\n    \n    def add_long_term(self, docs):\n        \"\"\"添加长期记忆\"\"\"\n        vectors = self.embedding.encode(docs)\n        self.long_term.add(vectors, docs)\n    \n    def retrieve(self, query, k=3):\n        \"\"\"检索相关记忆\"\"\"\n        query_vec = self.embedding.encode([query])[0]\n        results = self.long_term.search(query_vec, k=k)\n        return results\n    \n    def get_context(self, query):\n        \"\"\"获取完整上下文\"\"\"\n        retrieved = self.retrieve(query)\n        context = \"\\n\".join([doc for _, doc in retrieved])\n        context += \"\\n\\n对话历史：\" + \"\\n\".join(self.short_term[-5:])\n        return context\n\n# RAG检索示例\nclass RAGSystem:\n    def __init__(self, memory, llm):\n        self.memory = memory\n        self.llm = llm\n    \n    def answer(self, query):\n        context = self.memory.get_context(query)\n        prompt = f\"基于以下上下文回答问题：\\n{context}\\n\\n问题：{query}\"\n        return self.llm.generate(prompt)" },
-        { "type": "content", "title": "本章小结", "content": "记忆分为短期记忆和长期记忆\nRAG是检索增强生成，将外部知识与LLM结合\n向量数据库是RAG的核心，支持相似度搜索\n文档处理流程：加载→分割→向量化→存储→检索\n进阶技巧包括上下文压缩、查询改写、多轮检索等" },
-        { "type": "quiz", "title": "知识测验" }
+        {
+          "type": "cover",
+          "title": "第八章",
+          "subtitle": "记忆与检索"
+        },
+        {
+          "type": "content",
+          "title": "为什么智能体需要记忆？",
+          "content": "• 上下文理解：记住对话历史\n• 知识积累：从经验中学习\n• 个性化：记住用户偏好\n• 长期任务：跨会话保持状态"
+        },
+        {
+          "type": "content",
+          "title": "记忆的分类",
+          "content": "• 短期记忆（STM）：当前对话上下文，容量有限，易遗忘\n• 长期记忆（LTM）：历史经验和知识，容量大，持久存储\n• 工作记忆：当前正在处理的信息"
+        },
+        {
+          "type": "animation",
+          "title": "记忆系统工作流程",
+          "animation": "ch8-memory"
+        },
+        {
+          "type": "content",
+          "title": "RAG 是什么？",
+          "content": "RAG = Retrieval-Augmented Generation\n\n检索增强生成：将外部知识库与LLM结合，实现动态知识检索。\n\n流程：\n1. 用户提问\n2. 从知识库检索相关文档\n3. 将文档作为上下文输入LLM\n4. LLM基于文档生成回答"
+        },
+        {
+          "type": "content",
+          "title": "RAG 的优势",
+          "content": "• 知识时效性：无需重新训练即可更新知识\n• 减少幻觉：基于真实文档生成回答\n• 可溯源：回答可追溯到原始文档\n• 成本效益：比微调更经济"
+        },
+        {
+          "type": "content",
+          "title": "向量数据库",
+          "content": "向量数据库是RAG的核心组件\n• 存储文档的向量表示\n• 支持相似度搜索\n• 常用数据库：Pinecone、Milvus、Weaviate、FAISS\n• 向量维度：通常几百到几千维"
+        },
+        {
+          "type": "content",
+          "title": "文档处理流程",
+          "content": "1. 文档加载：读取PDF、网页、文档等\n2. 文本分割：将长文档切分成小块\n3. 向量化：使用嵌入模型生成向量\n4. 存储：将向量存入向量数据库\n5. 检索：根据查询向量搜索相似文档"
+        },
+        {
+          "type": "content",
+          "title": "检索策略",
+          "content": "• 语义检索：基于语义相似度\n• 关键词检索：基于关键词匹配\n• 混合检索：结合语义和关键词\n• 多级检索：先粗筛再精排\n• 重排序：对检索结果重新排序"
+        },
+        {
+          "type": "content",
+          "title": "RAG 进阶技巧",
+          "content": "• 上下文压缩：精简检索到的文档\n• 查询改写：优化用户查询\n• 多轮检索：迭代式检索\n• 知识图谱：结合结构化知识\n• 实时更新：支持增量更新"
+        },
+        {
+          "type": "code",
+          "title": "完整记忆系统实现",
+          "language": "python",
+          "code": "class MemorySystem:\n    def __init__(self, vector_db, embedding_model):\n        self.short_term = []  # 短期记忆\n        self.long_term = vector_db  # 长期记忆\n        self.embedding = embedding_model\n    \n    def add_short_term(self, info):\n        \"\"\"添加短期记忆\"\"\"\n        self.short_term.append(info)\n        if len(self.short_term) > 20:\n            self.short_term.pop(0)\n    \n    def add_long_term(self, docs):\n        \"\"\"添加长期记忆\"\"\"\n        vectors = self.embedding.encode(docs)\n        self.long_term.add(vectors, docs)\n    \n    def retrieve(self, query, k=3):\n        \"\"\"检索相关记忆\"\"\"\n        query_vec = self.embedding.encode([query])[0]\n        results = self.long_term.search(query_vec, k=k)\n        return results\n    \n    def get_context(self, query):\n        \"\"\"获取完整上下文\"\"\"\n        retrieved = self.retrieve(query)\n        context = \"\\n\".join([doc for _, doc in retrieved])\n        context += \"\\n\\n对话历史：\" + \"\\n\".join(self.short_term[-5:])\n        return context\n\n# RAG检索示例\nclass RAGSystem:\n    def __init__(self, memory, llm):\n        self.memory = memory\n        self.llm = llm\n    \n    def answer(self, query):\n        context = self.memory.get_context(query)\n        prompt = f\"基于以下上下文回答问题：\\n{context}\\n\\n问题：{query}\"\n        return self.llm.generate(prompt)"
+        },
+        {
+          "type": "content",
+          "title": "本章小结",
+          "content": "记忆分为短期记忆和长期记忆\nRAG是检索增强生成，将外部知识与LLM结合\n向量数据库是RAG的核心，支持相似度搜索\n文档处理流程：加载→分割→向量化→存储→检索\n进阶技巧包括上下文压缩、查询改写、多轮检索等"
+        },
+        {
+          "type": "quiz",
+          "title": "知识测验"
+        }
       ],
       "hasAnimation": true,
       "hasQuiz": true,
       "icon": "🧠"
     },
     {
+      "id": "ch9",
+      "title": "上下文工程",
+      "subtitle": "持续交互的情境理解",
+      "icon": "📋",
+      "estimatedMinutes": 30,
+      "tags": [
+        "上下文",
+        "RAG",
+        "工程"
+      ],
+      "slides": [
+        {
+          "type": "cover",
+          "title": "第九章",
+          "subtitle": "上下文工程"
+        },
+        {
+          "type": "content",
+          "title": "什么是上下文工程",
+          "content": "上下文工程（Context Engineering）关注的是\"在每一次模型调用前，如何以可复用、可度量、可演进的方式，拼装并优化输入上下文\"，从而提升正确性、鲁棒性与效率。\n\n所谓\"上下文\"，是指对 LLM 进行采样时所包含的那组 tokens。工程问题在于：在 LLM 的固有约束之下，优化这些 tokens 的效用，以便稳定地得到预期结果。\n\n关键转变：从\"如何写出有效提示\"到\"如何策划最优的信息集合\"。"
+        },
+        {
+          "type": "content",
+          "title": "上下文工程 vs 提示工程",
+          "content": "提示工程（Prompt Engineering）：\n• 关注如何编写与组织指令以获得更优结果\n• 核心问题：系统提示的写法与结构化策略\n• 适用于单轮分类或文本生成场景\n\n上下文工程（Context Engineering）：\n• 在推理阶段策划与维护\"最优的信息集合（tokens）\"\n• 包含提示本身 + 进入上下文窗口的一切信息\n  - 系统指令、工具、MCP、外部数据、消息历史\n\n演进动力：\n智能体在更长的时间范围内、跨多次推理轮次地工作 → 需要能管理整个上下文状态的策略。\n\n核心挑战：从持续扩张的\"候选信息宇宙\"中，甄别哪些内容应当进入有限的上下文窗口。"
+        },
+        {
+          "type": "content",
+          "title": "为什么上下文工程重要",
+          "content": "尽管模型速度越来越快、可处理数据规模越来越大，但我们观察到：\n\n上下文腐蚀（Context Rot）\n• 随着上下文窗口中的 tokens 增加，模型准确回忆信息的能力反而下降\n• 不同模型的退化曲线或许更平滑，但这一特征几乎在所有模型上出现\n\n注意力预算有限\n• Transformer 让每个 token 与所有 token 建立 (n²) 级别的注意力关系\n• 上下文增长 → 注意力被\"拉薄\" → 性能下降\n• 模型对\"全上下文依赖\"的经验更少、专门参数也更少\n\n位置编码插值等技术可以让模型处理更长的序列，但会牺牲部分对 token 位置的精确理解。\n\n结论：上下文必须被视作一种有限资源，有意识的上下文工程是构建强健智能体的必需品。"
+        },
+        {
+          "type": "animation",
+          "title": "上下文窗口可视化",
+          "animation": "ch9-context-window"
+        },
+        {
+          "type": "content",
+          "title": "有效上下文的解剖学",
+          "content": "在\"有限注意力预算\"的约束下，上下文工程的目标：用尽可能少但高信号密度的 tokens，最大化获得期望结果的概率。\n\n系统提示（System Prompt）\n• 语言清晰、直白，信息层级把握在\"刚刚好\"的高度\n• 常见误区：过度硬编码（脆弱 if-else）vs 过于空泛（缺少具体信号）\n• 建议：分区组织，追求\"最小必要信息集\"\n\n工具（Tools）\n• 定义智能体与信息/行动空间的契约\n• 职责单一、接口语义清晰、对错误鲁棒\n• 最小可行工具集（MVTS）原则\n\n示例（Few-shot）\n• 精选多样且典型的示例，直接画像\"期望行为\"\n• 好的示例胜过千言万语"
+        },
+        {
+          "type": "concepts",
+          "title": "上下文工程的三大策略",
+          "items": [
+            {
+              "icon": "📦",
+              "title": "压缩整合（Compaction）",
+              "description": "当对话接近上下文上限时，对其进行高保真总结，并用该摘要重启一个新窗口。先优化召回（不遗漏关键信息），再优化精确度（剔除冗余）。"
+            },
+            {
+              "icon": "📝",
+              "title": "结构化笔记（Structured Note-taking）",
+              "description": "也称\"智能体记忆\"。以固定频率将关键信息写入上下文外的持久化存储，后续按需拉回。以极低的上下文开销维持持久状态与依赖关系。"
+            },
+            {
+              "icon": "👥",
+              "title": "子代理架构（Sub-agent Architectures）",
+              "description": "主代理负责高层规划，多个专长子代理在\"干净的上下文窗口\"中各自深挖。庞杂的搜索上下文留在子代理内部，主代理专注于整合与推理。"
+            }
+          ]
+        },
+        {
+          "type": "content",
+          "title": "GSSC 流水线",
+          "content": "ContextBuilder 的核心是 GSSC 流水线，将上下文构建过程分解为四个清晰的阶段：\n\nGather（汇集）→ Select（选择）→ Structure（结构化）→ Compress（压缩）\n\nGather：从多个来源汇集候选信息\n• 系统指令（最高优先级）\n• 记忆系统检索（MemoryTool）\n• RAG 系统检索（RAGTool）\n• 对话历史（保留最近 N 条）\n• 自定义信息包\n\nSelect：基于\"相关性 + 新近性\"加权评分\n• 分离系统指令和其他信息\n• 计算综合分数 = relevance_weight × 相关性 + recency_weight × 新近性\n• 贪心算法按分数填充，直到 token 上限"
+        },
+        {
+          "type": "content",
+          "title": "ContextBuilder 结构化输出",
+          "content": "Structure 阶段将选中信息组织成结构化上下文模板：\n\n[Role & Policies]  ← 系统指令\n[Task]            ← 用户查询\n[Evidence]        ← RAG 检索的知识\n[Context]         ← 对话历史 + 记忆\n[Output]          ← 输出格式要求\n\nCompress 阶段在超限时执行兜底压缩：\n• 分区压缩：保持结构完整性\n• 按比例截断或 LLM 智能摘要\n• 确保系统指令始终有足够的预留空间（reserve_ratio）\n\n核心数据结构：\n• ContextPacket：候选信息包（内容、时间戳、token 数、相关性分数）\n• ContextConfig：配置管理（max_tokens、reserve_ratio、权重等）"
+        },
+        {
+          "type": "code",
+          "title": "滑动窗口上下文管理",
+          "language": "python",
+          "code": "from dataclasses import dataclass\nfrom datetime import datetime\nfrom typing import Optional, List\n\n@dataclass\nclass ContextPacket:\n    \"\"\"候选信息包\"\"\"\n    content: str\n    timestamp: datetime\n    token_count: int\n    relevance_score: float = 0.5\n    metadata: Optional[dict] = None\n\n    def __post_init__(self):\n        self.relevance_score = max(0.0, min(1.0, self.relevance_score))\n\nclass ContextBuilder:\n    \"\"\"上下文构建器 - GSSC 流水线\"\"\"\n    def __init__(self, config=None):\n        self.config = config or ContextConfig()\n\n    def build(self, user_query, conversation_history=None,\n              system_instructions=None, custom_packets=None):\n        # 1. Gather - 汇集信息\n        packets = self._gather(\n            user_query, conversation_history,\n            system_instructions, custom_packets\n        )\n\n        # 2. Select - 智能选择\n        total_tokens = self.config.max_tokens\n        reserve = int(total_tokens * self.config.reserve_ratio)\n        selected = self._select(packets, user_query, total_tokens - reserve)\n\n        # 3. Structure - 结构化输出\n        context = self._structure(selected, user_query)\n\n        # 4. Compress - 兜底压缩\n        if self.config.enable_compression:\n            context = self._compress(context, total_tokens)\n\n        return context\n\n    def _select(self, packets, query, budget):\n        \"\"\"基于相关性+新近性选择信息\"\"\"\n        scored = []\n        for p in packets:\n            relevance = self._calc_relevance(p.content, query)\n            recency = self._calc_recency(p.timestamp)\n            score = (\n                self.config.relevance_weight * relevance +\n                self.config.recency_weight * recency\n            )\n            if p.relevance_score >= self.config.min_relevance:\n                scored.append((score, p))\n\n        scored.sort(key=lambda x: x[0], reverse=True)\n\n        # 贪心选择\n        selected, tokens = [], 0\n        for _, p in scored:\n            if tokens + p.token_count <= budget:\n                selected.append(p)\n                tokens += p.token_count\n        return selected\n\n    def _calc_relevance(self, content, query):\n        \"\"\"Jaccard 相似度（可替换为向量相似度）\"\"\"\n        c_words = set(content.lower().split())\n        q_words = set(query.lower().split())\n        inter = c_words & q_words\n        union = c_words | q_words\n        return len(inter) / len(union) if union else 0.0\n\n    def _calc_recency(self, timestamp):\n        \"\"\"指数衰减新近性分数\"\"\"\n        import math\n        hours = (datetime.now() - timestamp).total_seconds() / 3600\n        return max(0.1, math.exp(-0.1 * hours / 24))",
+          "explanation": "ContextBuilder 的核心是 GSSC 流水线。Select 阶段使用贪心算法，基于相关性和新近性的加权分数选择最有价值的信息。Compress 阶段在超限时执行分区压缩，确保在有限 token 预算内保留最高信号密度的上下文。"
+        },
+        {
+          "type": "content",
+          "title": "NoteTool：结构化笔记",
+          "content": "NoteTool 是为\"长时程任务\"提供的结构化外部记忆组件。\n\n存储格式：Markdown + YAML 混合格式\n---\nid: note_20250119_153000_0\ntitle: 项目进展 - 第一阶段\ntype: task_state\ntags: [refactoring, phase1]\ncreated_at: 2025-01-19T15:30:00\nupdated_at: 2025-01-19T15:30:00\n---\n# 项目进展\n已完成数据模型层的重构...\n\n优势：\n• 结构化记录：YAML 元数据机器可解析，Markdown 正文人类可读\n• 版本友好：纯文本格式，天然支持 Git\n• 低开销：无需复杂数据库操作\n\n笔记类型：task_state / conclusion / blocker / action / reference"
+        },
+        {
+          "type": "content",
+          "title": "TerminalTool：即时文件系统访问",
+          "content": "TerminalTool 实现了 9.2.2 节提到的\"即时（Just-in-time, JIT）上下文\"理念——智能体不需要预先加载所有文件，而是按需探索和检索。\n\n四层安全机制：\n1. 命令白名单：只允许安全的只读命令（ls、cat、grep、find 等）\n2. 工作目录限制（沙箱）：只能访问指定目录\n3. 超时控制：防止无限循环或资源耗尽\n4. 输出大小限制：防止内存溢出\n\n典型使用模式：\n• 探索式导航：ls → cd → find → cat\n• 数据文件分析：head → wc → cut | sort | uniq\n• 日志文件分析：tail | grep、awk\n• 代码库分析：find + wc、grep -rn"
+        },
+        {
+          "type": "content",
+          "title": "长程智能体实战：代码库维护助手",
+          "content": "整合 ContextBuilder + NoteTool + TerminalTool + MemoryTool，构建跨会话的代码库维护助手。\n\n三层架构：\n• TerminalTool（即时访问）→ 按需探索代码\n• MemoryTool（会话记忆）→ 当前对话上下文\n• NoteTool（持久笔记）→ 跨会话状态追踪\n\n实际工作流：\n第1天：探索代码库\n  → 自动识别模块结构，记录关键发现\n\n第2天：分析代码质量\n  → 检测代码重复、复杂度、缺少测试等问题\n  → 自动创建 blocker 笔记\n\n第3天：规划重构任务\n  → 基于历史笔记制定优先级\n  → blocker → action → task_state 递进\n\n关键特性：跨会话连贯性、智能上下文管理、自动知识沉淀"
+        },
+        {
+          "type": "content",
+          "title": "上下文工程 Checklist",
+          "content": "设计上下文管理策略时，逐一检查：\n\n• ✅ **长度管理**：是否设置了合理的 max_tokens 上限？\n• ✅ **优先级排序**：重要信息是否放在上下文的首尾？\n• ✅ **去噪**：是否过滤了低质量/重复的内容？\n• ✅ **结构化**：信息组织是否有清晰的层级？\n• ✅ **缓存策略**：哪些内容可以跨轮复用？\n• ✅ **回退机制**：上下文溢出时的降级方案？\n• ✅ **监控指标**：是否跟踪 token 使用率、检索命中率？\n\n[成功] 好的上下文工程让同样参数的模型表现出显著更好的效果。"
+        },
+        {
+          "type": "content",
+          "title": "摘要策略：递归摘要与渐进式摘要",
+          "content": "**递归摘要（Recursive Summarization）：**\n1. 将长文档分成多个块\n2. 对每个块分别生成摘要\n3. 将摘要合并，再生成最终摘要\n4. 可以递归多层\n\n**渐进式摘要（Progressive Summarization）：**\n1. 第 1 层：原文\n2. 第 2 层：粗体关键句\n3. 第 3 层：高亮核心观点\n4. 第 4 层：一句话总结\n\n[提示] 摘要策略的本质是**信息压缩**——在保留关键信息的同时减少 token 消耗。递归摘要适合处理超长文档，渐进式摘要适合个人知识管理。"
+        },
+        {
+          "type": "code",
+          "title": "滑动窗口上下文管理",
+          "language": "python",
+          "code": "class SlidingWindowContext:\n    \"\"\"滑动窗口上下文管理器\"\"\"\n    def __init__(self, max_tokens=4096, overlap=512):\n        self.max_tokens = max_tokens\n        self.overlap = overlap\n        self.messages = []\n\n    def add_message(self, role, content):\n        self.messages.append({\"role\": role, \"content\": content})\n        self._trim()\n\n    def _trim(self):\n        total = sum(len(m[\"content\"]) // 4 for m in self.messages)\n        while total > self.max_tokens and len(self.messages) > 2:\n            # 保留最近消息，删除最旧的\n            removed = self.messages.pop(1)  # 保留 system prompt\n            total = sum(len(m[\"content\"]) // 4 for m in self.messages)\n\n    def get_context(self):\n        return self.messages",
+          "explanation": "滑动窗口保留最近 max_tokens 的对话，超出部分自动丢弃。overlap 参数控制窗口滑动时保留的重叠量，避免截断关键上下文。"
+        },
+        {
+          "type": "content",
+          "title": "KV Cache：加速推理的关键",
+          "content": "**KV Cache** 是 Transformer 推理优化的核心技术：\n\n• 自回归生成时，每个新 token 需要关注所有历史 token\n• 历史 token 的 Key 和 Value 矩阵可以**缓存复用**\n• 避免重复计算，将推理复杂度从 O(n²) 降到 O(n)\n\n**实际影响：**\n• 生成长文本时，KV Cache 占据大量显存\n• 上下文越长，KV Cache 越大 → 成本越高\n• 这是为什么长上下文 API 调用更贵的原因\n\n`显存 ≈ 2 × 层数 × 隐藏维度 × 上下文长度 × 精度字节`"
+        },
+        {
+          "type": "content",
+          "title": "上下文污染与对策",
+          "content": "**上下文污染（Context Contamination）：**\n无关信息混入上下文，降低 LLM 输出质量。\n\n常见来源：\n• 历史对话中的错误信息被重复引用\n• 检索到的低质量文档片段\n• 过多的系统提示占据上下文空间\n\n**对策：**\n• 定期清理/摘要历史对话\n• 提高检索质量阈值（相似度 > 0.8）\n• 精简系统提示，移除冗余指令\n\n[警告] 上下文越长，LLM 对中间位置信息的注意力越低——**Lost in the Middle** 现象。"
+        },
+        {
+          "type": "content",
+          "title": "本章小结",
+          "content": "• 上下文工程从\"提示工程\"自然演进而来，核心是管理有限的注意力预算\n• 上下文腐蚀（Context Rot）是长上下文场景的关键挑战\n• GSSC 流水线（Gather → Select → Structure → Compress）提供统一的上下文管理框架\n• 三大策略：压缩整合、结构化笔记、子代理架构\n• NoteTool（Markdown + YAML）支持持久化、结构化的长期记忆\n• TerminalTool 实现 JIT 上下文，按需探索文件系统\n• 分层上下文管理（即时访问 + 会话记忆 + 持久笔记）是构建长程智能体的最佳实践"
+        },
+        {
+          "type": "quiz",
+          "title": "知识测验"
+        }
+      ],
+      "hasAnimation": true,
+      "hasQuiz": true
+    },
+    {
       "id": "ch10",
       "title": "智能体通信协议",
       "subtitle": "MCP、A2A、ANP",
       "slides": [
-        { "type": "cover", "title": "第十章", "subtitle": "智能体通信协议" },
-        { "type": "content", "title": "为什么需要通信协议？", "content": "• 多智能体协作需要标准化的消息格式\n• 不同系统之间需要互操作性\n• 确保消息的可靠传递\n• 支持复杂的交互模式" },
-        { "type": "content", "title": "MCP 协议", "content": "MCP = Model Context Protocol\n\n由 Anthropic 提出的协议，用于在语言模型和工具之间建立标准化通信。\n\n核心组件：\n• Provider：提供工具服务\n• Client：调用工具的智能体\n• Host：协调通信的中间层" },
-        { "type": "animation", "title": "MCP 协议交互", "animation": "ch10-protocol" },
-        { "type": "content", "title": "MCP 消息格式", "content": "MCP 定义了三种主要消息类型：\n• Initialize：建立连接\n• Call：调用工具\n• Result：返回结果\n\n每条消息包含：\n• Header：元数据（来源、目标、时间戳）\n• Body：实际内容\n• Signature：可选的认证信息" },
-        { "type": "content", "title": "MCP 的优势", "content": "• 标准化：统一的接口和消息格式\n• 安全性：支持认证和授权\n• 可扩展：易于添加新工具\n• 互操作性：不同系统可以协作\n• 透明性：消息内容可见可追溯" },
-        { "type": "content", "title": "A2A 协议", "content": "A2A = Agent-to-Agent\n\n专门用于智能体之间直接通信的协议。\n\n特点：\n• 对等通信：智能体之间直接交互\n• 异步支持：支持异步消息传递\n• 多模态：支持文本、语音、图像等\n• 语义理解：支持自然语言交互" },
-        { "type": "content", "title": "ANP 协议", "content": "ANP = Agent Network Protocol\n\n更高级的智能体网络协议，支持：\n• 智能体发现：自动发现网络中的智能体\n• 服务注册：智能体可以注册提供的服务\n• 负载均衡：任务分配到多个智能体\n• 故障恢复：自动处理智能体故障" },
-        { "type": "content", "title": "三种协议对比", "content": "| 协议 | 用途 | 特点 |\n|------|------|------|\n| MCP | 模型与工具通信 | 标准化、安全、可扩展 |\n| A2A | 智能体间通信 | 对等、异步、多模态 |\n| ANP | 智能体网络 | 发现、注册、负载均衡 |" },
-        { "type": "content", "title": "协议选择指南", "content": "• 单智能体 + 工具 → MCP\n• 两个智能体协作 → A2A\n• 多个智能体组成网络 → ANP\n• 复杂场景 → 组合使用" },
-        { "type": "content", "title": "通信模式", "content": "• 请求-响应：同步调用，等待结果\n• 发布-订阅：异步消息，一对多\n• 点对点：直接通信\n• 广播：向所有智能体发送\n• 路由：通过中间节点转发" },
-        { "type": "code", "title": "协议消息实现", "language": "python", "code": "import json\nimport time\nfrom dataclasses import dataclass\nfrom typing import Any, Optional\n\n@dataclass\nclass MCPMessage:\n    \"\"\"MCP 消息结构\"\"\"\n    from_agent: str\n    to_agent: str\n    action: str\n    payload: dict\n    message_id: str = None\n    timestamp: float = None\n    \n    def __post_init__(self):\n        if self.message_id is None:\n            self.message_id = f\"msg_{int(time.time() * 1000)}\"\n        if self.timestamp is None:\n            self.timestamp = time.time()\n    \n    def to_json(self):\n        \"\"\"序列化为 JSON\"\"\"\n        return json.dumps({\n            'header': {\n                'from': self.from_agent,\n                'to': self.to_agent,\n                'message_id': self.message_id,\n                'timestamp': self.timestamp\n            },\n            'body': {\n                'action': self.action,\n                'payload': self.payload\n            }\n        }, indent=2)\n    \n    @classmethod\n    def from_json(cls, json_str):\n        \"\"\"从 JSON 解析\"\"\"\n        data = json.loads(json_str)\n        return cls(\n            from_agent=data['header']['from'],\n            to_agent=data['header']['to'],\n            action=data['body']['action'],\n            payload=data['body']['payload'],\n            message_id=data['header']['message_id'],\n            timestamp=data['header']['timestamp']\n        )\n\nclass MCPProtocol:\n    \"\"\"MCP 协议实现\"\"\"\n    def initialize(self, provider_info):\n        return MCPMessage(\n            from_agent='client',\n            to_agent='provider',\n            action='initialize',\n            payload=provider_info\n        )\n    \n    def call(self, tool_name, arguments):\n        return MCPMessage(\n            from_agent='client',\n            to_agent='provider',\n            action='call',\n            payload={'tool': tool_name, 'args': arguments}\n        )\n    \n    def result(self, message_id, result, error=None):\n        return MCPMessage(\n            from_agent='provider',\n            to_agent='client',\n            action='result',\n            payload={\n                'message_id': message_id,\n                'result': result,\n                'error': error\n            }\n        )" },
-        { "type": "content", "title": "本章小结", "content": "MCP：模型与工具通信的标准化协议\nA2A：智能体之间直接通信的协议\nANP：智能体网络的高级协议\n选择合适的协议取决于具体场景\n消息格式包含 Header 和 Body，支持 JSON 序列化" },
-        { "type": "quiz", "title": "知识测验" }
+        {
+          "type": "cover",
+          "title": "第十章",
+          "subtitle": "智能体通信协议"
+        },
+        {
+          "type": "content",
+          "title": "为什么需要通信协议？",
+          "content": "• 多智能体协作需要标准化的消息格式\n• 不同系统之间需要互操作性\n• 确保消息的可靠传递\n• 支持复杂的交互模式"
+        },
+        {
+          "type": "content",
+          "title": "MCP 协议",
+          "content": "MCP = Model Context Protocol\n\n由 Anthropic 提出的协议，用于在语言模型和工具之间建立标准化通信。\n\n核心组件：\n• Provider：提供工具服务\n• Client：调用工具的智能体\n• Host：协调通信的中间层"
+        },
+        {
+          "type": "animation",
+          "title": "MCP 协议交互",
+          "animation": "ch10-protocol"
+        },
+        {
+          "type": "content",
+          "title": "MCP 消息格式",
+          "content": "MCP 定义了三种主要消息类型：\n• Initialize：建立连接\n• Call：调用工具\n• Result：返回结果\n\n每条消息包含：\n• Header：元数据（来源、目标、时间戳）\n• Body：实际内容\n• Signature：可选的认证信息"
+        },
+        {
+          "type": "content",
+          "title": "MCP 的优势",
+          "content": "• 标准化：统一的接口和消息格式\n• 安全性：支持认证和授权\n• 可扩展：易于添加新工具\n• 互操作性：不同系统可以协作\n• 透明性：消息内容可见可追溯"
+        },
+        {
+          "type": "content",
+          "title": "A2A 协议",
+          "content": "A2A = Agent-to-Agent\n\n专门用于智能体之间直接通信的协议。\n\n特点：\n• 对等通信：智能体之间直接交互\n• 异步支持：支持异步消息传递\n• 多模态：支持文本、语音、图像等\n• 语义理解：支持自然语言交互"
+        },
+        {
+          "type": "content",
+          "title": "ANP 协议",
+          "content": "ANP = Agent Network Protocol\n\n更高级的智能体网络协议，支持：\n• 智能体发现：自动发现网络中的智能体\n• 服务注册：智能体可以注册提供的服务\n• 负载均衡：任务分配到多个智能体\n• 故障恢复：自动处理智能体故障"
+        },
+        {
+          "type": "content",
+          "title": "三种协议对比",
+          "content": "| 协议 | 用途 | 特点 |\n|------|------|------|\n| MCP | 模型与工具通信 | 标准化、安全、可扩展 |\n| A2A | 智能体间通信 | 对等、异步、多模态 |\n| ANP | 智能体网络 | 发现、注册、负载均衡 |"
+        },
+        {
+          "type": "content",
+          "title": "协议选择指南",
+          "content": "• 单智能体 + 工具 → MCP\n• 两个智能体协作 → A2A\n• 多个智能体组成网络 → ANP\n• 复杂场景 → 组合使用"
+        },
+        {
+          "type": "content",
+          "title": "通信模式",
+          "content": "• 请求-响应：同步调用，等待结果\n• 发布-订阅：异步消息，一对多\n• 点对点：直接通信\n• 广播：向所有智能体发送\n• 路由：通过中间节点转发"
+        },
+        {
+          "type": "code",
+          "title": "协议消息实现",
+          "language": "python",
+          "code": "import json\nimport time\nfrom dataclasses import dataclass\nfrom typing import Any, Optional\n\n@dataclass\nclass MCPMessage:\n    \"\"\"MCP 消息结构\"\"\"\n    from_agent: str\n    to_agent: str\n    action: str\n    payload: dict\n    message_id: str = None\n    timestamp: float = None\n    \n    def __post_init__(self):\n        if self.message_id is None:\n            self.message_id = f\"msg_{int(time.time() * 1000)}\"\n        if self.timestamp is None:\n            self.timestamp = time.time()\n    \n    def to_json(self):\n        \"\"\"序列化为 JSON\"\"\"\n        return json.dumps({\n            'header': {\n                'from': self.from_agent,\n                'to': self.to_agent,\n                'message_id': self.message_id,\n                'timestamp': self.timestamp\n            },\n            'body': {\n                'action': self.action,\n                'payload': self.payload\n            }\n        }, indent=2)\n    \n    @classmethod\n    def from_json(cls, json_str):\n        \"\"\"从 JSON 解析\"\"\"\n        data = json.loads(json_str)\n        return cls(\n            from_agent=data['header']['from'],\n            to_agent=data['header']['to'],\n            action=data['body']['action'],\n            payload=data['body']['payload'],\n            message_id=data['header']['message_id'],\n            timestamp=data['header']['timestamp']\n        )\n\nclass MCPProtocol:\n    \"\"\"MCP 协议实现\"\"\"\n    def initialize(self, provider_info):\n        return MCPMessage(\n            from_agent='client',\n            to_agent='provider',\n            action='initialize',\n            payload=provider_info\n        )\n    \n    def call(self, tool_name, arguments):\n        return MCPMessage(\n            from_agent='client',\n            to_agent='provider',\n            action='call',\n            payload={'tool': tool_name, 'args': arguments}\n        )\n    \n    def result(self, message_id, result, error=None):\n        return MCPMessage(\n            from_agent='provider',\n            to_agent='client',\n            action='result',\n            payload={\n                'message_id': message_id,\n                'result': result,\n                'error': error\n            }\n        )"
+        },
+        {
+          "type": "content",
+          "title": "本章小结",
+          "content": "MCP：模型与工具通信的标准化协议\nA2A：智能体之间直接通信的协议\nANP：智能体网络的高级协议\n选择合适的协议取决于具体场景\n消息格式包含 Header 和 Body，支持 JSON 序列化"
+        },
+        {
+          "type": "quiz",
+          "title": "知识测验"
+        }
       ],
       "hasAnimation": true,
       "hasQuiz": true,
       "icon": "📡"
     },
     {
-      "id": "ch13",
-      "title": "智能旅行助手",
-      "subtitle": "多智能体协作实战",
+      "id": "ch11",
+      "title": "Agentic-RL",
+      "subtitle": "从 SFT 到 GRPO 的 LLM 训练实战",
+      "icon": "🎮",
+      "estimatedMinutes": 35,
+      "tags": [
+        "RL",
+        "GRPO",
+        "训练"
+      ],
       "slides": [
-        { "type": "cover", "title": "第十三章", "subtitle": "智能旅行助手" },
-        { "type": "content", "title": "项目概述", "content": "构建一个多智能体协作的旅行规划系统。用户输入旅行需求后，系统会自动规划行程、预订服务、提供建议。" },
-        { "type": "content", "title": "需求分析", "content": "用户需求：\n• 目的地：城市或地区\n• 时间：出行日期和时长\n• 预算：人均预算\n• 偏好：旅行风格（休闲、冒险、文化等）\n• 人数：同行人数\n\n系统输出：\n• 行程规划：每日活动安排\n• 预订信息：机票、酒店、门票\n• 旅行建议：美食、交通、注意事项" },
-        { "type": "animation", "title": "多智能体协作流程", "animation": "ch13-travel" },
-        { "type": "content", "title": "角色分工", "content": "• Planner（规划师）：负责整体行程规划\n  - 分析用户需求\n  - 制定每日行程\n  - 协调其他智能体\n\n• Booking（预订员）：负责预订服务\n  - 预订机票/火车票\n  - 预订酒店\n  - 预订景点门票\n\n• Advisor（顾问）：负责提供建议\n  - 推荐当地美食\n  - 提供交通指南\n  - 提醒注意事项" },
-        { "type": "content", "title": "协作流程", "content": "1. 用户提交旅行需求\n2. Planner 分析需求，制定初步行程\n3. Planner 将预订任务发送给 Booking\n4. Booking 完成预订，返回确认信息\n5. Planner 将行程发送给 Advisor\n6. Advisor 提供个性化建议\n7. Planner 汇总所有信息，生成最终方案\n8. 返回给用户" },
-        { "type": "content", "title": "数据流转", "content": "• 用户需求 → Planner\n• 行程草稿 ↔ Booking（预订可行性验证）\n• 预订结果 → Planner\n• 确认行程 → Advisor\n• 建议信息 → Planner\n• 最终方案 → 用户" },
-        { "type": "content", "title": "协作模式", "content": "• 主从模式：Planner 为主，其他为从\n• 流水线模式：任务依次传递\n• 反馈循环：各智能体之间互相反馈\n• 并行执行：Booking 和 Advisor 可并行工作" },
-        { "type": "content", "title": "技术挑战", "content": "• 信息一致性：各智能体共享状态\n• 任务协调：避免重复预订\n• 异常处理：预订失败如何处理\n• 用户反馈：如何处理用户修改需求\n• 成本优化：在预算内找到最优方案" },
-        { "type": "content", "title": "实际案例", "content": "用户需求：\n\"帮我规划一个3天的北京之旅，预算每人2000元，喜欢历史文化。\"\n\nPlanner 输出：\nDay 1: 故宫 → 天安门 → 王府井\nDay 2: 颐和园 → 圆明园 → 清华北大\nDay 3: 长城 → 鸟巢水立方\n\nBooking 完成：\n• 往返高铁票\n• 三星级酒店（市中心）\n• 故宫和长城门票\n\nAdvisor 建议：\n• 故宫需提前预约\n• 长城建议选慕田峪\n• 推荐北京烤鸭店" },
-        { "type": "code", "title": "多智能体协作代码", "language": "python", "code": "class PlannerAgent:\n    \"\"\"行程规划智能体\"\"\"\n    def __init__(self, llm):\n        self.llm = llm\n    \n    def create_itinerary(self, request):\n        \"\"\"创建行程规划\"\"\"\n        prompt = f\"根据用户需求创建旅行行程：\\n{request}\"\n        return self.llm.generate(prompt)\n    \n    def validate_itinerary(self, itinerary, booking_results):\n        \"\"\"验证行程可行性\"\"\"\n        pass\n    \n    def finalize_plan(self, itinerary, bookings, tips):\n        \"\"\"汇总最终方案\"\"\"\n        return {\n            'itinerary': itinerary,\n            'bookings': bookings,\n            'tips': tips\n        }\n\nclass BookingAgent:\n    \"\"\"预订智能体\"\"\"\n    def __init__(self, travel_api):\n        self.travel_api = travel_api\n    \n    def search_flights(self, from_city, to_city, date):\n        return self.travel_api.search('flight', from_city, to_city, date)\n    \n    def search_hotels(self, city, dates, budget):\n        return self.travel_api.search('hotel', city, dates, budget)\n    \n    def make_reservation(self, service_type, options):\n        return self.travel_api.book(service_type, options)\n    \n    def make_reservations(self, itinerary):\n        \"\"\"批量预订\"\"\"\n        bookings = {}\n        # 预订交通\n        bookings['transport'] = self.search_flights(\n            itinerary['from'], itinerary['to'], itinerary['dates'][0]\n        )\n        # 预订酒店\n        bookings['hotel'] = self.search_hotels(\n            itinerary['destination'], itinerary['dates'], itinerary['budget']\n        )\n        return bookings\n\nclass AdvisorAgent:\n    \"\"\"旅行顾问智能体\"\"\"\n    def __init__(self, llm, knowledge_base):\n        self.llm = llm\n        self.knowledge_base = knowledge_base\n    \n    def get_food_recommendations(self, city):\n        \"\"\"推荐美食\"\"\"\n        query = f\"{city}特色美食推荐\"\n        return self.knowledge_base.search(query)\n    \n    def get_transport_tips(self, city):\n        \"\"\"交通指南\"\"\"\n        query = f\"{city}交通出行指南\"\n        return self.knowledge_base.search(query)\n    \n    def give_advice(self, itinerary):\n        \"\"\"综合建议\"\"\"\n        city = itinerary['destination']\n        return {\n            'food': self.get_food_recommendations(city),\n            'transport': self.get_transport_tips(city),\n            'notes': self.get_travel_notes(city)\n        }\n\nclass TravelAssistant:\n    \"\"\"旅行助手主协调器\"\"\"\n    def __init__(self, llm, travel_api, knowledge_base):\n        self.planner = PlannerAgent(llm)\n        self.booking = BookingAgent(travel_api)\n        self.advisor = AdvisorAgent(llm, knowledge_base)\n    \n    def plan_trip(self, request):\n        \"\"\"规划完整行程\"\"\"\n        # 1. 创建行程\n        itinerary = self.planner.create_itinerary(request)\n        \n        # 2. 并行执行预订和建议\n        bookings = self.booking.make_reservations(itinerary)\n        tips = self.advisor.give_advice(itinerary)\n        \n        # 3. 验证并最终化\n        validated = self.planner.validate_itinerary(itinerary, bookings)\n        \n        # 4. 返回最终方案\n        return self.planner.finalize_plan(validated, bookings, tips)" },
-        { "type": "content", "title": "本章小结", "content": "多智能体协作需要明确的角色分工\nPlanner负责规划、Booking负责预订、Advisor负责建议\n协作流程：需求分析→规划→预订→建议→汇总\n技术挑战包括信息一致性、任务协调、异常处理\n实际应用可以大幅提升用户体验" },
-        { "type": "quiz", "title": "知识测验" }
+        {
+          "type": "cover",
+          "title": "第十一章",
+          "subtitle": "从 SFT 到 GRPO：LLM 训练实战"
+        },
+        {
+          "type": "content",
+          "title": "什么是 Agentic RL？",
+          "content": "Agentic RL 是将 LLM 作为可学习策略，嵌入到智能体的感知-决策-执行循环中，通过强化学习优化智能体在多步任务中的表现。\n\n与传统 SFT 不同，Agentic RL 让模型通过试错来优化推理策略，从而超越训练数据的质量。\n\n核心区别：\n• 任务性质：从单轮对话优化扩展到多步序贯决策\n• 状态空间：从静态提示扩展到动态演化的环境状态\n• 行动空间：从纯文本生成扩展到文本+工具+环境操作"
+        },
+        {
+          "type": "content",
+          "title": "从 SFT 到 GRPO 的演进",
+          "content": "LLM 训练方法的演进路径：\n\n**SFT（监督微调）**：在标注数据上学习基础格式和推理模式。简单直接，但对齐能力有限。\n\n**RLHF（基于人类反馈的强化学习）**：训练奖励模型模拟人类偏好，使用 PPO 优化策略。效果好但流程复杂。\n\n**DPO（直接偏好优化）**：无需显式奖励模型，直接从偏好数据中优化。简化了 RLHF 流程。\n\n**GRPO（组相对策略优化）**：无需价值模型，使用组内相对奖励代替绝对奖励，专为 LLM 训练设计。"
+        },
+        {
+          "type": "content",
+          "title": "MDP 框架下的 Agentic RL",
+          "content": "强化学习以马尔可夫决策过程（MDP）为理论框架：\n\n**状态（State）**：智能体当前所处的环境状态，包含历史观察。\n\n**行动（Action）**：智能体可以执行的动作，如生成文本、调用工具。\n\n**奖励（Reward）**：环境对智能体行动的即时反馈信号。\n\n**策略（Policy）**：智能体从状态到行动的映射函数，即 LLM 本身。\n\nAgentic RL 的目标是最大化长期累积奖励，而非单步正确率。"
+        },
+        {
+          "type": "comparison",
+          "title": "SFT vs RLHF vs DPO vs GRPO",
+          "headers": [
+            "特性",
+            "SFT",
+            "RLHF",
+            "DPO",
+            "GRPO"
+          ],
+          "rows": [
+            [
+              "是否需要奖励模型",
+              "否",
+              "是",
+              "否",
+              "否"
+            ],
+            [
+              "是否需要价值模型",
+              "否",
+              "是",
+              "否",
+              "否"
+            ],
+            [
+              "训练复杂度",
+              "低",
+              "高",
+              "中",
+              "中"
+            ],
+            [
+              "显存占用",
+              "低",
+              "高",
+              "中",
+              "中"
+            ],
+            [
+              "对齐能力",
+              "弱",
+              "强",
+              "强",
+              "强"
+            ],
+            [
+              "训练稳定性",
+              "稳定",
+              "不稳定",
+              "较稳定",
+              "稳定"
+            ],
+            [
+              "数据需求",
+              "标注数据",
+              "人类偏好",
+              "偏好数据",
+              "正确答案"
+            ],
+            [
+              "适用场景",
+              "基础训练",
+              "综合对齐",
+              "偏好对齐",
+              "推理优化"
+            ]
+          ]
+        },
+        {
+          "type": "animation",
+          "title": "奖励信号反馈环",
+          "animation": "ch11-rl-feedback"
+        },
+        {
+          "type": "content",
+          "title": "数据集：GSM8K 数学推理",
+          "content": "GSM8K（Grade School Math 8K）是评估 LLM 推理能力的标准数据集。\n\n**数据统计**：\n• 训练样本：7,473 个\n• 测试样本：1,319 个\n• 难度：小学数学水平（2-8 年级）\n• 题型：应用题，需要 2-8 步推理\n\n**为何选择数学推理**：\n• 有明确的正确答案，可自动评估\n• 需要多步推理，是典型的多步决策场景\n• 学到的推理能力可以迁移到其他领域"
+        },
+        {
+          "type": "content",
+          "title": "数据格式转换",
+          "content": "不同训练方法需要不同的数据格式：\n\n**原始格式**：包含 question 和 answer（含解题步骤），适合人类阅读。\n\n**SFT 格式**：将问题转换为对话格式的 prompt，将完整解答作为 completion，让模型学习输出格式和推理模式。\n\n**RL 格式**：只提供问题和正确答案（ground_truth），不提供解题过程。模型需要自己生成完整的推理过程，迫使模型学会自主推理。\n\n[提示] RL 格式的关键在于 prompt 与 SFT 相同，但 ground_truth 只包含最终答案，用于计算奖励。"
+        },
+        {
+          "type": "content",
+          "title": "奖励函数设计",
+          "content": "奖励函数是强化学习的核心，定义了什么是好的行为。HelloAgents 提供三种内置奖励函数：\n\n**准确率奖励（AccuracyReward）**：答案正确得 1 分，错误得 0 分。简单直接，但奖励稀疏。\n\n**长度惩罚（LengthPenaltyReward）**：鼓励模型生成简洁答案。公式：R = 1 - α × max(0, len - target)，仅在答案正确时应用。\n\n**步骤奖励（StepReward）**：鼓励清晰的推理步骤。每个检测到的步骤给予额外奖励。\n\n[建议] 实际应用中通常组合多种奖励函数以平衡不同目标。"
+        },
+        {
+          "type": "concepts",
+          "title": "训练流程核心概念",
+          "items": [
+            {
+              "icon": "🎯",
+              "title": "SFT",
+              "description": "监督微调，在标注数据上学习任务格式和基础推理能力，是强化学习训练的基础"
+            },
+            {
+              "icon": "🔄",
+              "title": "PPO",
+              "description": "近端策略优化，通过限制策略更新幅度保证训练稳定性，但需要价值模型"
+            },
+            {
+              "icon": "⚡",
+              "title": "GRPO",
+              "description": "组相对策略优化，使用组内相对奖励代替价值函数，简化训练流程"
+            },
+            {
+              "icon": "📊",
+              "title": "KL 散度惩罚",
+              "description": "防止策略偏离参考模型太远，避免遗忘 SFT 阶段学到的知识"
+            },
+            {
+              "icon": "🔧",
+              "title": "LoRA",
+              "description": "低秩适配，只训练少量额外参数，大幅降低显存占用和训练时间"
+            }
+          ]
+        },
+        {
+          "type": "content",
+          "title": "为什么需要 SFT？",
+          "content": "直接进行强化学习往往会失败，因为模型连基本的输出格式都不懂。\n\n**预训练模型的局限**：\n• 输出格式是自由文本，缺乏结构化\n• 不知道什么是好的推理过程\n• 无法提取有效答案\n\n**SFT 的作用**：\n• 学习输出格式（如 Step 1、Final Answer 标记）\n• 建立基线推理能力\n• 为强化学习提供合理的起点\n• 减少探索空间，RL 不需要从零开始"
+        },
+        {
+          "type": "content",
+          "title": "LoRA：参数高效微调",
+          "content": "LoRA（Low-Rank Adaptation）通过低秩分解大幅减少训练参数：\n\n**原理**：假设模型微调时的参数变化 ΔW 可分解为两个低秩矩阵的乘积：ΔW = BA，其中 B∈R^(d×r)，A∈R^(r×k)，r << min(d,k)。\n\n**参数量对比**：对 768×768 的矩阵，原参数量 589,824，LoRA 参数量 2×768×8=12,288，减少 48 倍！\n\n**优势**：\n• 显存占用大幅降低\n• 训练速度更快\n• 防止过拟合\n• 易于部署（只需保存小量参数）"
+        },
+        {
+          "type": "code",
+          "title": "简化 PPO 训练循环",
+          "language": "python",
+          "code": "import torch\nimport torch.nn.functional as F\n\ndef ppo_train_step(policy_model, ref_model, optimizer, batch, clip_eps=0.2):\n    \"\"\"简化 PPO 训练步骤\n    \n    Args:\n        policy_model: 当前策略模型\n        ref_model: 参考模型（冻结）\n        optimizer: 优化器\n        batch: 批次数据，包含 prompts、responses、rewards\n        clip_eps: PPO 裁剪阈值\n    \"\"\"\n    prompts, responses, rewards = batch\n    \n    # 1. 计算当前策略的 log_prob\n    current_log_probs = compute_log_probs(policy_model, prompts, responses)\n    \n    # 2. 计算参考模型的 log_prob（用于 KL 散度）\n    with torch.no_grad():\n        ref_log_probs = compute_log_probs(ref_model, prompts, responses)\n    \n    # 3. 计算比率和 KL 散度\n    ratio = torch.exp(current_log_probs - ref_log_probs)\n    kl_div = ref_log_probs - current_log_probs\n    \n    # 4. PPO 裁剪目标\n    surr1 = ratio * rewards\n    surr2 = torch.clamp(ratio, 1 - clip_eps, 1 + clip_eps) * rewards\n    pg_loss = -torch.min(surr1, surr2).mean()\n    \n    # 5. 总损失 = PPO 损失 + KL 惩罚\n    kl_coef = 0.05\n    loss = pg_loss + kl_coef * kl_div.mean()\n    \n    # 6. 反向传播\n    optimizer.zero_grad()\n    loss.backward()\n    optimizer.step()\n    \n    return loss.item()\n\ndef compute_log_probs(model, prompts, responses):\n    \"\"\"计算模型生成响应的 log 概率\"\"\"\n    # 拼接 prompt 和 response\n    input_ids = torch.cat([prompts, responses], dim=-1)\n    outputs = model(input_ids)\n    logits = outputs.logits[:, :-1, :]  # 移除最后一个 token\n    target_ids = responses[:, :-1]  # 预测下一个 token\n    return -F.cross_entropy(\n        logits.reshape(-1, logits.size(-1)),\n        target_ids.reshape(-1),\n        reduction='none'\n    ).reshape(responses.size(0), -1).sum(dim=-1)",
+          "explanation": "简化版 PPO 训练循环。核心步骤：计算当前策略和参考模型的 log_prob，计算比率 ratio，应用 PPO 裁剪确保策略更新幅度可控，添加 KL 散度惩罚防止策略偏离参考模型太远。GRPO 在此基础上省去了价值模型，使用组内相对奖励。"
+        },
+        {
+          "type": "content",
+          "title": "GRPO 训练流程",
+          "content": "GRPO 的训练循环包括五个核心步骤：\n\n**1. 采样阶段**：对每个问题，使用当前策略生成多个答案（num_generations，典型值 4-8）。这些答案构成一个组。\n\n**2. 奖励计算**：对每个生成的答案计算奖励（准确率、长度惩罚、步骤奖励等）。\n\n**3. 相对奖励**：计算组内平均奖励，然后计算相对奖励 R_rel = R_i - R_avg。减少奖励方差，使训练更稳定。\n\n**4. 策略更新**：使用相对奖励更新策略，添加 KL 散度惩罚防止偏离参考模型。\n\n**5. 重复**：重复以上步骤直到完成所有训练轮次。"
+        },
+        {
+          "type": "content",
+          "title": "KL 散度惩罚",
+          "content": "KL 散度惩罚是 GRPO 的关键组成部分，防止策略偏离参考模型太远：\n\n**定义**：KL(P||Q) = Σ P(x) × log(P(x)/Q(x))\n\n在 GRPO 中，P 是当前策略，Q 是参考模型（即 SFT 后的模型）。\n\n**kl_coef 的选择**：\n• 太小（0.01）：策略偏离太远，可能丢失 SFT 学到的格式知识\n• 太大（0.5）：策略更新受限，学习缓慢\n• 建议（0.05-0.1）：平衡探索和稳定性\n\n[警告] KL 散度过大（>0.5）说明策略偏离太远，需要增大 kl_coef 或降低学习率。"
+        },
+        {
+          "type": "content",
+          "title": "模型评估与分析",
+          "content": "训练完成后需要从多维度评估模型性能：\n\n**准确性指标**：\n• 准确率（Accuracy）：答案完全正确的比例\n• Top-K 准确率：生成 K 个答案，一个正确即算对\n• 数值误差：预测值与真实值的差距\n\n**效率指标**：\n• 平均长度：生成答案的平均 token 数，影响推理成本\n• 推理步骤数：推理过程中的步骤数量\n• 推理时间：生成一个答案的耗时\n\n**质量指标**：\n• 格式正确率：答案是否符合预期格式\n• 推理连贯性：步骤之间是否逻辑连贯"
+        },
+        {
+          "type": "content",
+          "title": "错误分析",
+          "content": "深入分析模型错误类型，指导后续改进：\n\n**计算错误（42.1%）**：推理步骤正确但数值计算错误。解决方案：使用计算器工具或增强数值推理训练。\n\n**推理错误（23.7%）**：推理逻辑错误，解题思路不对。解决方案：增加多步推理训练数据。\n\n**理解错误（28.9%）**：没有正确理解问题。解决方案：增强语言理解能力训练。\n\n**格式错误（5.3%）**：答案正确但格式不符合要求。解决方案：SFT 阶段加强格式约束。\n\n[提示] 这是一个持续迭代的过程：训练 → 评估 → 分析 → 改进 → 重新训练。"
+        },
+        {
+          "type": "content",
+          "title": "超参数调优",
+          "content": "系统调优超参数是提升模型性能的关键：\n\n**网格搜索**：遍历所有参数组合，找到全局最优。简单但计算成本高。\n\n**随机搜索**：随机采样参数组合，效率更高。适合参数空间较大的情况。\n\n**贝叶斯优化**：使用概率模型指导搜索，样本效率高。可使用 Optuna 库实现。\n\n**关键调优参数**：\n• 学习率（1e-6 ~ 1e-4）：GRPO 通常比 SFT 小\n• LoRA 秩（4-64）：越大表达能力越强\n• kl_coef（0.01-0.5）：控制策略偏离程度\n• num_generations（4-8）：组内采样数"
+        },
+        {
+          "type": "content",
+          "title": "分布式训练与部署",
+          "content": "当数据量和模型规模增大时，需要分布式训练：\n\n**方案选择**：\n• 单机多卡（2-8卡）：使用 DDP，简单高效\n• 大模型（>7B）：使用 DeepSpeed ZeRO-2/3\n• 多节点集群：DeepSpeed ZeRO-3 + Offload\n\n**生产部署**：\n• LoRA 权重合并到基础模型\n• 8-bit 量化减少显存占用\n• FastAPI 创建推理服务\n• 使用 vLLM 等推理加速框架"
+        },
+        {
+          "type": "content",
+          "title": "本章小结",
+          "content": "**Agentic RL 的本质**：将 LLM 作为可学习策略，嵌入智能体循环，通过强化学习优化多步任务表现。\n\n**训练流程三阶段**：\n1. 预训练 → 在大规模文本上学习语言知识\n2. SFT → 学习任务格式和基础推理能力\n3. RL（GRPO）→ 通过试错优化推理策略\n\n**六大核心能力提升**：推理、工具使用、记忆、规划、自我改进、感知\n\n**关键经验**：\n• 从小规模开始快速迭代\n• 组合奖励函数平衡多个目标\n• 监控 KL 散度防止策略偏离\n• 系统地调优超参数"
+        },
+        {
+          "type": "quiz",
+          "title": "知识测验"
+        }
       ],
       "hasAnimation": true,
-      "hasQuiz": true,
-      "icon": "✈️"
+      "hasQuiz": true
+    },
+    {
+      "id": "ch12",
+      "title": "智能体性能评估",
+      "subtitle": "核心指标、基准测试与评估框架",
+      "icon": "📊",
+      "estimatedMinutes": 30,
+      "tags": [
+        "评估",
+        "基准",
+        "指标"
+      ],
+      "slides": [
+        {
+          "type": "cover",
+          "title": "第十二章",
+          "subtitle": "智能体性能评估"
+        },
+        {
+          "type": "content",
+          "title": "为什么需要智能体评估？",
+          "content": "构建智能体系统时，我们需要客观地回答三个核心问题：\n\n1. **智能体是否具备预期的能力？**\n2. **在不同任务上的表现如何？**\n3. **与其他智能体相比处于什么水平？**\n\n评估的核心价值：\n• 用具体指标量化智能体表现\n• 客观比较不同设计方案的优劣\n• 及时发现特定场景下的弱点\n• 向用户证明智能体的可靠性"
+        },
+        {
+          "type": "content",
+          "title": "评估面临的挑战",
+          "content": "与传统软件测试不同，智能体评估面临独特挑战：\n\n**输出的不确定性**：同一问题可能有多个正确答案，难以用简单对错判断。\n\n**评估标准的多样性**：不同任务需要不同评估方法——工具调用检查函数签名，问答任务评估语义相似度。\n\n**评估成本的高昂**：每次评估需要大量 API 调用，成本可能达到数百元甚至更多。\n\n**外部信息依赖**：智能体依赖互联网搜索等外部信息，每次评估结果可能不同。"
+        },
+        {
+          "type": "content",
+          "title": "主流评估基准概览",
+          "content": "**工具调用能力评估**：\n• **BFCL**（Berkeley Function Calling Leaderboard）：1120+ 测试样本，涵盖 simple/multiple/parallel/irrelevance 四个类别，使用 AST 匹配算法\n• **ToolBench**：16000+ 真实 API 调用场景\n• **API-Bank**：53 个常用 API 工具评估\n\n**通用能力评估**：\n• **GAIA**（General AI Assistants）：466 个真实世界问题，三个难度级别\n• **AgentBench**：8 个不同领域任务\n• **WebArena**：真实网页环境中的任务完成能力\n\n**常用评估指标**：准确性（Accuracy、F1）、效率（响应时间、Token 用量）、鲁棒性（错误率、故障恢复）"
+        },
+        {
+          "type": "content",
+          "title": "HelloAgents 评估体系架构",
+          "content": "HelloAgents 评估体系采用模块化设计，覆盖三个核心场景：\n\n**BFCL 评估**（工具调用能力）：\n• 数据集加载器 BFCLDataset\n• 评估执行器 BFCLEvaluator（AST 匹配）\n• 指标计算器 BFCLMetrics\n• 一键评估工具 BFCLEvaluationTool\n\n**GAIA 评估**（通用 AI 助手能力）：\n• 多模态数据集加载器 GAIADataset\n• 准精确匹配评估器 GAIAEvaluator\n• 一键评估工具 GAIAEvaluationTool\n\n**数据生成质量评估**：\n• LLM Judge 多维度评分\n• Win Rate 成对对比\n• 人工验证 Web 界面"
+        },
+        {
+          "type": "concepts",
+          "title": "评估六维模型",
+          "items": [
+            {
+              "icon": "🎯",
+              "title": "准确率",
+              "description": "答案完全正确的比例。最基本指标，简单直观，但无法区分接近正确和完全错误"
+            },
+            {
+              "icon": "🛡️",
+              "title": "鲁棒性",
+              "description": "面对异常输入、噪声干扰时的稳定性。评估错误恢复能力和容错能力"
+            },
+            {
+              "icon": "🔧",
+              "title": "工具调用率",
+              "description": "正确选择和调用工具的比例。评估函数名匹配、参数填充和复杂调用场景"
+            },
+            {
+              "icon": "✅",
+              "title": "任务完成率",
+              "description": "多步任务的整体完成比例。评估智能体的任务规划与执行能力"
+            },
+            {
+              "icon": "🧠",
+              "title": "推理能力",
+              "description": "多步逻辑推理的正确性。评估链式推理、数学计算和逻辑推导能力"
+            },
+            {
+              "icon": "⚡",
+              "title": "效率",
+              "description": "响应时间、Token 使用量等资源消耗指标。影响实际部署成本"
+            }
+          ]
+        },
+        {
+          "type": "animation",
+          "title": "六维评估雷达图",
+          "animation": "ch12-radar"
+        },
+        {
+          "type": "content",
+          "title": "BFCL：工具调用能力评估",
+          "content": "BFCL 基准由 UC Berkeley 推出，评估智能体在函数调用方面的能力。\n\n**四个评估类别**（难度递增）：\n• **Simple**：单函数调用，最基础的场景\n• **Multiple**：需要调用多个不同函数的场景\n• **Parallel**：需要并行调用多个函数的复杂场景\n• **Irrelevance**：需要判断是否真的需要调用函数\n\n**核心评估算法**：AST 匹配（Abstract Syntax Tree Matching），比字符串匹配更智能——忽略参数顺序、识别等价表达式。"
+        },
+        {
+          "type": "content",
+          "title": "BFCL 数据集结构",
+          "content": "每个测试样本包含以下关键字段：\n\n**question**：用户的自然语言请求\n**function**：可用的函数列表（名称、参数签名、描述）\n**ground_truth**：标准答案（期望的函数调用）\n\n示例数据：\n• question: \"What's the weather like in Beijing today?\"\n• function: get_weather(location, unit?)\n• ground_truth: get_weather(location=\"Beijing\")\n\n**AST 匹配规则**：\n• 函数名必须精确匹配（get_weather ≠ get_temperature）\n• 参数键值对集合相等（忽略顺序）\n• 参数值语义等价（2+3 等价于 5，'hello' 等价于 \"hello\"）"
+        },
+        {
+          "type": "content",
+          "title": "BFCL 评估指标",
+          "content": "BFCL 使用以下核心指标评估智能体性能：\n\n**准确率（Accuracy）**：AST 匹配成功的样本比例，最核心的指标。\n\n**分类准确率（Category-wise Accuracy）**：对每个类别单独计算准确率：\n• simple_python: 95.0%\n• multiple: 82.0%\n• parallel: 68.0%\n• irrelevance: 90.0%\n\n**加权准确率（Weighted Accuracy）**：考虑不同类别难度：\nWeighted = Σ(w_i × acc_i)，其中 Σw_i = 1\n\n**错误率（Error Rate）**：未能正确调用函数的样本比例。"
+        },
+        {
+          "type": "code",
+          "title": "评估指标计算",
+          "language": "python",
+          "code": "from hello_agents import SimpleAgent, HelloAgentsLLM\nfrom hello_agents.tools import BFCLEvaluationTool\n\n# 1. 创建智能体\nllm = HelloAgentsLLM()\nagent = SimpleAgent(\n    name=\"EvalAgent\",\n    llm=llm,\n    system_prompt=\"你是一个工具调用助手。\"\n)\n\n# 2. 创建评估工具\nbfcl_tool = BFCLEvaluationTool()\n\n# 3. 运行评估（一键完成）\nresults = bfcl_tool.run(\n    agent=agent,\n    category=\"simple_python\",  # 评估类别\n    max_samples=10,             # 评估样本数\n    run_official_eval=True      # 运行官方评估\n)\n\n# 4. 查看结果\nprint(f\"总体准确率: {results['overall_accuracy']:.2%}\")\nprint(f\"正确数: {results['correct_samples']}/{results['total_samples']}\")\n\n# 指标计算示例\naccuracy = results['correct_samples'] / results['total_samples']\nweighted_accuracy = (\n    0.95 * 0.25 +  # Simple\n    0.82 * 0.25 +  # Multiple\n    0.68 * 0.25 +  # Parallel\n    0.90 * 0.25    # Irrelevance\n)\nprint(f\"加权准确率: {weighted_accuracy:.2%}\")\nprint(f\"错误率: {(1 - accuracy):.2%}\")",
+          "explanation": "使用 BFCLEvaluationTool 一键评估智能体的工具调用能力。工具自动完成数据集加载、评估执行、AST 匹配、结果导出和报告生成。支持分类准确率和加权准确率等多维度指标。"
+        },
+        {
+          "type": "content",
+          "title": "GAIA：通用 AI 助手能力评估",
+          "content": "GAIA 由 Meta AI 和 Hugging Face 联合推出，评估 AI 助手的综合能力。\n\n**三个难度级别**：\n• Level 1（53 个样本）：零步推理任务，直接回答即可\n• Level 2（62 个样本）：需要 1-2 步推理或外部知识\n• Level 3（50 个样本）：需要多步推理、工具使用、多模态理解\n\n**评估能力**：多步推理、知识运用、多模态理解、网页浏览、文件操作\n\n**强制答案格式**：FINAL ANSWER: [答案]\n• 数字：不包含逗号和单位（$100 → 100，50% → 50）\n• 字符串：不包含冠词和缩写\n• 列表：逗号分隔，按字母排序"
+        },
+        {
+          "type": "content",
+          "title": "GAIA 官方系统提示词",
+          "content": "GAIA 要求使用特定的系统提示词确保输出符合评估格式：\n\n```\nYou are a general AI assistant. I will ask you a question.\nReport your thoughts, and finish your answer with the\nfollowing template: FINAL ANSWER: [YOUR FINAL ANSWER].\n\nYOUR FINAL ANSWER should be a number OR as few words\nas possible OR a comma separated list of numbers\nand/or strings.\n\nIf you are asked for a number, don't use comma to write\nyour number neither use units such as $ or percent sign\nunless specified otherwise.\n\nIf you are asked for a string, don't use articles,\nneither abbreviations (e.g. for cities), and write the\ndigits in plain text unless specified otherwise.\n```\n\n**答案提取策略**：先查找 FINAL ANSWER: 标记，退而查找其他答案标记（Answer:、最终答案:），最后返回最后一个非空行。"
+        },
+        {
+          "type": "content",
+          "title": "准精确匹配算法",
+          "content": "GAIA 使用准精确匹配（Quasi Exact Match）评估算法：\n\n**核心步骤**：先归一化，再精确匹配。\n\n**归一化规则**：\n• 数字类型：移除逗号分隔符（1,000 → 1000）和单位符号（$100 → 100）\n• 字符串类型：转小写、移除冠词（the、a、an）、移除多余空格、移除末尾标点\n• 列表类型：按逗号分隔，每个元素归一化，字母排序后重连\n\n**示例**：\n• \"$1,234.56\" → \"1234.56\"\n• \"The United States\" → \"united states\"\n• \"Paris, London, Berlin\" → \"berlin, london, paris\"\n\n**指标**：精确匹配率（核心指标）、分级准确率（Level 1/2/3）、难度递进下降率"
+        },
+        {
+          "type": "content",
+          "title": "GAIA 一键评估示例",
+          "content": "使用 GAIAEvaluationTool 实现一键评估：\n\n**评估流程**：\n1. 使用 GAIA 官方系统提示词创建智能体\n2. GAIAEvaluationTool 自动下载数据集（需申请 HuggingFace 访问权限）\n3. 运行评估并导出 GAIA 格式结果（JSONL）\n4. 自动生成评估报告（Markdown）\n5. 生成提交指南文件\n\n**GAIA 数据集获取**：\n• 受限数据集，需在 HuggingFace 申请访问权限\n• 使用 snapshot_download 下载到 ./data/gaia/\n• 包含 2023/validation 和 2023/test 两个分割\n• 每个样本可能附带附件文件（图片、PDF、CSV 等）\n\n**提交到排行榜**：上传 JSONL 结果文件到 HuggingFace leaderboard Space。"
+        },
+        {
+          "type": "content",
+          "title": "数据生成质量评估",
+          "content": "使用 HelloAgents 评估 LLM 生成的训练数据质量，以 AIME 数学题目的生成为例。\n\n**三种互补方法**：\n\n**LLM Judge**：使用 LLM 作为评委，从 4 个维度评估：\n• 正确性（Correctness）：数学逻辑是否正确\n• 清晰度（Clarity）：问题表述是否清晰\n• 难度匹配（Difficulty Match）：是否符合 AIME 标准\n• 完整性（Completeness）：解答步骤是否完整\n\n**Win Rate**：通过成对对比判断生成题目与真题的质量。理想情况 Win Rate ≈ 50%。\n\n**人工验证**：通过 Gradio Web 界面进行人工评分和状态标注（通过/拒绝/需修改）。"
+        },
+        {
+          "type": "content",
+          "title": "LLM Judge 评估详解",
+          "content": "LLM Judge 评估从大规模生成数据中筛选高质量样本：\n\n**评估指标**：\n• **平均分**：所有题目在四个维度上的平均得分\n  Score_avg = (1/N) × Σ Σ score_ij\n• **及格率**（Pass Rate）：平均分 ≥ 3.5 分的题目比例\n  Pass Rate = count(Score_avg ≥ 3.5) / N\n• **优秀率**（Excellent Rate）：平均分 ≥ 4.5 分的题目比例\n  Excellent Rate = count(Score_avg ≥ 4.5) / N\n\n**评分维度**（1-5 分制）：\n• 正确性：数学逻辑和答案准确性\n• 清晰度：表述的清晰易懂程度\n• 难度匹配：是否符合目标难度\n• 完整性：推理步骤的完整程度"
+        },
+        {
+          "type": "content",
+          "title": "评估结果解读与优化",
+          "content": "**渐进式评估策略**：\n1. 快速测试（5 个样本）→ 检查评估流程是否正常\n2. 中等规模（50 个样本）→ 评估主要指标\n3. 完整评估（全部样本）→ 获取准确结果\n\n**对比评估**：对比不同配置的智能体性能差异，如默认提示词 vs 优化提示词。\n\n**多类别评估**：评估不同难度任务的表现：\n```python\ncategories = [\"simple_python\", \"multiple\", \"parallel\", \"irrelevance\"]\nfor category in categories:\n    results = bfcl_tool.run(agent, category=category, max_samples=10)\n    print(f\"{category}: {results['overall_accuracy']:.2%}\")\n```\n\n**优化方向**：使用原生函数调用 LLM、优化提示词、分析失败案例。"
+        },
+        {
+          "type": "content",
+          "title": "本章小结",
+          "content": "**评估的重要性**：标准化地衡量智能体能力，量化表现，发现弱点。\n\n**三大评估基准**：\n• BFCL：评估工具调用能力，使用 AST 匹配算法\n• GAIA：评估通用 AI 助手能力，使用准精确匹配算法\n• 数据生成质量评估：使用 LLM Judge、Win Rate 和人工验证\n\n**核心评估维度**：准确率、鲁棒性、工具调用率、任务完成率、推理能力、效率\n\n**HelloAgents 评估体系**：\n• 一键评估工具（BFCLEvaluationTool、GAIAEvaluationTool）\n• 自动生成评估报告（Markdown 格式）\n• 支持导出到官方排行榜格式\n• 支持渐进式、多类别、对比评估策略\n\n评估不是一次性的任务，而是持续改进的循环：评估 → 分析 → 优化 → 再评估。"
+        },
+        {
+          "type": "quiz",
+          "title": "知识测验"
+        }
+      ],
+      "hasAnimation": true,
+      "hasQuiz": true
+    },
+    {
+      "id": "ch13",
+      "title": "智能旅行助手",
+      "subtitle": "MCP 与多智能体协作的真实世界应用",
+      "icon": "✈️",
+      "estimatedMinutes": 35,
+      "tags": [
+        "MCP",
+        "多智能体",
+        "实战"
+      ],
+      "slides": [
+        {
+          "type": "cover",
+          "title": "第十三章",
+          "subtitle": "智能旅行助手"
+        },
+        {
+          "type": "content",
+          "title": "项目概述",
+          "content": "构建一个多智能体协作的旅行规划系统。用户输入旅行需求后，系统会自动规划行程、预订服务、提供建议。\n\n核心价值：\n• 将复杂旅行规划分解为多个简单子任务\n• 各 Agent 各司其职，专注擅长的领域\n• 支持个性化需求，生成定制化旅行方案"
+        },
+        {
+          "type": "content",
+          "title": "需求分析",
+          "content": "用户需求：\n• 目的地：城市或地区\n• 时间：出行日期和时长\n• 预算：人均预算\n• 偏好：旅行风格（休闲、冒险、文化等）\n• 人数：同行人数\n\n系统输出：\n• 行程规划：每日活动安排\n• 预订信息：机票、酒店、门票\n• 旅行建议：美食、交通、注意事项"
+        },
+        {
+          "type": "animation",
+          "title": "多智能体协作流程",
+          "animation": "ch13-travel"
+        },
+        {
+          "type": "content",
+          "title": "角色分工",
+          "content": "• **Planner（规划师）**：负责整体行程规划\n  - 分析用户需求，制定每日行程\n  - 协调其他智能体，验证可行性\n\n• **Booking（预订员）**：负责预订服务\n  - 预订机票/火车票、酒店、景点门票\n\n• **Advisor（顾问）**：负责提供建议\n  - 推荐当地美食、交通指南、注意事项"
+        },
+        {
+          "type": "content",
+          "title": "协作流程",
+          "content": "1. 用户提交旅行需求\n2. Planner 分析需求，制定初步行程\n3. Planner 将预订任务发送给 Booking\n4. Booking 完成预订，返回确认信息\n5. Planner 将行程发送给 Advisor\n6. Advisor 提供个性化建议\n7. Planner 汇总所有信息，生成最终方案\n8. 返回给用户"
+        },
+        {
+          "type": "flow",
+          "title": "多 Agent 协作流程",
+          "steps": [
+            {
+              "title": "用户提交需求",
+              "description": "输入目的地、日期、预算、偏好等信息"
+            },
+            {
+              "title": "Planner 规划",
+              "description": "分析需求，制定初步行程框架"
+            },
+            {
+              "title": "Booking 预订",
+              "description": "并行查询交通、酒店、门票信息"
+            },
+            {
+              "title": "Advisor 建议",
+              "description": "并行搜索美食、交通、注意事项"
+            },
+            {
+              "title": "Planner 整合",
+              "description": "汇总预订结果与建议，生成最终方案"
+            },
+            {
+              "title": "返回用户",
+              "description": "展示完整旅行计划，支持编辑调整"
+            }
+          ]
+        },
+        {
+          "type": "content",
+          "title": "数据流转",
+          "content": "• 用户需求 → Planner\n• 行程草稿 ↔ Booking（预订可行性验证）\n• 预订结果 → Planner\n• 确认行程 → Advisor\n• 建议信息 → Planner\n• 最终方案 → 用户\n\n[提示] 数据流是单向传递的，Planner 作为中心协调器，Booking 和 Advisor 可以并行工作。"
+        },
+        {
+          "type": "content",
+          "title": "协作模式",
+          "content": "• **主从模式**：Planner 为主，其他为从\n• **流水线模式**：任务依次传递\n• **反馈循环**：各智能体之间互相反馈\n• **并行执行**：Booking 和 Advisor 可并行工作\n\n这种设计使得系统能够高效利用资源，Booking 在查询交通时，Advisor 同时搜索美食推荐。"
+        },
+        {
+          "type": "concepts",
+          "title": "多 Agent 架构设计模式",
+          "items": [
+            {
+              "icon": "🎯",
+              "title": "主从协调",
+              "description": "Planner 作为主Agent，负责任务分解和结果整合。Booking 和 Advisor 作为从Agent，执行具体任务。类似项目经理和团队成员的关系。"
+            },
+            {
+              "icon": "🔗",
+              "title": "流水线处理",
+              "description": "任务按照需求分析→景点搜索→天气查询→酒店推荐→行程生成的顺序流水线处理，每个阶段的输出是下一阶段的输入。"
+            },
+            {
+              "icon": "⚡",
+              "title": "并行执行",
+              "description": "Booking（预订）和 Advisor（建议）两个 Agent 相互独立，可以同时执行，提高系统响应速度。"
+            }
+          ]
+        },
+        {
+          "type": "content",
+          "title": "Planner Agent 详解",
+          "content": "**PlannerAgent** 是整个系统的核心协调器。\n\n核心职责：\n• 分析用户输入的旅行需求\n• 调用 LLM 生成初步行程规划\n• 协调 Booking 和 Advisor 的工作\n• 整合所有结果，生成最终方案\n\n关键技术：\n• 使用简单的 Prompt 驱动（不需要工具调用）\n• 输出严格的 JSON 格式行程数据\n• 验证行程可行性（景点距离、时间安排）"
+        },
+        {
+          "type": "content",
+          "title": "Booking Agent 详解",
+          "content": "**BookingAgent** 负责具体的预订服务。\n\n核心职责：\n• 搜索可用交通方式（飞机、火车等）\n• 查找符合预算的酒店\n• 预订景点门票\n\n关键技术：\n• 调用高德地图 MCP 工具的 POI 搜索\n• 根据预算和偏好筛选结果\n• 返回结构化预订信息"
+        },
+        {
+          "type": "content",
+          "title": "Advisor Agent 详解",
+          "content": "**AdvisorAgent** 负责提供旅行建议。\n\n核心职责：\n• 推荐当地特色美食和餐厅\n• 提供交通出行指南\n• 提醒注意事项（天气、文化习俗等）\n\n关键技术：\n• 从知识库中检索相关信息\n• 结合天气数据提供针对性建议\n• 生成人性化的旅行提示"
+        },
+        {
+          "type": "content",
+          "title": "MCP 接入概述",
+          "content": "**MCP（Model Context Protocol）** 是 Anthropic 提出的标准化协议，用于连接 LLM 和外部工具。\n\n为什么通过 MCP 接入高德地图：\n• **标准化**：统一的接口和调用方式\n• **Agent 自主调用**：Agent 可通过提示词中的工具标记自主调用\n• **简化参数**：MCP 服务器封装了 API 细节\n• **易于管理**：16 个工具自动注册，一键集成"
+        },
+        {
+          "type": "content",
+          "title": "高德地图 MCP 工具",
+          "content": "高德地图 MCP 服务器提供了丰富的工具：\n\n| 类别 | 工具 |\n|------|------|\n| POI 搜索 | maps_text_search、maps_around_search |\n| 天气查询 | maps_weather |\n| 路线规划 | maps_driving、maps_transit、maps_walking |\n| 地理编码 | maps_geo_code、maps_regeo_code |\n| 行政区划 | maps_district |\n| 静态地图 | maps_staticmap |\n\n通过 `auto_expand=True` 可自动注册全部工具。"
+        },
+        {
+          "type": "content",
+          "title": "共享 MCP 实例",
+          "content": "在多 Agent 系统中，多个 Agent 共享同一个 MCPTool 实例。\n\n优势：\n• 只有一个 MCP 服务器进程在运行\n• 节省内存和 CPU 资源\n• 更好地控制 API 调用频率\n• 避免超过 API 速率限制\n\n实现方式：在 TripPlannerAgent 中创建 MCPTool，然后添加到每个子 Agent 的工具列表中。"
+        },
+        {
+          "type": "code",
+          "title": "MCP 集成代码",
+          "language": "python",
+          "code": "from hello_agents.tools import MCPTool\n\n# 创建共享的MCP工具实例\nmcp_tool = MCPTool(\n    name=\"amap_mcp\",\n    command=\"npx\",\n    args=[\"-y\", \"@sugarforever/amap-mcp-server\"],\n    env={\"AMAP_API_KEY\": settings.amap_api_key},\n    auto_expand=True  # 自动注册所有16个工具\n)\n\n# 多个Agent共享同一个MCPTool\nself.attraction_agent = SimpleAgent(\n    name=\"AttractionSearchAgent\",\n    llm=self.llm,\n    system_prompt=ATTRACTION_AGENT_PROMPT\n)\nself.attraction_agent.add_tool(mcp_tool)\n\nself.weather_agent = SimpleAgent(\n    name=\"WeatherQueryAgent\",\n    llm=self.llm,\n    system_prompt=WEATHER_AGENT_PROMPT\n)\nself.weather_agent.add_tool(mcp_tool)  # 同一实例"
+        },
+        {
+          "type": "code",
+          "title": "多 Agent 编排实现",
+          "language": "python",
+          "code": "class TripPlannerAgent:\n    \"\"\"旅行规划主协调器\"\"\"\n    def __init__(self):\n        self.llm = HelloAgentsLLM()\n        self.mcp_tool = MCPTool(name=\"amap_mcp\", ...)\n        \n        # 创建四个独立但协作的Agent\n        self.attraction_agent = SimpleAgent(\n            name=\"景点搜索\",\n            llm=self.llm, prompt=ATTRACTION_PROMPT\n        )\n        self.weather_agent = SimpleAgent(\n            name=\"天气查询\",\n            llm=self.llm, prompt=WEATHER_PROMPT\n        )\n        self.hotel_agent = SimpleAgent(\n            name=\"酒店推荐\",\n            llm=self.llm, prompt=HOTEL_PROMPT\n        )\n        self.planner_agent = SimpleAgent(\n            name=\"行程规划\",\n            llm=self.llm, prompt=PLANNER_PROMPT\n        )\n        # 三个工具Agent共享MCP工具\n        for agent in [self.attraction_agent, \n                      self.weather_agent, \n                      self.hotel_agent]:\n            agent.add_tool(self.mcp_tool)\n\n    def plan_trip(self, request: TripPlanRequest) -> TripPlan:\n        \"\"\"完整行程规划流程\"\"\"\n        # 步骤1-3: 并行查询\n        attraction = self.attraction_agent.run(\n            f\"搜索{request.city}的景点\")\n        weather = self.weather_agent.run(\n            f\"查询{request.city}天气\")\n        hotel = self.hotel_agent.run(\n            f\"搜索{request.city}酒店\")\n        # 步骤4: 整合生成\n        query = self._build_query(\n            request, attraction, weather, hotel)\n        result = self.planner_agent.run(query)\n        return self._parse_trip_plan(result)"
+        },
+        {
+          "type": "content",
+          "title": "前端架构概览",
+          "content": "采用前后端分离架构：\n\n后端（Python + FastAPI）：\n• POST /api/trip/plan 接收请求\n• 调用多 Agent 系统生成行程\n• 使用 Pydantic 模型（TripPlan, DayPlan, Attraction）\n\n前端（Vue 3 + TypeScript + Vite）：\n• Home 页面：表单收集旅行需求\n• Result 页面：展示完整旅行计划\n• 高德地图 JS API：景点地图可视化\n• 支持导出图片/PDF"
+        },
+        {
+          "type": "content",
+          "title": "技术挑战与解决方案",
+          "content": "• **信息一致性**：各智能体共享状态 → Planner 统一协调\n• **任务协调**：避免重复预订 → 通过流程顺序控制\n• **异常处理**：预订失败如何处理 → 回滚和重试机制\n• **用户反馈**：如何处理用户修改需求 → 行程可编辑\n• **成本优化**：在预算内找到最优方案 → LLM 估算+人工调整"
+        },
+        {
+          "type": "content",
+          "title": "实际案例",
+          "content": "用户需求：\n\"帮我规划一个3天的北京之旅，预算每人2000元，喜欢历史文化。\"\n\n**Planner 输出：**\nDay 1: 故宫 → 天安门 → 王府井\nDay 2: 颐和园 → 圆明园 → 清华北大\nDay 3: 长城 → 鸟巢水立方\n\n**Booking 完成：**\n• 往返高铁票 ・三星级酒店（市中心）・故宫和长城门票\n\n**Advisor 建议：**\n• 故宫需提前预约 ・长城建议选慕田峪 ・推荐北京烤鸭店"
+        },
+        {
+          "type": "content",
+          "title": "功能实现要点",
+          "content": "**预算计算**：\nPlannerAgent 根据行程自动估算费用，分为景点门票、酒店住宿、餐饮、交通四大类。\n\n**加载进度条**：\n模拟进度更新，状态对应步骤：搜索景点→查询天气→推荐酒店→生成行程。\n\n**行程编辑**：\n支持移动景点顺序、删除景点，使用深拷贝保存原始计划用于取消恢复。\n\n**导出功能**：\n使用 html2canvas 导出图片，jsPDF 导出 PDF。"
+        },
+        {
+          "type": "comparison",
+          "title": "三种 Agent 角色对比",
+          "headers": [
+            "维度",
+            "Planner",
+            "Booking",
+            "Advisor"
+          ],
+          "rows": [
+            [
+              "核心职责",
+              "行程规划与协调",
+              "预订服务",
+              "旅行建议"
+            ],
+            [
+              "输入",
+              "用户需求 + 子Agent结果",
+              "行程草稿",
+              "确认行程"
+            ],
+            [
+              "输出",
+              "最终旅行计划(JSON)",
+              "预订确认信息",
+              "建议清单"
+            ],
+            [
+              "工具需求",
+              "无需工具(Prompt驱动)",
+              "MCP(高德地图POI)",
+              "知识库检索"
+            ],
+            [
+              "工作模式",
+              "串行(等待子Agent)",
+              "可并行执行",
+              "可并行执行"
+            ],
+            [
+              "复杂度",
+              "高(整合多源信息)",
+              "中(API调用)",
+              "中(知识检索)"
+            ]
+          ]
+        },
+        {
+          "type": "content",
+          "title": "本章小结",
+          "content": "• 多智能体协作需要明确的角色分工\n• Planner负责规划、Booking负责预订、Advisor负责建议\n• 通过 MCP 协议集成外部工具（高德地图）\n• 共享 MCP 实例节省资源，`auto_expand=True` 自动注册所有工具\n• 协作流程：需求分析→规划→预订→建议→汇总\n• 前端采用 Vue 3 + TypeScript，完成表单→API→展示完整链路\n• 实际应用可大幅提升旅行规划效率"
+        },
+        {
+          "type": "quiz",
+          "title": "知识测验"
+        }
+      ],
+      "hasAnimation": true,
+      "hasQuiz": true
+    },
+    {
+      "id": "ch14",
+      "title": "DeepResearch",
+      "subtitle": "自动化深度研究智能体复现与解析",
+      "icon": "🔬",
+      "estimatedMinutes": 30,
+      "tags": [
+        "DeepResearch",
+        "检索",
+        "报告生成"
+      ],
+      "slides": [
+        {
+          "type": "cover",
+          "title": "第十四章",
+          "subtitle": "自动化深度研究智能体"
+        },
+        {
+          "type": "content",
+          "title": "什么是 DeepResearch？",
+          "content": "DeepResearch 是一种自动化深度研究智能体系统，能够将复杂的研究主题分解为可执行的子任务，通过多智能体协作完成从信息搜集到报告生成的全流程。\n\n**核心思想**：TODO 驱动的研究范式——将复杂问题分解为可管理的子任务，逐个攻破。\n\n**与传统搜索的区别**：\n• 传统搜索：输入关键词 → 获得链接列表，需要人工筛选\n• DeepResearch：输入研究主题 → 获得结构化研究报告，自动完成研究流程\n\n**典型场景**：技术调研、竞品分析、文献综述、市场研究"
+        },
+        {
+          "type": "content",
+          "title": "TODO 驱动的研究范式",
+          "content": "研究流程分为三个阶段：\n\n**1. 规划阶段**：将研究主题分解为 3-5 个子任务，每个子任务包含：\n• title：任务标题\n• intent：任务意图（为什么做这个任务）\n• query：搜索查询（如何获取信息）\n\n**2. 执行阶段**：对每个子任务执行搜索和总结，生成结构化的知识块。\n\n**3. 报告阶段**：整合所有子任务的总结，生成最终的研究报告。\n\n[提示] 这种范式的优势在于可控性强、质量可靠、易于调试、可扩展性好。"
+        },
+        {
+          "type": "content",
+          "title": "任务分解与递归分解",
+          "content": "任务分解是 DeepResearch 的核心能力，将复杂问题逐层分解：\n\n**分解策略**：\n• 主题分析：理解研究主题的各个维度\n• 子任务划分：按照逻辑关系分解为独立子任务\n• 查询生成：为每个子任务生成精准的搜索查询\n• 优先级排序：确定子任务的执行顺序\n\n**递归分解**：对于复杂的子任务，可以进一步递归分解为更小的子任务，形成任务树。递归终止条件为任务足够简单（如查询定义性概念）。\n\n**评估标准**：\n• 覆盖全面：涵盖主题所有重要方面\n• 逻辑清晰：子任务之间有明确的逻辑关系\n• 查询精准：搜索查询能准确找到相关资料"
+        },
+        {
+          "type": "animation",
+          "title": "任务树展开",
+          "animation": "ch14-task-tree"
+        },
+        {
+          "type": "content",
+          "title": "三 Agent 协作系统",
+          "content": "系统设计了三个专门的 Agent，各司其职：\n\n**TODO Planner（研究规划专家）**：\n• 负责将研究主题分解为子任务\n• 生成每个子任务的标题、意图和搜索查询\n• 评估规划质量（覆盖率、逻辑性、精准度）\n\n**Task Summarizer（任务总结专家）**：\n• 对每个子任务的搜索结果进行总结\n• 提取关键信息\n• 格式化来源引用\n\n**Report Writer（报告撰写专家）**：\n• 整合所有子任务的总结\n• 生成结构化的研究报告\n• 整理参考文献\n\n三个 Agent 顺序协作，形成从规划到执行再到报告的完整流水线。"
+        },
+        {
+          "type": "content",
+          "title": "Agent 协作模式",
+          "content": "三个 Agent 之间是顺序协作的关系，具有以下特点：\n\n**线性流程**：Agent 按照固定顺序执行：Planner → Summarizer → Report Writer\n\n**明确的输入输出**：每个 Agent 的输入来自上一个 Agent 的输出：\n• Planner 输出 → 子任务列表\n• Summarizer 输出 → 任务总结\n• Report Writer 输出 → 最终报告\n\n**无并发**：同一时间只有一个 Agent 在工作\n\n**DeepResearchAgent 充当协调器**：\n1. 调用 Planner 生成 TODO 列表\n2. 循环调用 SearchService + Summarizer 处理每个子任务\n3. 调用 Report Writer 生成最终报告\n4. 通过事件机制实时推送进度给前端"
+        },
+        {
+          "type": "comparison",
+          "title": "三 Agent 对比",
+          "headers": [
+            "特性",
+            "TODO Planner",
+            "Task Summarizer",
+            "Report Writer"
+          ],
+          "rows": [
+            [
+              "职责",
+              "任务分解与规划",
+              "信息总结与提炼",
+              "报告整合生成"
+            ],
+            [
+              "输入",
+              "研究主题",
+              "子任务 + 搜索结果",
+              "所有子任务总结"
+            ],
+            [
+              "输出",
+              "子任务列表（JSON）",
+              "任务总结（文本）",
+              "研究报告（Markdown）"
+            ],
+            [
+              "核心能力",
+              "逻辑分解、查询生成",
+              "信息提取、来源引用",
+              "结构化写作、文献整理"
+            ],
+            [
+              "评估标准",
+              "覆盖率、逻辑性",
+              "准确性、完整性",
+              "清晰度、可读性"
+            ]
+          ]
+        },
+        {
+          "type": "concepts",
+          "title": "核心服务组件",
+          "items": [
+            {
+              "icon": "📋",
+              "title": "PlanningService",
+              "description": "构建规划 Prompt，调用规划 Agent 生成子任务列表，解析 JSON 响应，验证子任务格式"
+            },
+            {
+              "icon": "📝",
+              "title": "SummarizationService",
+              "description": "格式化搜索结果，构建总结 Prompt，调用总结 Agent 生成总结，提取来源引用"
+            },
+            {
+              "icon": "📄",
+              "title": "ReportingService",
+              "description": "格式化子任务总结，构建报告 Prompt，调用报告 Agent 生成最终报告，整理引用"
+            },
+            {
+              "icon": "🔍",
+              "title": "SearchService",
+              "description": "调度搜索引擎，执行搜索，去重、限制 Token、格式化结果，支持结果缓存"
+            }
+          ]
+        },
+        {
+          "type": "content",
+          "title": "ToolAwareSimpleAgent",
+          "content": "在 SimpleAgent 基础上扩展的工具感知智能体，支持工具调用监听。\n\n**核心增强**：\n• 监听工具调用：通过回调函数监听每次工具调用\n• 实时反馈：将工具调用信息实时推送给前端\n• 调试支持：记录所有工具调用，便于调试\n\n**实现机制**：重写 _execute_tool_call 方法，在调用前后触发监听器回调：\n\n```python\ndef _execute_tool_call(self, tool_name, parameters):\n    parsed = self._parse_parameters(parameters)\n    result = super()._execute_tool_call(tool_name, parameters)\n    if self._tool_call_listener:\n        self._tool_call_listener({\n            \"agent_name\": self.name,\n            \"tool_name\": tool_name,\n            \"parsed_parameters\": parsed,\n            \"result\": result\n        })\n    return result\n```"
+        },
+        {
+          "type": "content",
+          "title": "搜索服务与工具集成",
+          "content": "深度研究助手集成了多种搜索引擎和笔记工具：\n\n**搜索引擎**：\n• Tavily：AI 优化的搜索引擎，适合研究场景\n• DuckDuckGo：隐私优先的通用搜索引擎\n• Perplexity：AI 问答搜索引擎，直接生成答案\n• SearXNG：自托管元搜索引擎\n• Advanced：组合多个搜索引擎提高覆盖率\n\n**搜索引擎选择**：通过 .env 配置文件选择，无需修改代码。\n\n**NoteTool**：持久化研究进度，每个任务一个 Markdown 笔记。\n\n**ToolRegistry**：统一管理所有工具注册和调用。"
+        },
+        {
+          "type": "code",
+          "title": "任务树递归分解",
+          "language": "python",
+          "code": "from typing import List, Optional\nfrom dataclasses import dataclass, field\n\n@dataclass\nclass ResearchTask:\n    \"\"\"研究任务节点\"\"\"\n    title: str\n    intent: str\n    query: str\n    subtasks: List['ResearchTask'] = field(default_factory=list)\n    summary: Optional[str] = None\n    depth: int = 0\n\ndef decompose_task(llm, task: ResearchTask, max_depth=3):\n    \"\"\"递归分解研究任务\"\"\"\n    if task.depth >= max_depth:\n        return task\n    if is_task_simple(task):\n        return task\n    \n    prompt = f\"\"\"请将以下研究任务分解为子任务：\n    任务：{task.title}\n    意图：{task.intent}\n    返回 JSON 数组：[{{title, intent, query}}]\"\"\"\n    \n    response = llm.generate(prompt)\n    subtasks_data = parse_json(response)\n    \n    for item in subtasks_data:\n        subtask = ResearchTask(\n            title=item['title'],\n            intent=item['intent'],\n            query=item['query'],\n            depth=task.depth + 1\n        )\n        decomposed = decompose_task(llm, subtask, max_depth)\n        task.subtasks.append(decomposed)\n    return task\n\ndef is_task_simple(task: ResearchTask) -> bool:\n    \"\"\"判断任务是否足够简单\"\"\"\n    simple_kw = ['定义', '概念', '是什么', 'overview']\n    return any(kw in task.title.lower() for kw in simple_kw)\n\ndef build_task_tree(topic: str, llm, max_depth=3):\n    root = ResearchTask(\n        title=topic,\n        intent=f\"全面研究{topic}\",\n        query=topic, depth=0\n    )\n    return decompose_task(llm, root, max_depth)\n\ndef count_tasks(task: ResearchTask) -> int:\n    count = 1\n    for sub in task.subtasks:\n        count += count_tasks(sub)\n    return count\n\n# 使用示例\ntask_tree = build_task_tree(\n    \"多模态大模型的最新进展\", llm, max_depth=3\n)\nprint(f\"总任务数: {count_tasks(task_tree)}\")",
+          "explanation": "任务树递归分解的核心实现。ResearchTask 数据类表示一个研究任务节点，支持嵌套子任务。decompose_task 递归地将复杂任务分解为子任务，直到任务变得足够简单或达到最大深度。build_task_tree 从根主题开始构建完整的任务树。"
+        },
+        {
+          "type": "content",
+          "title": "规划服务实现",
+          "content": "PlanningService 是整个研究流程的第一步，也是最关键的一步：\n\n**核心职责**：\n1. 构建规划 Prompt（包含研究主题和当前日期）\n2. 调用规划 Agent 生成子任务列表\n3. 解析 JSON 响应（处理额外文本和格式错误）\n4. 验证子任务格式（确保包含 title、intent、query）\n\n**JSON 解析策略**（支持多种格式）：\n• 方法一：正则提取 JSON 数组 r'\\[.*\\]'\n• 方法二：直接尝试解析整个响应\n• 处理常见问题：额外文本、格式错误、字段缺失\n\n**规划质量评估**：\n• 数量检查：3-5 个子任务为最佳\n• 查询质量：每个查询不少于 2 个词\n• 逻辑关系：子任务之间应有清晰关联"
+        },
+        {
+          "type": "content",
+          "title": "总结与报告服务",
+          "content": "**SummarizationService（总结服务）**：\n• 格式化搜索结果（序号、标题、URL、摘要）\n• 构建总结 Prompt，包含任务信息和搜索结果\n• 调用 Task Summarizer Agent 生成总结\n• 提取来源引用 URL\n\n**ReportingService（报告生成服务）**：\n• 格式化所有子任务的总结\n• 构建报告 Prompt 整合信息\n• 调用 Report Writer Agent 生成最终报告\n• 整理参考文献到报告末尾\n\n**报告结构**：\n• 引言：研究背景和目的\n• 各章节：对应每个子任务的研究结果\n• 结论：综合分析和发现\n• 参考文献：所有来源引用清单"
+        },
+        {
+          "type": "content",
+          "title": "搜索调度服务",
+          "content": "SearchService 负责调度搜索引擎，是连接 Agent 和 SearchTool 的桥梁：\n\n**核心职责**：\n1. 读取配置：从 .env 文件读取 SEARCH_API 配置\n2. 选择引擎：根据配置选择搜索引擎\n3. 执行搜索：调用 SearchTool 的 run 方法\n4. 处理结果：去重、限制 Token、格式化\n\n**结果去重**：使用 seen_urls 集合去除重复 URL。\n\n**Token 限制**：限制每个来源的 Token 数量（默认 2000 tokens），避免超出上下文窗口。\n\n**结果缓存**：对搜索查询进行 MD5 哈希，缓存到本地文件系统，提高效率降低成本。\n\n**错误降级**：搜索失败时返回空列表，不中断整体流程。"
+        },
+        {
+          "type": "content",
+          "title": "前端交互与 SSE 实时推送",
+          "content": "深度研究助手使用 SSE（Server-Sent Events）实现实时进度展示：\n\n**SSE 流程**：\n1. 客户端发起 POST 请求到 /api/research\n2. 服务器返回 text/event-stream 响应\n3. 服务器定期推送进度事件\n4. 客户端监听事件，实时更新 UI\n\n**事件类型**：\n• progress：进度更新（百分比 + 文本描述）\n• plan：规划结果（子任务列表）\n• task_summary：任务总结完成\n• report：最终报告\n• completed：研究完成\n• error：错误处理\n\n**后端实现**：FastAPI 的 StreamingResponse，异步生成 SSE 格式数据。"
+        },
+        {
+          "type": "content",
+          "title": "前端的全屏模态对话框",
+          "content": "UI 采用全屏模态对话框设计，提供沉浸式研究体验：\n\n**UI 组件**：\n1. **顶部栏**：显示研究主题和关闭按钮\n2. **进度区域**：进度条 + 状态文本，实时显示研究进度\n3. **内容区域**：Markdown 渲染的研究结果\n4. **底部栏**：显示状态信息（\"研究中...\"、\"已完成\"）\n\n**交互设计**：\n• 点击关闭按钮或按 ESC 键返回主页面\n• 响应式设计适配不同屏幕（桌面、平板、手机）\n• marked 库将 Markdown 转换为 HTML 渲染\n\n**技术栈**：Vue 3 + TypeScript + EventSource + marked\n\n**SSE 前端接收**：使用 EventSource API 监听服务器推送的事件，根据事件类型更新对应的 UI 组件。"
+        },
+        {
+          "type": "content",
+          "title": "实际应用案例",
+          "content": "**研究主题**：\"Datawhale 组织的核心项目和贡献\"\n\n**规划结果**（3 个子任务）：\n1. Datawhale 的基本信息（组织定位、发展历史）\n2. Datawhale 的主要项目（Hello-Agents 等开源教程）\n3. Datawhale 的社区影响力（成员规模、活动）\n\n**执行过程**：\n• 对每个子任务进行搜索和总结\n• NoteTool 记录研究进度到 workspace/notes/ 目录\n• 搜索结果去重和 Token 限制\n• 逐步追加任务总结到 Markdown 内容\n\n**最终报告**：结构化的 Markdown 研究报告：\n• 引言\n• 三个章节对应各子任务的研究发现\n• 结论\n• 参考文献（含来源 URL）"
+        },
+        {
+          "type": "content",
+          "title": "本章小结",
+          "content": "**TODO 驱动的研究范式**：将复杂研究主题分解为可执行的子任务，通过三阶段（规划→执行→报告）完成研究。\n\n**三 Agent 协作系统**：\n• TODO Planner：研究规划专家，负责任务分解\n• Task Summarizer：任务总结专家，负责信息提炼\n• Report Writer：报告撰写专家，负责报告生成\n\n**核心技术实现**：\n• ToolAwareSimpleAgent：支持工具调用监听和实时反馈\n• 多搜索引擎集成（Tavily、DuckDuckGo、Perplexity、SearXNG）\n• SSE 实时进度推送\n• NoteTool 研究进度持久化\n• 全屏模态对话框 UI\n\n这些知识适用于各种 AI 应用中的自动化信息处理场景。"
+        },
+        {
+          "type": "quiz",
+          "title": "知识测验"
+        }
+      ],
+      "hasAnimation": true,
+      "hasQuiz": true
+    },
+    {
+      "id": "ch15",
+      "title": "赛博小镇",
+      "subtitle": "Agent 与游戏的结合，模拟社会动态",
+      "icon": "🏙️",
+      "estimatedMinutes": 30,
+      "tags": [
+        "GenerativeAgents",
+        "模拟",
+        "社交"
+      ],
+      "slides": [
+        {
+          "type": "cover",
+          "title": "第十五章",
+          "subtitle": "构建赛博小镇"
+        },
+        {
+          "type": "content",
+          "title": "项目概述",
+          "content": "将智能体技术与游戏引擎结合，构建一个充满生命力的 AI 小镇。\n\n核心功能：\n• **智能 NPC 对话系统**：与 NPC 进行自然语言对话\n• **记忆系统**：短期记忆和长期记忆，记住互动历史\n• **好感度系统**：NPC 态度随互动变化（陌生→熟悉→友好→亲密→挚友）\n• **游戏化交互**：2D 像素风格场景，自由移动\n• **实时日志系统**：记录所有对话和互动"
+        },
+        {
+          "type": "content",
+          "title": "技术架构概览",
+          "content": "四层分离架构：\n\n**前端层**（Godot 4.5 游戏引擎）：\n游戏渲染、玩家控制、NPC 显示、对话 UI\n\n**后端层**（FastAPI 框架）：\nAPI 路由、NPC 状态管理、对话处理、日志记录\n\n**智能体层**（HelloAgents 框架）：\nNPC 智能、记忆管理、好感度计算\n\n**外部服务层**：\nLLM API、Qdrant 向量数据库、SQLite 数据库"
+        },
+        {
+          "type": "content",
+          "title": "为什么构建 AI 小镇？",
+          "content": "传统游戏 NPC 只能预设对话树，缺乏真正的\"智能\"和\"生命力\"。\n\nAI 驱动的 NPC 可以实现：\n• **自然语言理解**：NPC 理解玩家的任意对话\n• **长期记忆**：记住过去的互动，保持连续性\n• **个性化性格**：独特的职业、性格和说话风格\n• **动态关系**：态度随互动变化（陌生人→朋友→挚友）\n\n应用场景：教育游戏（历史人物互动）、虚拟办公室、情感陪伴"
+        },
+        {
+          "type": "animation",
+          "title": "赛博小镇网格",
+          "animation": "ch15-cybertown"
+        },
+        {
+          "type": "content",
+          "title": "NPC 智能体系统",
+          "content": "每个 NPC 都是独立的 SimpleAgent 实例。\n\n创建 NPC Agent 的步骤：\n1. 定义 NPC 基本信息（ID、名称、职业、性格）\n2. 根据信息构建系统提示词\n3. 创建 SimpleAgent 实例\n4. 配置记忆系统\n5. 绑定好感度管理器\n\n代码示例：每个 NPC 有独立的 System Prompt，定义身份和性格。"
+        },
+        {
+          "type": "content",
+          "title": "NPC 角色设定",
+          "content": "**张三 - Python 工程师**\n性格：严谨、专业、喜欢分享技术知识\n口头禅：\"这个 bug 真是见鬼了...\"\n\n**李四 - 产品经理**\n性格：外向、善于沟通、注重用户体验\n口头禅：\"这个功能的优先级需要重新评估\"\n\n**王五 - UI 设计师**\n性格：温和、富有创意、审美独特\n口头禅：\"这杯咖啡的拉花真不错，灵感来了！\"\n\n三个 NPC 各有特色，玩家可根据兴趣互动。"
+        },
+        {
+          "type": "concepts",
+          "title": "Agent 三大核心组件",
+          "items": [
+            {
+              "icon": "🧠",
+              "title": "记忆流（Memory Stream）",
+              "description": "短期记忆（WorkingMemory）保存最近对话，容量10条；长期记忆（EpisodicMemory）通过向量数据库语义检索历史互动。Agent 自动融合两者构建完整上下文。"
+            },
+            {
+              "icon": "🔄",
+              "title": "反思（Reflection）",
+              "description": "对过去的互动进行回顾和总结，提取关键信息（如玩家偏好、常见话题），整合到记忆中用于未来的对话，使 NPC 表现出\"成长\"的智能感。"
+            },
+            {
+              "icon": "📋",
+              "title": "规划（Planning）",
+              "description": "NPC 根据当前状态、记忆和好感度决定行为方向。例如：是否主动分享信息、是否提供特殊任务、对话的亲密程度等，由好感度等级驱动。"
+            }
+          ]
+        },
+        {
+          "type": "content",
+          "title": "记忆系统集成",
+          "content": "采用两层记忆架构：\n\n**短期记忆（WorkingMemory）**\n• 容量：10 条消息\n• 保留时间：120 分钟\n• 作用：保持对话连贯性\n\n**长期记忆（EpisodicMemory）**\n• 存储：SQLite + Qdrant 向量数据库\n• 检索：语义搜索 Top-K = 3\n• 作用：回忆历史互动，记住用户偏好\n\nAgent 处理对话时从两层记忆同时检索，构建完整上下文。"
+        },
+        {
+          "type": "content",
+          "title": "批量对话生成",
+          "content": "**问题**：多个玩家同时对话时，LLM 并发调用成本高、延迟大。\n\n**解决方案**：批量对话生成系统\n• 将多个 NPC 的对话合并为一次 LLM 调用\n• 成本降低至原来的 1/3\n• 延迟大幅减少\n\n**生成方式**：构建特殊提示词，要求 LLM 一次性生成所有 NPC 回复，以 JSON 格式返回。\n\n示例输出：`{\"张三\": \"...\", \"李四\": \"...\", \"王五\": \"...\"}`"
+        },
+        {
+          "type": "flow",
+          "title": "NPC Agent 工作流程",
+          "steps": [
+            {
+              "title": "玩家输入消息",
+              "description": "按 E 键触发对话，输入自然语言消息"
+            },
+            {
+              "title": "检索短期记忆",
+              "description": "获取最近 5 条对话，理解上下文"
+            },
+            {
+              "title": "检索长期记忆",
+              "description": "向量语义搜索相关历史互动"
+            },
+            {
+              "title": "构建上下文",
+              "description": "融合短期+长期记忆+好感度等级"
+            },
+            {
+              "title": "调用 LLM",
+              "description": "生成符合角色性格的个性化回复"
+            },
+            {
+              "title": "更新记忆与好感度",
+              "description": "保存交互，分析情感，调整好感度"
+            }
+          ]
+        },
+        {
+          "type": "content",
+          "title": "混合模式：批量 + 即时",
+          "content": "巧妙结合两种模式，兼顾效率与质量：\n\n**后台批量生成（每 5 分钟）**\n• 为所有 NPC 生成\"背景对话\"\n• 显示 NPC 在工作状态（调试、看文档等）\n• 让 NPC 看起来\"活着\"\n\n**按需即时响应（玩家交互时）**\n• 调用该 NPC 的专属 Agent\n• 根据具体消息、历史记忆、好感度生成个性化回复\n• 保证回复的准确性和相关性\n\n两个模式无缝切换，玩家感受不到差异。"
+        },
+        {
+          "type": "content",
+          "title": "好感度系统：五级设计",
+          "content": "好感度分级（0-100）：\n\n**陌生（0-20）**：NPC 礼貌但保持距离，回复简短\n**熟悉（21-40）**：开始记住玩家，愿意简单交流\n**友好（41-60）**：视作朋友，分享更多信息\n**亲密（61-80）**：非常信任，分享私人话题\n**挚友（81-100）**：无话不谈，分享内心想法\n\n好感度等级直接影响 NPC 的系统提示词，改变回复风格。"
+        },
+        {
+          "type": "content",
+          "title": "好感度计算逻辑",
+          "content": "使用 LLM 自动分析对话情感：\n\n**友好（+5 分）**：礼貌、热情、表示感谢或赞同\n**中立（+2 分）**：普通的询问或陈述（默认）\n**不友好（-3 分）**：粗鲁、冷漠、批评或否定\n\n好感度变化值限制在 -3 到 +5 之间，总分范围 0-100。\n\n设计特点：\n• 不需要刻意讨好，正常交流即可提升\n• 负面行为会降低好感度\n• 互动次数越多，关系越深入"
+        },
+        {
+          "type": "code",
+          "title": "NPC Agent 创建与记忆系统",
+          "language": "python",
+          "code": "from hello_agents import SimpleAgent, HelloAgentsLLM\nfrom hello_agents.memory import MemoryManager, WorkingMemory, EpisodicMemory\n\ndef create_npc_agent(npc_id, name, role, personality):\n    \"\"\"创建带记忆的NPC Agent\"\"\"\n    system_prompt = f\"\"\"你是{name}，一位{role}。\n你的性格特点：{personality}\n你在Datawhale办公室工作，\n与同事们一起推动开源社区的发展。\n\"\"\"\n    llm = HelloAgentsLLM()\n    memory_manager = MemoryManager(\n        working_memory=WorkingMemory(\n            capacity=10, ttl_minutes=120),\n        episodic_memory=EpisodicMemory(\n            db_path=f\"memory/{npc_id}.db\",\n            collection_name=f\"{npc_id}_memories\"\n        )\n    )\n    return SimpleAgent(\n        name=name, llm=llm,\n        system_prompt=system_prompt,\n        memory_manager=memory_manager\n    )\n\n# 创建三个NPC Agent\nnpc_agents = {\n    \"zhang_san\": create_npc_agent(\n        \"zhang_san\", \"张三\", \"Python工程师\",\n        \"严谨、专业、喜欢分享技术知识\"),\n    \"li_si\": create_npc_agent(\n        \"li_si\", \"李四\", \"产品经理\",\n        \"外向、善于沟通、注重用户体验\"),\n    \"wang_wu\": create_npc_agent(\n        \"wang_wu\", \"王五\", \"UI设计师\",\n        \"温和、富有创意、审美独特\")\n}"
+        },
+        {
+          "type": "code",
+          "title": "好感度管理器实现",
+          "language": "python",
+          "code": "class RelationshipManager:\n    \"\"\"好感度管理器\"\"\"\n    def __init__(self):\n        self.affinity_data = {}\n        self.llm = HelloAgentsLLM()\n    \n    def analyze_sentiment(self, player_msg, npc_reply):\n        \"\"\"分析对话情感，返回好感度变化值\"\"\"\n        prompt = f\"\"\"分析玩家态度：\n玩家：{player_msg}\nNPC：{npc_reply}\n请判断：\n1. 友好(+5)：礼貌、热情、感谢\n2. 中立(+2)：普通询问或陈述\n3. 不友好(-3)：粗鲁、冷漠、批评\n只返回数字。\"\"\"\n        response = self.llm.think([\n            {\"role\": \"user\", \"content\": prompt}\n        ])\n        return max(-3, min(5, int(response.strip())))\n    \n    def update_affinity(self, npc_id, player_name,\n                        player_msg, npc_reply):\n        key = f\"{npc_id}_{player_name}\"\n        if key not in self.affinity_data:\n            self.affinity_data[key] = {\n                \"score\": 0, \"level\": \"陌生\",\n                \"interaction_count\": 0}\n        score_change = self.analyze_sentiment(\n            player_msg, npc_reply)\n        new_score = max(0, min(100,\n            self.affinity_data[key][\"score\"]\n            + score_change))\n        level = self._get_level(new_score)\n        self.affinity_data[key].update({\n            \"score\": new_score, \"level\": level,\n            \"interaction_count\":\n                self.affinity_data[key][\"interaction_count\"] + 1})\n        return self.affinity_data[key]\n    \n    def _get_level(self, score):\n        if score <= 20: return \"陌生\"\n        elif score <= 40: return \"熟悉\"\n        elif score <= 60: return \"友好\"\n        elif score <= 80: return \"亲密\"\n        else: return \"挚友\""
+        },
+        {
+          "type": "content",
+          "title": "后端服务实现",
+          "content": "FastAPI 应用模块化设计：\n\n**main.py**：应用入口，CORS 配置，启动初始化\n**agents.py**：NPCAgentManager，管理 NPC Agent\n**relationship_manager.py**：好感度计算与管理\n**state_manager.py**：NPC 状态（位置、忙碌、动作）\n**logger.py**：双输出日志（控制台 + 文件）\n**models.py**：Pydantic 数据模型\n\n核心 API：\n• GET /npcs/status - 获取所有 NPC 状态\n• POST /dialogue - 处理玩家对话\n• GET /affinity/{npc_id}/{player_name} - 查询好感度"
+        },
+        {
+          "type": "content",
+          "title": "Godot 游戏场景构建",
+          "content": "为什么选择 Godot：\n• **2D 开发优势**：TileMap、AnimatedSprite2D 等原生支持\n• **完全开源免费**：MIT 许可证，无版权费用\n• **低学习成本**：GDScript 类似 Python，上手快\n• **易于集成**：HTTPRequest 节点与 FastAPI 通信\n\n核心场景：\n• Main（主场景）：整合所有组件\n• Player（玩家角色）：WASD 移动，四方向动画\n• NPC（通用模板）：三人共享，独立配置\n• DialogueUI（对话界面）：CanvasLayer 始终显示在最上层"
+        },
+        {
+          "type": "content",
+          "title": "前后端通信",
+          "content": "使用 HTTP REST API + 信号机制实现通信：\n\n**API 客户端（api_client.gd）**：\n• 封装所有 API 调用\n• 使用 HTTPRequest 异步节点（不阻塞游戏）\n• 通过信号通知响应结果（松耦合）\n\n**对话流程**：\n1. 玩家输入消息\n2. Godot 发送 POST /dialogue 请求\n3. FastAPI 调用 Agent 生成回复\n4. 更新好感度和日志\n5. 返回回复给 Godot\n6. Godot 通过信号更新对话 UI\n\n**定时更新**：每 30 秒获取一次 NPC 状态，更新对话气泡"
+        },
+        {
+          "type": "content",
+          "title": "本章小结",
+          "content": "• **架构设计**：游戏引擎+后端服务分离，各层独立开发和测试\n• **NPC 智能**：使用 SimpleAgent，每个 NPC 有独立的角色设定和记忆\n• **记忆系统**：短期记忆保持连贯性，长期记忆通过向量数据库检索\n• **批量生成**：降低 LLM 调用成本至 1/3，混合模式兼顾效率与质量\n• **好感度系统**：五级设计，LLM 自动分析对话情感，动态调整 NPC 行为\n• **场景构建**：Godot 模块化设计，NPC 场景复用，易于扩展\n• **前后端通信**：HTTP + 信号机制，异步不阻塞，松耦合设计"
+        },
+        {
+          "type": "quiz",
+          "title": "知识测验"
+        }
+      ],
+      "hasAnimation": true,
+      "hasQuiz": true
+    },
+    {
+      "id": "ch16",
+      "title": "毕业设计",
+      "subtitle": "构建属于你的完整多智能体应用",
+      "icon": "🎓",
+      "estimatedMinutes": 25,
+      "tags": [
+        "毕业设计",
+        "综合",
+        "实践"
+      ],
+      "slides": [
+        {
+          "type": "cover",
+          "title": "第十六章",
+          "subtitle": "毕业设计：构建属于你的多智能体应用"
+        },
+        {
+          "type": "content",
+          "title": "毕业设计的意义",
+          "content": "恭喜你来到 Hello-Agents 教程的最后一章！\n\n前面的 15 章学习了：智能体核心概念、多种范式（ReAct、Plan-and-Solve、Reflection）、工具系统、记忆机制、通信协议（MCP/A2A/ANP）、强化学习、性能评估，以及三个完整实战项目。\n\n现在，是时候成为真正的智能体系统构建者了！\n\n毕业设计的核心：**将理论知识转化为可交付的作品**。"
+        },
+        {
+          "type": "content",
+          "title": "综合应用能力",
+          "content": "毕业设计培养的核心能力：\n\n• **系统设计**：从需求出发设计完整的系统架构\n• **技术选型**：选择合适的智能体范式和工具\n• **框架运用**：熟练使用 HelloAgents 框架各种功能\n• **工具开发**：开发自定义工具扩展智能体能力\n• **项目管理**：从需求分析到代码实现的完整流程\n• **开源协作**：使用 Git/GitHub 提交 PR，参与社区\n• **文档撰写**：编写清晰的项目文档和 README"
+        },
+        {
+          "type": "content",
+          "title": "毕业设计的形式与要求",
+          "content": "以开源项目形式提交到 Hello-Agents Co-creation-projects 目录。\n\n**项目命名**：`{GitHub用户名}-{项目名称}`\n示例：`jjyaoao-CodeReviewAgent`\n\n**项目内容**：\n• 可运行的 Jupyter Notebook（.ipynb）或 Python 脚本\n• 完整的依赖列表（requirements.txt）\n• 清晰的 README 文档\n• 可选：演示视频、截图、数据集等\n\n**提交方式**：通过 GitHub Pull Request 提交到主仓库"
+        },
+        {
+          "type": "content",
+          "title": "选题原则",
+          "content": "好的毕业设计项目应该：\n\n• **实用性**：解决真实问题，而不是为了技术而技术\n• **可完成性**：在有限的时间和资源内可以完成\n• **可展示性**：清晰地展示你的技术能力\n• **创新性**：有自己的思考和独特的设计\n\n记住：小的创意同样可以被收录，只要是自己动手的作品都值得珍惜。"
+        },
+        {
+          "type": "concepts",
+          "title": "推荐选题方向",
+          "items": [
+            {
+              "icon": "💻",
+              "title": "生产力工具",
+              "description": "智能代码审查助手、文档生成器、会议助手、邮件助手。利用多智能体自动化重复性工作。"
+            },
+            {
+              "icon": "📚",
+              "title": "学习辅助",
+              "description": "智能学习伙伴、论文助手、编程导师、语言学习助手。个性化学习体验，因材施教。"
+            },
+            {
+              "icon": "🎨",
+              "title": "创意娱乐",
+              "description": "故事生成器、游戏 NPC、音乐推荐、菜谱助手。AI 激发创造力和娱乐体验。"
+            },
+            {
+              "icon": "📊",
+              "title": "数据分析",
+              "description": "智能数据分析师、股票分析、舆情监控、竞品分析。自动化的数据洞察。"
+            },
+            {
+              "icon": "🏠",
+              "title": "生活服务",
+              "description": "健康助手、理财助手、购物助手、家居控制。AI 让生活更便利。"
+            }
+          ]
+        },
+        {
+          "type": "content",
+          "title": "选题示例：CodeReviewAgent",
+          "content": "**项目名称**：智能代码审查助手（CodeReviewAgent）\n\n**问题分析**：\n• 人工审查耗时且容易遗漏问题\n• 静态分析工具只能发现语法错误\n• 需要理解代码语义的深度分析\n\n**核心功能**：\n• 代码质量分析：检查风格、命名规范、注释完整性\n• 潜在 Bug 检测：逻辑错误、边界条件、资源泄漏\n• 性能优化建议：识别瓶颈、优化方案\n• 安全漏洞扫描：SQL 注入、XSS 等\n• Markdown 格式审查报告"
+        },
+        {
+          "type": "content",
+          "title": "开发环境准备",
+          "content": "**1. Python 环境**\n```bash\npip install \"hello-agents[all]\"\n```\n\n**2. Git 和 GitHub**\n```bash\ngit config --global user.name \"你的名字\"\ngit config --global user.email \"你的邮箱\"\nssh-keygen -t ed25519 -C \"你的邮箱\"\n```\n\n**3. Jupyter Notebook**\n```bash\npip install jupyterlab\njupyter lab\n```\n\n**4. Fork 仓库**\n访问 https://github.com/datawhalechina/hello-agents → Fork → Clone 到本地"
+        },
+        {
+          "type": "flow",
+          "title": "从 Fork 到 PR 的完整流程",
+          "steps": [
+            {
+              "title": "Fork 仓库",
+              "description": "在 GitHub 上 Fork datawhalechina/hello-agents 到个人账号"
+            },
+            {
+              "title": "克隆到本地",
+              "description": "git clone 并添加 upstream 远程仓库"
+            },
+            {
+              "title": "创建分支",
+              "description": "git checkout -b feature/项目名称"
+            },
+            {
+              "title": "开发实现",
+              "description": "在 Co-creation-projects 目录下创建项目，编写代码"
+            },
+            {
+              "title": "提交推送",
+              "description": "git add → commit → push 到个人 Fork"
+            },
+            {
+              "title": "创建 PR",
+              "description": "提交 Pull Request 到主仓库，等待 Review"
+            },
+            {
+              "title": "响应 Review",
+              "description": "根据社区反馈修改代码，更新 PR"
+            },
+            {
+              "title": "合并完成",
+              "description": "审核通过后合并到主仓库，项目收录"
+            }
+          ]
+        },
+        {
+          "type": "animation",
+          "title": "毕业设计演示",
+          "animation": "ch16-capstone",
+          "media": {
+            "video": "ch16/demo.mp4",
+            "canvasFallback": false
+          }
+        },
+        {
+          "type": "content",
+          "title": "项目目录结构",
+          "content": "推荐的项目结构：\n\n```\njjyaoao-CodeReviewAgent/\n├── README.md          # 项目说明文档\n├── requirements.txt   # Python依赖列表\n├── .env.example       # 环境变量示例\n├── main.ipynb         # 主程序Notebook\n├── data/\n│   └── sample_code.py # 示例代码\n├── outputs/\n│   └── review_report.md # 示例报告\n└── src/               # 源代码（可选）\n    ├── agents/\n    ├── tools/\n    └── utils/\n```"
+        },
+        {
+          "type": "content",
+          "title": "Notebook 开发指南",
+          "content": "Jupyter Notebook 应包含 7 个部分：\n\n1. **项目介绍**：项目名称、简介、作者信息\n2. **环境配置**：安装依赖、导入库、加载环境变量\n3. **工具定义**：自定义 Tool 类（CodeAnalysisTool, StyleCheckTool 等）\n4. **智能体构建**：创建 LLM 实例、配置 System Prompt、注册工具\n5. **功能演示**：至少 2 个示例（基础功能 + 复杂场景）\n6. **性能评估**（可选）：准确率、响应时间等指标\n7. **总结与展望**：实现功能、遇到的挑战、改进方向"
+        },
+        {
+          "type": "code",
+          "title": "项目骨架：工具定义",
+          "language": "python",
+          "code": "from hello_agents import SimpleAgent, HelloAgentsLLM\nfrom hello_agents.tools import Tool, ToolParameter\nimport ast\n\nclass CodeAnalysisTool(Tool):\n    \"\"\"代码静态分析工具\"\"\"\n    name = \"code_analysis\"\n    description = \"分析Python代码的结构、复杂度和潜在问题\"\n\n    def run(self, parameters):\n        code = parameters.get(\"code\", \"\")\n        if not code:\n            return \"错误：代码不能为空\"\n        try:\n            tree = ast.parse(code)\n            functions = [n for n in ast.walk(tree)\n                         if isinstance(n, ast.FunctionDef)]\n            classes = [n for n in ast.walk(tree)\n                       if isinstance(n, ast.ClassDef)]\n            return str({\n                \"函数数量\": len(functions),\n                \"类数量\": len(classes),\n                \"代码行数\": len(code.split('\\n')),\n                \"函数列表\": [f.name for f in functions],\n                \"类列表\": [c.name for c in classes]\n            })\n        except SyntaxError as e:\n            return f\"语法错误：{str(e)}\"\n\nclass StyleCheckTool(Tool):\n    \"\"\"代码风格检查工具\"\"\"\n    name = \"style_check\"\n    description = \"检查代码是否符合PEP 8规范\"\n\n    def run(self, parameters):\n        code = parameters.get(\"code\", \"\")\n        issues = []\n        for i, line in enumerate(code.split('\\n'), 1):\n            if len(line) > 79:\n                issues.append(f\"第{i}行：超过79个字符\")\n        if not issues:\n            return \"代码风格良好，符合PEP 8规范\"\n        return \"发现以下问题：\\n\" + \"\\n\".join(issues)"
+        },
+        {
+          "type": "code",
+          "title": "项目骨架：智能体构建与运行",
+          "language": "python",
+          "code": "from hello_agents import SimpleAgent, HelloAgentsLLM, ToolRegistry\n\n# 1. 创建工具注册表\ntool_registry = ToolRegistry()\ntool_registry.register_tool(CodeAnalysisTool())\ntool_registry.register_tool(StyleCheckTool())\n\n# 2. 初始化LLM\nllm = HelloAgentsLLM()\n\n# 3. 定义系统提示词\nsystem_prompt = \"\"\"你是一位经验丰富的代码审查专家。\n你的任务是：\n1. 使用code_analysis工具分析代码结构\n2. 使用style_check工具检查代码风格\n3. 基于分析结果，提供详细的审查报告\n\n审查报告应包括：\n- 代码结构分析\n- 风格问题\n- 潜在bug\n- 性能优化建议\n- 最佳实践建议\n请以Markdown格式输出报告。\"\"\"\n\n# 4. 创建智能体\nagent = SimpleAgent(\n    name=\"代码审查助手\",\n    llm=llm,\n    system_prompt=system_prompt,\n    tool_registry=tool_registry\n)\n\n# 5. 运行示例\nwith open(\"data/sample_code.py\", \"r\") as f:\n    sample_code = f.read()\n\nprint(\"=== 开始代码审查 ===\")\nresult = agent.run(\n    f\"请审查以下Python代码：\\n```python\\n{sample_code}\\n```\")\nprint(result)\n\n# 6. 保存报告\nwith open(\"outputs/review_report.md\", \"w\") as f:\n    f.write(result)\nprint(\"\\n审查报告已保存到 outputs/review_report.md\")"
+        },
+        {
+          "type": "content",
+          "title": "测试清单",
+          "content": "提交前的自检清单：\n\n□ 代码能够正常运行，没有报错\n□ README 文档完整，说明清晰\n□ requirements.txt 包含所有依赖\n□ 有清晰的使用示例\n□ 代码有适当的注释\n□ 输出结果符合预期\n□ 处理了常见的异常情况\n□ 项目结构清晰，文件命名规范\n□ 项目总大小不超过 5MB\n□ 大文件已使用外部链接或独立仓库处理\n\n[提示] 建议先在本地完整运行一遍所有代码，确保没有遗漏。"
+        },
+        {
+          "type": "content",
+          "title": "提交 Pull Request",
+          "content": "**PR 标题格式**（重要）：\n`[毕业设计] 项目名称 - 简短描述`\n示例：`[毕业设计] CodeReviewAgent - 智能代码审查助手`\n\n**PR 描述模板**：\n- 项目信息：名称、作者、类型\n- 项目简介（2-3 句话）\n- 核心功能列表\n- 技术亮点（使用的范式、实现的功能）\n- 演示效果（截图或 GIF）\n- 自检清单完成情况\n\n提交后会由社区成员 Review，及时响应反馈和修改。"
+        },
+        {
+          "type": "content",
+          "title": "大文件处理指南",
+          "content": "为了保护主仓库轻盈，请遵守以下规范：\n\n**项目总大小**：不超过 5MB\n**禁止直接提交**：视频文件、大型数据集、模型文件\n\n**处理方案**：\n• **外部链接**（推荐）：上传到百度网盘、Google Drive、B站、HuggingFace\n• **独立仓库**：创建单独的资源仓库存放数据\n• **示例数据**：只提供小规模示例数据（<1MB）\n\n示例：\n```\n## 数据集\n完整数据集（500MB）请从以下链接下载：\n- 百度网盘：[链接] 提取码：xxxx\n```"
+        },
+        {
+          "type": "content",
+          "title": "示例项目展示：CodeReviewAgent",
+          "content": "**项目结构**：\n```\njjyaoao-CodeReviewAgent/\n├── README.md\n├── requirements.txt\n├── main.ipynb\n├── .env.example\n├── data/sample_code.py\n└── outputs/review_report.md\n```\n\n**技术栈**：\n• HelloAgents 框架（SimpleAgent + ToolRegistry）\n• Python AST 模块（代码解析）\n• ModelScope API（Qwen2.5-72B 模型）\n\n**使用方式**：\n1. 将代码放入 data/sample_code.py\n2. 运行 main.ipynb\n3. 查看 outputs/review_report.md"
+        },
+        {
+          "type": "content",
+          "title": "十六章学习旅程回顾",
+          "content": "**基础篇（第1-3章）**\n智能体定义、类型与架构 → 工具系统 → 多智能体协作\n\n**范式篇（第4-6章）**\nReAct → Plan-and-Solve → Reflection 三大范式\n\n**框架篇（第7-9章）**\n从零构建 Agent 框架 → 记忆与 RAG → 评估与优化\n\n**进阶篇（第10-12章）**\n通信协议 → 强化学习训练 → 性能评估与调优\n\n**实战篇（第13-16章）**\n智能旅行助手 → 深度研究智能体 → 赛博小镇 → 毕业设计\n\n你已经从初学者成长为能够独立构建智能体系统的开发者！"
+        },
+        {
+          "type": "content",
+          "title": "展望未来",
+          "content": "学习完成只是新的起点。你可以继续：\n\n**深入学习**：\n• 更复杂的多智能体协作范式\n• 提示工程和上下文工程高级技巧\n• Agent 安全和对齐\n\n**扩展技术栈**：\n• Web 开发：用 FastAPI + Vue 构建完整应用\n• 数据库：PostgreSQL、Redis 实现持久化\n• 部署：Docker、Kubernetes 上线服务\n\n**持续参与**：\n• 帮助其他学习者\n• 参与 Hello-Agents 框架开发\n• 分享你的经验和心得\n\n记住：**最好的学习方式就是动手实践！**"
+        },
+        {
+          "type": "content",
+          "title": "本章小结",
+          "content": "• 毕业设计是将所学知识整合为完整项目的最佳实践\n• 选题应注重实用性、可完成性、可展示性\n• 项目遵循 `{用户名}-{项目名}` 命名规范\n• 使用 Fork → Clone → Branch → Develop → PR 流程提交\n• PR 标题格式：`[毕业设计] 项目名称 - 简短描述`\n• 注意大文件处理和外链引用\n• 项目总大小不超过 5MB\n• 完整的 README 文档和测试清单很重要\n\n🎓 恭喜你完成了 Hello-Agents 教程的全部学习！"
+        },
+        {
+          "type": "quiz",
+          "title": "知识测验"
+        }
+      ],
+      "hasAnimation": true,
+      "hasQuiz": true
     }
   ]
 }

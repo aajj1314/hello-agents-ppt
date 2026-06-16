@@ -1,0 +1,35 @@
+[
+  { "type": "cover", "title": "第五章", "subtitle": "低代码平台搭建" },
+  { "type": "content", "title": "从手写代码到平台化开发", "content": "在前一章中，我们通过编写 Python 代码从零实现了 ReAct、Plan-and-Solve 等经典智能体工作流。然而，对于快速发展的领域而言，纯代码的开发模式并非总是最高效的选择，尤其是在需要快速验证想法或非专业开发者参与构建的场景中。\n\n本章将聚焦于如何利用图形化、模块化的低代码平台，快速、直观地搭建、调试和部署智能体应用，将重心从\"实现细节\"转向\"业务逻辑\"。" },
+  { "type": "content", "title": "为何需要低代码平台", "content": "• 降低技术门槛：将复杂技术细节封装为\"节点\"或\"模块\"，拖拽即可构建工作流\n  - 产品经理、设计师、业务专家也能参与智能体创造\n\n• 提升开发效率：数小时完成原本数天的编码工作\n  - 快速验证想法、搭建原型\n\n• 可视化与可观测性：端到端看清数据如何在节点间流动\n  - 哪个环节耗时最长？哪个工具调用失败？一目了然\n\n• 标准化与最佳实践：内置 ReAct 模板、优化检索引擎、标准化的工具接入规范" },
+  { "type": "content", "title": "低代码平台的选择", "content": "当前智能体与 LLM 应用的低代码平台市场百花齐放，每个平台都有独特的定位和优势。\n\n• Coze（字节跳动）\n  - 零代码/低代码，让不具备编程背景的用户也能轻松创造\n  - 丰富的插件库，一键发布到主流平台\n\n• Dify（开源）\n  - 功能全面的 LLM 应用开发与运营平台\n  - 支持 Agent 工作流、RAG Pipeline、数据标注与微调\n\n• n8n（开源工作流自动化）\n  - 强项在于\"连接\"，数百个预置节点连接各类服务\n  - AI 能力是整体自动化链路中的一环" },
+  { "type": "animation", "title": "低代码平台实操演示", "animation": "ch5-lowcode", "media": { "video": "ch5/coze-demo.mp4", "canvasFallback": false } },
+  { "type": "content", "title": "平台一：Coze（扣子）", "content": "Coze 是字节跳动推出的 AI 智能体制作工具，以直观的可视化界面和丰富的功能模块著称。\n\n核心功能模块：\n• 工作流：关卡通关路线图，定义智能体的执行逻辑\n• 对话流：NPC 对话通关，设计多轮对话分支\n• 插件：角色技能卡，连接外部服务与数据源\n• 知识库：游戏百科全书，为智能体注入领域知识\n• 发布管理：一键发布到微信、飞书、豆包等平台\n\n总结：模型决定智能体的下限，资源库和插件决定智能体的上限。" },
+  { "type": "content", "title": "案例：每日 AI 简报助手", "content": "构建\"每日 AI 简报\"智能体，自动化从多个信息源抓取当日 AI 头条。\n\n步骤一：添加并配置信息源插件\n• RSS 插件订阅 36氪、虎嗅、it之家、InfoQ\n• GitHub 插件追踪开源项目（q:AI, per_page:10, sort:updated）\n• arXiv 插件获取学术论文（count:5, search_query:AI）\n\n步骤二：设定智能体角色与提示词\n• 角色设定：资深科技媒体编辑\n• 系统提示：定义行为准则和输出格式规范\n• 用户提示：定义具体任务指令和数据来源\n\n步骤三：测试、调试与多渠道发布\n• 运行预览 → 检查格式 → 调整提示词\n• 一键发布到微信、豆包、飞书等平台" },
+  { "type": "content", "title": "Coze 的优势与局限性", "content": "优势：\n• 强大的插件生态系统\n• 直观的可视化编排界面\n• 灵活的提示词控制与管理\n• 便捷的多平台部署（微信、飞书、豆包等）\n• 丰富的社区模板和智能体市场\n\n局限性：\n• 不支持 MCP 协议（开发中）\n• 部分插件配置复杂度高（需 API Key）\n• 工作流编排需一定 JS/Python 基础\n• 导出格式为 ZIP，非标准 JSON\n• 复杂逻辑的灵活度有限" },
+  { "type": "content", "title": "平台二：Dify", "content": "Dify 是一个开源的大语言模型应用开发平台，融合 BaaS 和 LLMOps 理念。\n\n核心特点：\n• 分层模块化架构：数据层、开发层、编排层、基础层\n• 模型高度中立：支持 GPT、Deepseek、Llama 等，以及任何兼容 OpenAI API 的模型\n• 本地部署（Docker Compose）+ 云端部署\n• Marketplace 插件生态（8677+ 插件）\n  - 模型、工具、智能体策略、扩展、捆绑包\n\n适用人群：\n• 有一定技术背景的开发者\n• 需要构建可扩展企业级 AI 应用的团队" },
+  { "type": "content", "title": "案例：超级智能体个人助手", "content": "使用 Dify 构建功能全面的超级智能体个人助手，涵盖多个场景：\n\n1. 日常生活问答：基础对话模块，配置 LLM 和时间工具\n2. 文案优化模块：润色、修改、扩写、缩写（超过 60% 的 ChatGPT 用户使用）\n3. 多模态生成模块：豆包生图/生视频，配置图片比例和模型选择\n4. 数据查询与分析：连接数据库，生成 SQL，输出可视化图表\n5. MCP 工具集成：高德地图、饮食推荐、新闻资讯\n\n采用\"问题分类器\"进行智能路由，将不同请求分发到对应的处理模块。" },
+  { "type": "content", "title": "Dify 的优势与局限性", "content": "优势：\n• 全栈式开发体验：RAG 管道 + AI 工作流 + 模型管理\n• 低代码与高扩展性的平衡\n• 企业级安全：AES-256 加密、RBAC 权限控制、审计日志\n• 丰富的工具集成（9000+ 插件）\n• 活跃的开源社区\n\n局限性：\n• 学习曲线较陡，非技术用户入门有难度\n• 高并发场景下性能挑战（Python 后端）\n• 多模态支持以文本为主\n• 企业版定价较高\n• API 格式不兼容 OpenAI" },
+  { "type": "content", "title": "平台三：n8n", "content": "n8n 的核心身份是通用工作流自动化平台，而非纯粹的 LLM 应用构建工具。\n\n两个基本概念：\n• 节点（Node）：执行具体操作的最小单元\n  - 触发节点：启动流程（如\"收到新邮件时\"）\n  - 常规节点：处理数据和逻辑（如\"调用 OpenAI 模型\"）\n\n• 工作流（Workflow）：多个节点连接而成的自动化流程图\n  - 数据以 JSON 格式在节点间传递\n\nn8n 的真正威力：强大的\"连接\"能力，将孤立的应用程序和服务串联起来。\n\n在 n8n 中构建智能应用，LLM 是整体自动化流程中的一个（或多个）\"处理节点\"。" },
+  { "type": "content", "title": "案例：智能邮件助手", "content": "使用 n8n 构建一体化智能邮件 Agent。\n\n核心架构：接收 → AI Agent（思考 → 决策 → 工具调用）→ 回复\n\n步骤一：准备 Agent 的\"记忆\"\n• Code 节点定义知识源（工作时间、回复策略等）\n• Embeddings 节点向量化（Gemini Embedding）\n• Simple Vector Store 存入内存数据库\n\n步骤二：构建 Agent 主工作流\n• Gmail 触发器：Message Received\n• AI Agent 节点：整合 Chat Model + Memory + Tools\n• 工具：SerpAPI（搜索）+ Simple Vector Store（私有知识）\n• Gmail 发送节点：自动回复\n\n效果：智能体在非工作时间自动告知发件人，并基于公开信息提供初步答复。" },
+  { "type": "code", "title": "Coze Bot DSL 示例", "language": "yaml", "code": "# Coze Bot DSL（Bot 配置文件）\nname: \"每日AI简报\"\ndescription: \"自动生成每日AI领域技术简报\"\nversion: \"1.0.0\"\n\non_trigger:\n  type: \"user_message\"\n  pattern: \"生成今日AI简报\"\n\npipeline:\n  - step: collect_news\n    plugin: rss\n    config:\n      sources:\n        - \"https://www.36kr.com/feed\"\n        - \"https://rss.huxiu.com/\"\n        - \"http://www.ithome.com/rss/\"\n        - \"https://feed.infoq.com/ai-ml-data-eng/\"\n      limit: 10\n\n  - step: collect_papers\n    plugin: arxiv\n    config:\n      search_query: \"LLM AI\"\n      count: 5\n      sort_by: \"submitted_date\"\n\n  - step: collect_projects\n    plugin: github\n    config:\n      query: \"AI\"\n      per_page: 10\n      sort: \"updated\"\n\n  - step: generate_report\n    llm: true\n    prompt: |\n      你是一位资深科技媒体编辑。\n      基于以下信息来源生成一份专业的AI日报：\n      - 新闻：{{collect_news.output}}\n      - 论文：{{collect_papers.output}}\n      - 项目：{{collect_projects.output}}\n      要求：每则标题前加Emoji，必须提供原始链接。\n\n  - step: format_output\n    template: |\n      # AI日报 | {{date}} | by@jasonhuang\n      \n      ## 🚀 AI技术新闻\n      {{generate_report.news_section}}\n      \n      ## 📚 AI学术论文\n      {{generate_report.paper_section}}\n      \n      ## 💻 AI开源项目\n      {{generate_report.project_section}}", "explanation": "Coze Bot DSL 使用 YAML 格式定义智能体的完整行为，包括触发条件、多步骤编排、插件调用和 LLM 提示词配置。每个步骤的输出可作为后续步骤的输入，形成完整的数据处理流水线。" },
+  { "type": "comparison", "title": "三大低代码平台对比", "headers": ["维度", "Coze", "Dify", "n8n"], "rows": [
+    ["核心定位", "零代码智能体构建", "LLM 应用开发平台", "通用工作流自动化"],
+    ["技术门槛", "最低（无需编程）", "中等（需一定技术背景）", "较高（需理解节点和流程）"],
+    ["插件生态", "丰富的官方插件库", "8677+ 插件市场", "数百个预置节点"],
+    ["模型支持", "内置模型，不可自由更换", "高度中立，支持数十种模型", "通过节点接入任意模型"],
+    ["知识库", "内置知识库管理", "完整的 RAG Pipeline", "通过 Vector Store 节点"],
+    ["MCP 支持", "不支持（Roadmap 中）", "支持 SSE 模式 MCP", "通过 HTTP 节点可间接支持"],
+    ["部署方式", "云平台（SaaS）", "本地部署 + 云端 SaaS", "私有化部署为主"],
+    ["发布渠道", "微信、飞书、豆包等", "API 集成", "通过节点连接任意系统"],
+    ["最佳场景", "快速原型、非技术用户", "企业级应用、复杂业务", "深度业务集成、自动化流程"]
+  ] },
+  { "type": "concepts", "title": "选型决策指南", "items": [
+    { "icon": "🚀", "title": "快速原型验证", "description": "优先选择 Coze。零代码、丰富的插件生态、一键发布到主流平台，让非技术用户也能快速将创意变为现实。" },
+    { "icon": "🏢", "title": "企业级应用", "description": "优先选择 Dify。全栈式开发、企业级安全、本地部署、丰富的插件市场，适合构建可扩展的生产级应用。" },
+    { "icon": "🔗", "title": "深度业务集成", "description": "优先选择 n8n。数百个预置节点，强大的连接能力，私有化部署，适合将 AI 能力嵌入复杂的业务流程。" }
+  ] },
+  { "type": "content", "title": "混合开发：低代码 + 代码协作", "content": "低代码平台并非要取代代码开发，而是提供一种互补的选择。实际项目中应根据不同阶段的需求灵活切换：\n\n• 用低代码平台快速验证想法\n• 用代码实现精细化控制\n• 用平台处理标准化流程\n• 用代码处理特殊逻辑\n\n推荐策略：\n| 阶段 | 方式 | 目的 |\n|------|------|------|\n| 原型验证 | Coze/Dify | 快速验证可行性 |\n| 核心逻辑 | Python 代码 | 精细化实现 |\n| 标准化流程 | n8n/Dify | 自动化部署 |\n| 特殊场景 | 自定义代码 | 灵活扩展 |\n\n这种\"混合开发\"思维，才是智能体工程化的最佳实践。" },
+  { "type": "content", "title": "本章小结", "content": "• 低代码平台通过图形化、模块化的方式降低技术门槛，提升开发效率\n• Coze 以零代码友好体验和丰富插件生态见长，适合快速原型验证\n• Dify 作为开源企业级平台，提供全栈式开发能力和 9000+ 插件生态\n• n8n 以强大的\"连接\"能力将 AI 嵌入复杂业务流程，支持私有化部署\n• 三个平台在核心定位、技术门槛、部署方式和适用场景上有显著差异\n• \"混合开发\"思维是智能体工程化的最佳实践" },
+  { "type": "quiz", "title": "知识测验" }
+]

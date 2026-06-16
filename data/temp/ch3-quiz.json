@@ -1,0 +1,161 @@
+{
+  "ch3": [
+    {
+      "id": "ch3-q1",
+      "type": "single",
+      "question": "Transformer架构最核心的创新是什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "循环神经网络（RNN）"
+        },
+        {
+          "id": "B",
+          "text": "自注意力机制（Self-Attention）"
+        },
+        {
+          "id": "C",
+          "text": "反向传播算法"
+        },
+        {
+          "id": "D",
+          "text": "词嵌入技术"
+        }
+      ],
+      "answer": "B",
+      "explanation": "Transformer完全抛弃了循环结构，转而完全依赖自注意力机制来捕捉序列内的依赖关系，从而实现了真正意义上的并行计算。"
+    },
+    {
+      "id": "ch3-q2",
+      "type": "single",
+      "question": "自注意力机制中，Q、K、V 分别代表什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "查询（Query）、键（Key）、值（Value）"
+        },
+        {
+          "id": "B",
+          "text": "质量（Quality）、知识（Knowledge）、价值（Value）"
+        },
+        {
+          "id": "C",
+          "text": "问题（Question）、关键（Key）、验证（Verify）"
+        },
+        {
+          "id": "D",
+          "text": "快速（Quick）、关键（Key）、变量（Variable）"
+        }
+      ],
+      "answer": "A",
+      "explanation": "Q（Query）代表当前词元主动查询其他词元，K（Key）代表可被查询的标签，V（Value）代表词元本身的语义内容。"
+    },
+    {
+      "id": "ch3-q3",
+      "type": "single",
+      "question": "Decoder-Only架构相比完整的Encoder-Decoder架构的一个劣势是？",
+      "options": [
+        {
+          "id": "A",
+          "text": "训练目标不统一"
+        },
+        {
+          "id": "B",
+          "text": "不适合需要双向理解输入的任务"
+        },
+        {
+          "id": "C",
+          "text": "结构过于复杂难以扩展"
+        },
+        {
+          "id": "D",
+          "text": "天然不适合文本生成任务"
+        }
+      ],
+      "answer": "B",
+      "explanation": "Decoder-Only架构只保留了解码器部分，缺乏编码器对输入的深度双向理解。但它的优势在于结构简单、训练目标统一（预测下一个词）、天然适合生成任务。"
+    },
+    {
+      "id": "ch3-q4",
+      "type": "judge",
+      "question": "BPE（字节对编码）是一种子词分词算法，GPT系列模型采用了此算法。",
+      "answer": true,
+      "explanation": "BPE通过迭代合并语料库中最高频的相邻词元对来构建词表，GPT系列模型采用此算法。类似的还有WordPiece（BERT）和SentencePiece（Llama）。"
+    },
+    {
+      "id": "ch3-q5",
+      "type": "single",
+      "question": "Temperature参数在LLM推理中的主要作用是什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "控制模型推理速度"
+        },
+        {
+          "id": "B",
+          "text": "控制输出文本的随机性和确定性"
+        },
+        {
+          "id": "C",
+          "text": "控制模型上下文窗口大小"
+        },
+        {
+          "id": "D",
+          "text": "控制模型参数量"
+        }
+      ],
+      "answer": "B",
+      "explanation": "Temperature通过调整Softmax分布的陡峭程度来控制输出的随机性。低温使分布更陡峭（更确定），高温使分布更平坦（更多样）。"
+    },
+    {
+      "id": "ch3-q6",
+      "type": "single",
+      "question": "以下哪种方法不是缓解模型幻觉（Hallucination）的有效策略？",
+      "options": [
+        {
+          "id": "A",
+          "text": "检索增强生成（RAG）"
+        },
+        {
+          "id": "B",
+          "text": "减小模型参数量"
+        },
+        {
+          "id": "C",
+          "text": "外部工具调用（搜索引擎、计算器）"
+        },
+        {
+          "id": "D",
+          "text": "多步推理与验证"
+        }
+      ],
+      "answer": "B",
+      "explanation": "减小模型参数量通常不利于缓解幻觉，因为小模型的推理能力更弱。RAG、外部工具调用和多步推理验证才是缓解幻觉的有效方法。"
+    },
+    {
+      "id": "ch3-q7",
+      "type": "single",
+      "question": "Chinchilla定律对缩放法则（Scaling Laws）的主要修正是什么？",
+      "options": [
+        {
+          "id": "A",
+          "text": "模型越大越好，无需考虑数据量"
+        },
+        {
+          "id": "B",
+          "text": "参数量和训练数据量存在最优配比，更多数据比更大模型更重要"
+        },
+        {
+          "id": "C",
+          "text": "增加计算量对性能提升没有帮助"
+        },
+        {
+          "id": "D",
+          "text": "小模型永远无法超越大模型"
+        }
+      ],
+      "answer": "B",
+      "explanation": "Chinchilla定律指出，在给定计算预算下，模型参数量和训练数据量之间应保持平衡。70B参数的Chinchilla用4倍于GPT-3的数据训练，性能反超175B的GPT-3，证明了数据效率的重要性。"
+    }
+  ]
+}
