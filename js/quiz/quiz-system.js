@@ -85,7 +85,7 @@ export class QuizSystem {
         }
     }
 
-    async submit() {
+    submit() {
         if (this.submitted || this.selectedIds.length === 0) return;
         this.submitted = true;
         const q = this.questions[this.currentIndex];
@@ -118,9 +118,19 @@ export class QuizSystem {
             correct: isCorrect
         });
 
+        // Record wrong answer synchronously (no async gap)
         if (!isCorrect) {
-            const { addWrongAnswer } = await import('../core/storage.js');
-            addWrongAnswer(this.chapterId, { questionId: q.id, userAnswer, correctAnswer });
+            Storage.addWrongAnswer(this.chapterId, { questionId: q.id, userAnswer, correctAnswer });
+        }
+
+        // Update button FIRST before any DOM changes
+        const submitBtn = document.getElementById('btn-submit');
+        if (submitBtn) {
+            submitBtn.textContent = this.currentIndex >= this.questions.length - 1 ? '查看成绩' : '下一题';
+            submitBtn.onclick = () => {
+                this.currentIndex++;
+                this.render();
+            };
         }
 
         // Show explanation
@@ -130,15 +140,6 @@ export class QuizSystem {
             explanation.innerHTML = `
                 <span class="quiz-result-icon">${isCorrect ? '✅ 正确' : '❌ 错误'}</span>
                 <p>${escapeHTML(q.explanation || '')}</p>`;
-        }
-
-        const submitBtn = document.getElementById('btn-submit');
-        if (submitBtn) {
-            submitBtn.textContent = this.currentIndex >= this.questions.length - 1 ? '查看成绩' : '下一题';
-            submitBtn.onclick = () => {
-                this.currentIndex++;
-                this.render();
-            };
         }
 
         // Highlight correct/wrong options
