@@ -50,7 +50,14 @@
 3. **教学级体验**：搜索、目录侧边栏、错题本、演讲者模式、键盘导航完整化。
 4. **生产级品质**：可访问性 ≥ AA、移动端可用、可导出 PDF、Lighthouse ≥ 90。
 
-技术栈不变：纯静态 HTML/CSS/JS，零构建、零依赖、双击即开。仅以 ES Modules 取代全局污染。
+技术栈不变：纯静态 HTML/CSS/JS，零构建、零依赖。仅以 ES Modules 取代全局污染。
+
+**运行方式约束（重要）**：本项目**必须通过本地 HTTP 服务器运行**（如 `python3 -m http.server`），不能双击 `index.html` 用 `file://` 协议打开。原因：
+- 当前代码已用 `fetch('data/chapters.json')` 加载数据，`fetch()` 在 `file://` 下被 CORS 拦截（即现状下双击打开已是白屏）。
+- ES Modules（`<script type="module">`）在 `file://` 下同样被浏览器 CORS 策略拦截。
+- 视频动画存在性判断也依赖 HTTP。
+
+因此 README 与所有验收标准均以"本地 HTTP 服务器"为前提，不再承诺"双击即开"。
 
 ---
 
@@ -58,14 +65,14 @@
 
 按"架构 → 内容 → 体验 → 完善"顺序，分四个独立可交付阶段：
 
-| 阶段 | 主题 | 估时 | 可单独交付 |
-|---|---|---|---|
-| 1 | 架构地基 + Bug 修复 + 视频动画接口 | 1-2 天 | ✓ 与现有功能等价的干净架构版 |
-| 2 | 补齐 10 章内容 + 8 个新 Canvas 动画 + 视频占位 | 5-8 天 | ✓ 16 章完整教材版 |
-| 3 | 搜索 / 目录 / 错题本 / 演讲者模式 / 键盘导航 | 2-3 天 | ✓ 教学级演示工具 |
-| 4 | A11y / 响应式 / PDF 导出 / 性能 | 1-2 天 | ✓ 生产级版本 |
+| 阶段 | 主题 | 可单独交付 |
+|---|---|---|
+| 1 | 架构地基 + Bug 修复 + 视频动画接口 | ✓ 与现有功能等价的干净架构版 |
+| 2 | 补齐 10 章内容 + 8 个新 Canvas 动画 + 视频占位 | ✓ 16 章完整教材版 |
+| 3 | 搜索 / 目录 / 错题本 / 演讲者模式 / 键盘导航 | ✓ 教学级演示工具 |
+| 4 | A11y / 响应式 / PDF 导出 / 性能 | ✓ 生产级版本 |
 
-每阶段完成后即可独立提交并停止，项目都不会处于半成品坏掉状态。
+每阶段完成后即可独立提交并停止，项目都不会处于半成品坏掉状态。阶段之间有依赖（详见各阶段"前置依赖"），必须按序执行。
 
 ---
 
@@ -154,12 +161,16 @@ registerAnimation('ch1-agent-types', () => new Ch1AgentTypes());
 
 #### 4.3.2 视频接口约定
 
+为避免脆弱的主动探测（每张动画 slide 发 HEAD 请求会有延迟、在 `file://` 下失败、404 刷红 console），采用**显式声明 + onerror 回退**策略：
+
 `renderers/animation.js` 渲染流程：
-1. 读取 slide.media.video（如 `ch3/transformer.mp4`）。
-2. `fetch(HEAD)` 探测 `assets/animations/ch3/transformer.mp4` 是否存在。
-3. 存在 → `VideoAnimation` 实例（带 play/pause/进度条/速度）。
-4. 不存在 → 查 `AnimationRegistry`，存在则用 Canvas 动画。
+1. 读取 `slide.media.video`（如 `ch3/transformer.mp4`）。若未声明则跳到第 4 步。
+2. 直接渲染 `<video src="assets/animations/ch3/transformer.mp4">`，不主动探测存在性。
+3. 监听 `<video onerror>`：加载失败（文件不存在）时，按 `canvasFallback` 决定是否回退到第 4 步。
+4. 查 `AnimationRegistry`，存在对应 id 则用 Canvas 动画。
 5. 都没有 → 占位提示"动画建设中，可在 `assets/animations/<chapter>/<name>.mp4` 放置视频启用"。
+
+约定：`media.video` 字段的存在即表示"作者打算用视频"；是否真的有文件由 `onerror` 在运行时决定。使用者放入 mp4 即生效，删除则自动回退 Canvas。
 
 `chapters.json` 新增字段（向后兼容，旧字段不变）：
 ```json
@@ -186,7 +197,14 @@ class Storage {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
 }
+// 关键：跨窗口缓存失效。演讲者模式用 window.open 开第二窗口共享同一 localStorage，
+// 必须监听 storage 事件让缓存失效，否则副窗口读到的是过期 _cache，导致进度 desync。
+window.addEventListener('storage', (e) => {
+    if (e.key === STORAGE_KEY) Storage._cache = null;
+});
 ```
+
+注意：`storage` 事件只在**其他**窗口写入时触发，本窗口写入不触发，因此本窗口靠 `set()` 主动更新 `_cache`、其他窗口靠事件失效，两端都能拿到最新值。
 
 ### 4.4 紧急 Bug 修复清单
 
@@ -202,9 +220,9 @@ class Storage {
 
 - 用户视角功能完全等价：6 章正常浏览、6 个动画都正常、quiz 正常、暗色切换正常。
 - `slides.html` 只 import 一个 module。
-- `js/slides/slide-engine.js` 不超过 200 行。
+- `slide-engine.js` 职责单一：只做路由分发与生命周期管理，不含具体渲染/解析/高亮逻辑（这些已拆到独立模块）。
 - 新增动画或新增章节只需改 data/JSON + 加一个 renderer/animation 文件，不需要改 HTML。
-- README 写明：双击 index.html 直接用，或 `python3 -m http.server` 启动。
+- README 写明：用 `python3 -m http.server` 启动后访问 `http://localhost:8000`（不支持双击 `file://` 打开，原因见 §2）。
 
 ---
 
@@ -212,6 +230,8 @@ class Storage {
 
 ### 5.1 目标
 按"详尽型"标准补齐 10 章缺失内容，使 16 章皆可作为完整教材。每章需 20-30 张 slide + 5-8 道 quiz + 至少 1 个动画。
+
+**前置依赖**：必须在阶段一完成后进行——依赖 AnimationRegistry、CanvasAnimation 基类、chapters.json 扩展 schema。否则每加一章都要在旧架构上返工。
 
 ### 5.2 章节规划
 
@@ -239,7 +259,8 @@ class Storage {
    封面 → 引入(为什么) → 核心定义 → 子概念分页 → 案例 → 代码 → 对比/时间线 → 动画 → 小结 → quiz。
 3. 编写对应动画（按上表）注册到 `AnimationRegistry`。
 4. 在 `quiz-data.json` 添加 5-8 道题。
-5. 验证：手动翻完该章 + 做完 quiz。
+5. **技术准确性 QA（关键）**：对照 `data/source/ch{n}.md` 逐条核对该章所有技术陈述——概念定义、代码可运行性、quiz 答案与解析、术语英文。AI 生成 230 张技术 slide 最大的风险是细节错误（讲错 GRPO、标错注意力机制等），此步独立于"翻一遍能看"，必须显式做。
+6. 验证：手动翻完该章 + 做完 quiz + 确认动画亮/暗主题正常。
 
 ### 5.4 chapters.json schema 扩展
 
@@ -277,6 +298,7 @@ class Storage {
 
 - 16 章全部出现在首页且 slide 数全 ≥ 20。
 - 每章 quiz 题数 ≥ 5。
+- 每章已完成技术准确性 QA（对照 source 核对，无概念/代码/答案错误）。
 - 所有 Canvas 动画在亮/暗主题下都正确显示。
 - 视频占位章节有清晰的"放入 mp4 即可启用"提示。
 - "开始学习"按钮可顺序通读 16 章。
@@ -291,6 +313,7 @@ class Storage {
 - 索引：首次打开时建立内存索引（Map<token, slideRef[]>），无后端依赖。
 - 匹配：忽略大小写、中英混合、子串匹配，结果带高亮。
 - 跳转：点击结果 → `slides.html?chapter=chX&slide=N`。
+  - **注意**：`SlideEngine.init()` 当前只读 `?chapter=`，需扩展为同时读 `?slide=`，命中后跳过"恢复上次进度"逻辑直接跳到指定 slide。这条对阶段三搜索功能是硬性依赖，必须在阶段一就修。
 - 快捷键：↑/↓ 选择，Enter 跳转，Esc 关闭。
 - UI：居中浮层 + 搜索框 + 按章分组结果。
 - 实现：`js/features/search.js`，挂载到所有页面。索引 lazy build（首次打开搜索时再建）。
@@ -315,10 +338,11 @@ class Storage {
 
 ### 6.4 演讲者模式
 
-- 触发：F5 进入 / Esc 退出。
+- 触发：专用"演讲者模式"按钮，或键盘 `P` 键进入 / Esc 退出。**不使用 F5**（F5 是浏览器刷新键，劫持它要么失效要么误触发刷新丢状态），也不使用 F11（系统接管）。
 - 双屏方案：`window.open` 打开第二窗口 + `BroadcastChannel` 同步状态。
   - 主窗口（投影仪）：全屏当前 slide。
   - 副窗口（讲者本机）：当前 slide + 计时器 + speakerNotes + 下一页缩略图。
+  - 进度同步依赖 §4.3.4 的跨窗口缓存失效（两窗口通过 BroadcastChannel 传当前页码，通过 storage 事件失效 Storage 缓存）。
 - 单屏退化：下方 PiP 模式（计时器 + 备注 + 下一页缩略图浮于角落）。
 - 辅助键：B = 黑屏，W = 白屏，数字+Enter = 跳页。
 - 实现：`js/features/presenter-mode.js` + `css/presenter.css`。speakerNotes 来自 chapters.json 的 `speakerNotes` 字段，缺省时回退为 slide.title。
@@ -335,18 +359,11 @@ slides.html：
 - ←/→/PgUp/PgDn 翻页
 - Home/End 首页/末页
 - 数字+Enter 跳到第 N 页
-- F5 演讲者模式
+- P 演讲者模式
 - Esc 退出演讲者模式 / 关闭抽屉
 - B/W 黑屏/白屏（演讲者模式）
 
-### 6.6 学习历史轴（轻量版）
-
-首页底部"最近 7 天学习"小图：
-- 按天聚合 slide 阅读数 + quiz 完成数。
-- 简单 Canvas 柱状图，不引入 chart 库。
-- 数据：`Storage.dailyStats[YYYY-MM-DD] = { slidesViewed, quizzesDone }`。
-
-### 6.7 验收标准
+### 6.6 验收标准
 
 - Ctrl+K 能在 < 100ms 出搜索结果。
 - 章节抽屉在 < 480px 屏幕自动变为 bottom sheet。
@@ -424,18 +441,25 @@ h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); }
 - 提示："使用浏览器另存为 PDF 即可获得本章 PDF"。
 - 首页 "导出全书 PDF"：临时构造 print-all.html 串联 16 章 → 一键打印。
 
+**与 §7.4 虚拟化的桥接**：虚拟化只渲染当前 ±1 张，DOM 里其他 slide 不存在，打印 PDF 会只有 3 张。
+
+桥接方案：`SlideEngine` 暴露 `renderAllForPrint()` 方法，
+- 调用前临时禁用虚拟化，挂一个 `.print-mode` class 到 `<body>`。
+- 在 `print-mode` 下渲染所有 slide（用 `DocumentFragment` 一次性插入，不触发 N 次 reflow）。
+- canvas 元素在插入后立刻 `toDataURL` 抓成 PNG，把 `<canvas>` 替换为 `<img src="data:image/png;...">`，保证打印静态化。
+- 触发 `window.print()`，监听 `afterprint` 事件还原：移除 `.print-mode`、重新挂回虚拟化（只保留当前 ±1 张）、恢复 canvas。
+- 用户按"取消"打印时也走 `afterprint` 清理路径，避免 DOM 残留。
+
+`@media print` 配合：让 `.print-mode` 下隐藏的所有 chrome（导航、按钮）保持隐藏；普通模式下不被影响。
+
 ### 7.4 性能优化
 
-- slide 渲染从"全部 innerHTML"改为虚拟化：只渲染当前 ± 1 张。
+- slide 渲染从"全部 innerHTML"改为虚拟化：只渲染当前 ± 1 张。**注：与 §7.3 打印互斥，已在 §7.3 用 `.print-mode` 桥接**。
 - canvas 动画 lazy mount：进入该 slide 才 init，离开 destroy。
 - 视频动画 `<video preload="none">`，进入 slide 才 load。
 - 章节级懒加载：首页只加载 metadata，进入章节才加载该章 slides（如果 chapters.json 单文件超 100KB）。
 
-### 7.5 国际化预留
-
-把所有 UI 文案抽到 `js/i18n/zh-CN.js`，导出 `t(key)`。后续要英文版只加 `en-US.js` 即可。本设计仅做接口预留，不做翻译实现。
-
-### 7.6 验收标准
+### 7.5 验收标准
 
 - axe-core 扫描无 critical/serious 违规。
 - 键盘 Tab 走完首页 + 1 章无焦点黑洞。
@@ -450,20 +474,20 @@ h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); }
 
 | 风险 | 影响 | 缓解 |
 |---|---|---|
-| 内容抽取耗时 | 阶段二延期 | 写一次性脚本按 `chapter-title` class 切分到 markdown |
-| 8 个新 Canvas 动画工作量大 | 阶段二延期 | 统一基类后单动画 200-300 行，2-3 天完成 |
-| 双屏演讲者模式浏览器兼容性 | F5 不可用 | `window.open` + `BroadcastChannel` 跨浏览器稳定，单屏可退化 |
+| 内容准确性（AI 生成 230 张技术 slide 细节错误） | 阶段二质量失败 | 阶段二工作流 §5.3 第 5 步显式做"技术准确性 QA"（对照 source 逐条核对概念/代码/答案） |
+| 8 个新 Canvas 动画工作量大 | 阶段二延期 | 统一基类后单动画 200-300 行，集中在原型阶段并行编写 |
+| 双屏演讲者模式浏览器兼容性 | 跨浏览器失效 | `window.open` + `BroadcastChannel` 跨浏览器稳定，单屏可退化 |
 | 搜索索引体积 | 首屏慢 | Lazy build，首次打开搜索时再建 |
-| canvas 截图暗色错位 | PDF 颜色错 | 打印前强制切回浅色 |
+| canvas 截图暗色错位 | PDF 颜色错 | 打印前强制切回浅色（`document.documentElement.setAttribute('data-theme', 'light')`） |
 | 全书 PDF 体积过大 | 用户难下载 | 提供"分章下载 ZIP"备选 |
-| i18n 抽取费时 | 阶段四延期 | 仅做接口预留，不实际翻译 |
+| 虚拟化与打印冲突 | 打印只出 3 张 | §7.3 桥接：`renderAllForPrint()` 临时挂 `.print-mode` 全量渲染，afterprint 还原 |
 
 ---
 
 ## 9. 验收门槛（端到端）
 
 阶段一交付：
-- 用户视角完全等价；`slide-engine.js` < 200 行；新增动画零 HTML 改动。
+- 用户视角完全等价；`slide-engine.js` 职责单一（仅路由 + 生命周期，不含具体渲染逻辑）；新增动画零 HTML 改动。
 
 阶段二交付：
 - 16 章完整；每章 ≥ 20 slide / ≥ 5 quiz；动画亮/暗主题正确。
@@ -472,7 +496,7 @@ h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); }
 - Ctrl+K 搜索 < 100ms；演讲者模式可用；错题本闭环；? 帮助浮层可用。
 
 阶段四交付：
-- axe 无 critical 违规；iPhone SE 可用；PDF 三浏览器可导出；Lighthouse Perf ≥ 90、A11y ≥ 95。
+- axe 无 critical 违规；iPhone SE 可用；PDF 三浏览器可导出且**包含全部 slide**（虚拟化桥接正确工作）；Lighthouse Perf ≥ 90、A11y ≥ 95。
 
 ---
 
@@ -480,11 +504,11 @@ h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); }
 
 明确不做：
 - TypeScript 化（保持 ES Modules + JSDoc 即可）。
-- 引入 React/Vue 等框架（与"双击即开"矛盾）。
+- 引入 React/Vue 等框架。
 - 后端服务（搜索/进度均在浏览器本地完成）。
 - 用户账号 / 多设备同步（localStorage 足够）。
 - 自动化 PDF 服务端生成（浏览器打印足够）。
-- 完整国际化翻译（仅留接口）。
+- 国际化 i18n（产品定位是中文教学，UI 文案量小且为辅，逐处手动改即可；前期抽 i18n 是过度设计）。
 - 实时协作 / 评论系统。
 
 ---
