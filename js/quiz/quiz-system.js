@@ -15,8 +15,10 @@ export class QuizSystem {
     }
 
     async init() {
+        console.log('[QuizSystem.init] loading quiz data for:', this.chapterId);
         const data = await loadJSON('data/quiz-data.json');
         this.questions = data[this.chapterId] || [];
+        console.log('[QuizSystem.init] loaded', this.questions.length, 'questions for', this.chapterId, 'keys:', Object.keys(data));
         if (this.questions.length === 0) {
             this.container.innerHTML = '<p class="text-center text-muted">本章暂无测验题目</p>';
             return;
@@ -25,8 +27,10 @@ export class QuizSystem {
     }
 
     render() {
+        console.log('[QuizSystem.render] currentIndex:', this.currentIndex, 'total:', this.questions.length);
         if (this.currentIndex >= this.questions.length) { this.renderResult(); return; }
         const q = this.questions[this.currentIndex];
+        console.log('[QuizSystem.render] question:', q.id, 'type:', q.type);
         this.submitted = false;
         this.selectedIds = [];
         this.container.innerHTML = '';
@@ -63,6 +67,8 @@ export class QuizSystem {
         const submitBtn = createElement('button', { className: 'btn btn-primary', id: 'btn-submit' }, '提交答案');
         submitBtn.addEventListener('click', () => this.submit());
         actionsEl.appendChild(submitBtn);
+        this.container.appendChild(actionsEl);
+        console.log('[QuizSystem.render] submit button added, innerHTML length:', this.container.innerHTML.length);
         this.container.appendChild(createElement('div', { className: 'quiz-explanation hidden', id: 'quiz-explanation' }));
     }
 
