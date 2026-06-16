@@ -106,24 +106,45 @@ export class SlideEngine {
     render() {
         if (this.titleEl) this.titleEl.textContent = this.chapterData.title;
         if (this.subtitleEl) this.subtitleEl.textContent = this.chapterData.subtitle || '';
+        if (this._isPrinting) { this._renderAll(); return; }
+        this._renderCurrent();
+    }
+
+    _renderCurrent() {
+        this.stage.innerHTML = '';
+        this._animMounted.clear();
+        const slide = this.slides[this.currentIndex];
+        const el = createElement('div', {
+            className: `slide-content slide-${slide.type} active`,
+            dataset: { index: this.currentIndex }
+        });
+        el.innerHTML = this.router.route(slide, {
+            chapterData: this.chapterData,
+            slideIndex: this.currentIndex,
+            slidesLength: this.slides.length
+        });
+        this.stage.appendChild(el);
+        if (slide.type === 'animation') setTimeout(() => this._mountAnimation(slide), 0);
+        if (slide.type === 'quiz') setTimeout(() => this._mountQuiz(), 0);
+    }
+
+    _renderAll() {
         this.stage.innerHTML = '';
         this._animMounted.clear();
         this.slides.forEach((slide, index) => {
             const el = createElement('div', {
-                className: `slide-content slide-${slide.type}`,
+                className: `slide-content slide-${slide.type}` + (index === this.currentIndex ? ' active' : ''),
                 dataset: { index }
             });
-            const html = this.router.route(slide, {
+            el.innerHTML = this.router.route(slide, {
                 chapterData: this.chapterData,
                 slideIndex: index,
                 slidesLength: this.slides.length
             });
-            el.innerHTML = html;
             this.stage.appendChild(el);
-            if (slide.type === 'animation') setTimeout(() => this._mountAnimation(slide), 0);
-            if (slide.type === 'quiz') setTimeout(() => this._mountQuiz(), 0);
+            if (slide.type === 'animation') this._mountAnimation(slide);
+            if (slide.type === 'quiz' && index === this.currentIndex) this._mountQuiz();
         });
-        this.updateSlideVisibility();
     }
 
     _mountAnimation(slide) {
@@ -193,6 +214,8 @@ export class SlideEngine {
         if (this.progressBar) {
             const pct = ((this.currentIndex + 1) / this.slides.length) * 100;
             this.progressBar.innerHTML = `<div class="fill" style="width: ${pct}%"></div>`;
+            this.progressBar.setAttribute('aria-valuenow', this.currentIndex + 1);
+            this.progressBar.setAttribute('aria-valuemax', this.slides.length);
         }
         const first = this.currentIndex === 0, last = this.currentIndex === this.slides.length - 1;
         if (this.btnPrev) this.btnPrev.disabled = first;
@@ -216,7 +239,18 @@ export class SlideEngine {
         });
     }
 
-    next() { if (this.currentIndex < this.slides.length - 1) { this.currentIndex++; this.updateSlideVisibility(); this.updateUI(); } }
-    prev() { if (this.currentIndex > 0) { this.currentIndex--; this.updateSlideVisibility(); this.updateUI(); } }
-    goTo(i) { if (i >= 0 && i < this.slides.length) { this.currentIndex = i; this.updateSlideVisibility(); this.updateUI(); } }
+    printCurrent() {
+        this._isPrinting = true;
+        import('../features/print.js').then(({ renderAllForPrint, setupAfterPrint }) => {
+            this._renderAll();
+            renderAllForPrint();
+            setupAfterPrint();
+            window.print();
+            setTimeout(() => { this._isPrinting = false; this._renderCurrent(); }, 100);
+        });
+    }
+
+    next() { if (this.currentIndex < this.slides.length - 1) { this.currentIndex++; this.render(); this.updateUI(); } }
+    prev() { if (this.currentIndex > 0) { this.currentIndex--; this.render(); this.updateUI(); } }
+    goTo(i) { if (i >= 0 && i < this.slides.length) { this.currentIndex = i; this.render(); this.updateUI(); } }
 }

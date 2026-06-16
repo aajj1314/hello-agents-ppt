@@ -889,3 +889,25 @@ body::before {
     .hero-stats .stat-value { font-size: 1.25rem; }
     .hero-banner .progress-overview { flex-direction: column; padding: 0.75rem 1rem; }
 }
+
+/* === 响应式断点（扩展） === */
+@media (max-width: 1024px) {
+    .toc-drawer { width: 260px; }
+}
+
+@media (max-width: 768px) {
+    .chapter-grid { grid-template-columns: 1fr; }
+    .top-nav { padding: 0.5rem; }
+    .comparison-table { display: block; overflow-x: auto; }
+    .canvas-wrapper { height: 320px !important; }
+    .hero-stats { grid-template-columns: repeat(2, 1fr); }
+    .slide-cover h1 { font-size: 1.75rem; }
+}
+
+@media (max-width: 480px) {
+    html { font-size: 14px; }
+    .chapter-card { padding: 0.75rem; }
+    .toc-drawer { width: 100%; bottom: 0; top: auto; height: 60vh; }
+    button, a { min-height: 44px; }
+    .kbd-shortcuts { display: none; }
+}

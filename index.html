@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/themes.css">
     <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/a11y.css">
 </head>
 <body>
     <div class="app">
@@ -15,52 +16,52 @@
             <h1>Hello-Agents</h1>
             <p class="subtitle">从零开始构建智能体 · 交互式学习平台</p>
 
-            <div class="hero-stats" id="heroStats">
+            <div class="hero-stats" id="heroStats" role="group" aria-label="学习统计">
                 <div class="stat-card">
-                    <div class="stat-value" id="statChapters">0</div>
+                    <div class="stat-value" id="statChapters" aria-live="polite">0</div>
                     <div class="stat-label">章节</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" id="statPages">0</div>
+                    <div class="stat-value" id="statPages" aria-live="polite">0</div>
                     <div class="stat-label">幻灯片</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" id="statAnimations">0</div>
+                    <div class="stat-value" id="statAnimations" aria-live="polite">0</div>
                     <div class="stat-label">交互动画</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" id="statQuizzes">0</div>
+                    <div class="stat-value" id="statQuizzes" aria-live="polite">0</div>
                     <div class="stat-label">测验</div>
                 </div>
             </div>
 
             <div class="progress-overview" id="heroProgress">
-                <span>整体进度</span>
-                <div class="progress-bar-hero">
+                <span id="heroProgressLabel">整体进度</span>
+                <div class="progress-bar-hero" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="heroProgressBar">
                     <div class="fill" id="heroProgressFill" style="width: 0%"></div>
                 </div>
                 <span id="heroProgressText">0%</span>
             </div>
         </header>
 
-        <main class="chapter-grid" id="chapterGrid"></main>
+        <main class="chapter-grid" id="chapterGrid" aria-label="章节列表"></main>
 
         <footer class="app-footer">
-            <button class="btn btn-primary" id="btnStart">
+            <button class="btn btn-primary" id="btnStart" aria-label="开始学习">
                 <span class="btn-icon">🚀</span>
                 <span>开始学习</span>
             </button>
-            <button class="btn btn-secondary" id="btnContinue">
+            <button class="btn btn-secondary" id="btnContinue" aria-label="继续上次学习">
                 <span class="btn-icon">📖</span>
                 <span>继续上次</span>
             </button>
-            <button class="btn btn-danger" id="btnReset">
+            <button class="btn btn-danger" id="btnReset" aria-label="重置学习进度">
                 <span class="btn-icon">↺</span>
                 <span>重置进度</span>
             </button>
         </footer>
     </div>
-    <button class="theme-toggle" id="themeToggle">🌓</button>
+    <button class="theme-toggle" id="themeToggle" aria-label="切换主题">🌓</button>
     <script type="module" src="js/main.js"></script>
 </body>
 </html>

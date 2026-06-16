@@ -84,6 +84,8 @@ class App {
         const heroText = document.getElementById('heroProgressText');
         if (heroFill) { heroFill.style.width = overall + '%'; heroFill.style.transition = 'width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)'; }
         if (heroText) heroText.textContent = overall + '%';
+        const heroBar = document.getElementById('heroProgressBar');
+        if (heroBar) heroBar.setAttribute('aria-valuenow', overall);
     }
 
     bindButtons() {

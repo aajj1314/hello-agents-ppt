@@ -1,0 +1,9 @@
+:focus-visible {
+    outline: 3px solid #4F46E5;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+button:focus-visible,
+a:focus-visible {
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.4);
+}

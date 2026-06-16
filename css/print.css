@@ -1,0 +1,18 @@
+@media print {
+    body { background: white !important; color: #0F172A !important; }
+    .slides-nav, .slides-bottom-nav, .theme-toggle, .search-toggle, .toc-drawer { display: none !important; }
+    .slide-content {
+        display: block !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+        margin-bottom: 1rem;
+        border: 1px solid #ddd;
+        padding: 1rem;
+    }
+    .slide-content.active { display: block !important; }
+    canvas { display: none !important; }
+    canvas.print-static { display: block !important; }
+    .quiz-explanation { display: block !important; }
+    .code-block { white-space: pre-wrap; word-break: break-all; }
+    a { color: #4F46E5 !important; }
+}
