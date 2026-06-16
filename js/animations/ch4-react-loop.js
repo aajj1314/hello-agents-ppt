@@ -2,53 +2,43 @@
  * CH4: ReAct Loop Animation
  * Visualizes Thought → Action → Observation cycle with step-by-step demo
  */
-const ReActAnimation = {
-    canvas: null, ctx: null, width: 0, height: 0,
-    step: 0, isPlaying: false, speed: 1,
-    animationId: null, lastStepTime: 0,
+import { CanvasAnimation } from './canvas-animation.js';
+import { registerAnimation } from './animation-registry.js';
 
-    demoSteps: [
-        {
-            thought: '用户问：华为最新手机是什么？',
-            action: 'Search["华为最新手机型号"]',
-            observation: '华为 Mate 系列、Pura 系列是最新旗舰手机。'
-        },
-        {
-            thought: '需要了解具体型号和卖点，才能给出更完整回答。',
-            action: 'Search["华为 Pura 70 卖点与参数"]',
-            observation: 'Pura 70：麒麟9010芯片 · 超聚光影像 · 100W 快充。'
-        },
-        {
-            thought: '已收集足够信息，汇总后回答用户。',
-            action: 'Finish["综合回答"]',
-            observation: ''
-        }
-    ],
+class Ch4ReActLoop extends CanvasAnimation {
+    constructor() {
+        super();
+        this.step = 0;
+        this.isPlaying = false;
+        this.speed = 1;
+        this.animationId = null;
+        this.lastStepTime = 0;
+
+        this.demoSteps = [
+            {
+                thought: '用户问：华为最新手机是什么？',
+                action: 'Search["华为最新手机型号"]',
+                observation: '华为 Mate 系列、Pura 系列是最新旗舰手机。'
+            },
+            {
+                thought: '需要了解具体型号和卖点，才能给出更完整回答。',
+                action: 'Search["华为 Pura 70 卖点与参数"]',
+                observation: 'Pura 70：麒麟9010芯片 · 超聚光影像 · 100W 快充。'
+            },
+            {
+                thought: '已收集足够信息，汇总后回答用户。',
+                action: 'Finish["综合回答"]',
+                observation: ''
+            }
+        ];
+    }
 
     init(canvas) {
-        this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
-        this._resize();
+        super.init(canvas);
         this._setupControls();
-        window.addEventListener('resize', () => this._resize());
+        window.addEventListener('resize', () => { this._resize(); this.draw(); });
         this.draw();
-    },
-
-    _resize() {
-        if (!this.canvas) return;
-        const container = this.canvas.parentElement;
-        const dpr = window.devicePixelRatio || 1;
-        const logicalW = container.clientWidth;
-        const logicalH = container.clientHeight || 420;
-        this.canvas.style.width = logicalW + 'px';
-        this.canvas.style.height = logicalH + 'px';
-        this.canvas.width = logicalW * dpr;
-        this.canvas.height = logicalH * dpr;
-        this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        this.width = logicalW;
-        this.height = logicalH;
-        this.draw();
-    },
+    }
 
     _setupControls() {
         const animId = 'ch4-react-loop';
@@ -63,7 +53,7 @@ const ReActAnimation = {
         if (speedSlider) speedSlider.addEventListener('input', (e) => {
             this.speed = parseFloat(e.target.value) || 1;
         });
-    },
+    }
 
     togglePlay() {
         this.isPlaying = !this.isPlaying;
@@ -71,7 +61,7 @@ const ReActAnimation = {
         if (btn) btn.textContent = this.isPlaying ? '⏸ 暂停' : '▶ 播放';
         if (this.isPlaying) this._loop();
         else cancelAnimationFrame(this.animationId);
-    },
+    }
 
     _loop() {
         if (!this.isPlaying) return;
@@ -83,7 +73,6 @@ const ReActAnimation = {
                 this.step++;
                 this.draw();
             } else {
-                // Pause at the end
                 this.isPlaying = false;
                 const btn = document.getElementById('btn-play-ch4-react-loop');
                 if (btn) btn.textContent = '▶ 播放';
@@ -91,12 +80,12 @@ const ReActAnimation = {
             this.lastStepTime = now;
         }
         this.animationId = requestAnimationFrame(() => this._loop());
-    },
+    }
 
     stepForward() {
         if (this.step < this.demoSteps.length * 3 - 1) this.step++;
         this.draw();
-    },
+    }
 
     reset() {
         this.step = 0;
@@ -106,17 +95,21 @@ const ReActAnimation = {
         const btn = document.getElementById('btn-play-ch4-react-loop');
         if (btn) btn.textContent = '▶ 播放';
         this.draw();
-    },
+    }
 
-    _isDarkTheme() {
-        return document.documentElement.getAttribute('data-theme') === 'dark';
-    },
+    play() {
+        this.togglePlay();
+    }
+
+    setSpeed(v) {
+        this.speed = v;
+    }
 
     draw() {
         const ctx = this.ctx;
         const w = this.width;
         const h = this.height;
-        const isDark = this._isDarkTheme();
+        const isDark = this.isDarkTheme();
         const bg = isDark ? '#1E293B' : '#F8FAFC';
         const textColor = isDark ? '#F8FAFC' : '#0F172A';
         const subTextColor = isDark ? '#CBD5E1' : '#475569';
@@ -132,9 +125,8 @@ const ReActAnimation = {
         const memX = w - 120;
         const memY = h * 0.55;
 
-        // Phase: step 0 -> initial; step 1-> thought highlighted; step 2-> action arrow; step 3-> observation
         const demoIdx = Math.floor(this.step / 3);
-        const phase = this.step % 3; // 0=thought, 1=action, 2=observation
+        const phase = this.step % 3;
         const step = this.demoSteps[demoIdx] || this.demoSteps[0];
 
         // User question (top)
@@ -185,7 +177,7 @@ const ReActAnimation = {
             const ey = entryTop + i * entryH;
             const isCurrent = i === demoIdx && phase >= 2;
             ctx.fillStyle = isDark ? '#475569' : '#D1FAE5';
-            this._roundRect(ctx, memX - memW / 2 + 12, ey, memW - 24, entryH - 8, 8);
+            this.roundRect(ctx, memX - memW / 2 + 12, ey, memW - 24, entryH - 8, 8);
             ctx.fill();
             ctx.fillStyle = textColor;
             ctx.font = 'bold 11px sans-serif';
@@ -210,13 +202,13 @@ const ReActAnimation = {
         this._drawLegend(ctx, 16, legendY, brainColor, 'Thought');
         this._drawLegend(ctx, 120, legendY, '#3B82F6', 'Action');
         this._drawLegend(ctx, 220, legendY, '#10B981', 'Observation');
-    },
+    }
 
     _drawBox(ctx, x, y, w, h, label, bg, border, textColor, highlight) {
         ctx.fillStyle = bg;
-        this._roundRect(ctx, x, y, w, h, 8);
+        this.roundRect(ctx, x, y, w, h, 8);
         ctx.fill();
-        ctx.strokeStyle = highlight ? border : (this._isDarkTheme() ? '#475569' : '#CBD5E1');
+        ctx.strokeStyle = highlight ? border : (this.isDarkTheme() ? '#475569' : '#CBD5E1');
         ctx.lineWidth = highlight ? 3 : 1.5;
         ctx.stroke();
 
@@ -225,10 +217,9 @@ const ReActAnimation = {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         this._wrapText(ctx, label, x + w / 2, y + h / 2, w - 20, 16);
-    },
+    }
 
     _drawCircle(ctx, x, y, r, label, color, active, isDark, textColor) {
-        // Glow if active
         if (active) {
             ctx.beginPath();
             ctx.arc(x, y, r + 12, 0, Math.PI * 2);
@@ -251,7 +242,7 @@ const ReActAnimation = {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(label, x, y);
-    },
+    }
 
     _drawArrow(ctx, x1, y1, x2, y2, color, progress, dashed) {
         ctx.beginPath();
@@ -265,7 +256,6 @@ const ReActAnimation = {
         ctx.stroke();
         ctx.setLineDash([]);
 
-        // Arrow head
         if (progress >= 0.99) {
             const angle = Math.atan2(y2 - y1, x2 - x1);
             const headLen = 10;
@@ -279,13 +269,13 @@ const ReActAnimation = {
             ctx.fillStyle = color;
             ctx.fill();
         }
-    },
+    }
 
     _drawCallout(ctx, x, y, w, h, text, bg, border, textColor) {
         ctx.fillStyle = bg;
         ctx.strokeStyle = border;
         ctx.lineWidth = 1.5;
-        this._roundRect(ctx, x, y, w, h, 8);
+        this.roundRect(ctx, x, y, w, h, 8);
         ctx.fill();
         ctx.stroke();
         // Tail triangle pointing back to brain
@@ -304,17 +294,17 @@ const ReActAnimation = {
         ctx.textAlign = 'left';
         ctx.textBaseline = 'middle';
         this._wrapText(ctx, text, x + 10, y + h / 2, w - 20, 16);
-    },
+    }
 
     _drawLegend(ctx, x, y, color, label) {
         ctx.fillStyle = color;
         ctx.fillRect(x, y, 12, 12);
-        ctx.fillStyle = this._isDarkTheme() ? '#CBD5E1' : '#475569';
+        ctx.fillStyle = this.isDarkTheme() ? '#CBD5E1' : '#475569';
         ctx.font = '12px sans-serif';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'top';
         ctx.fillText(label, x + 18, y - 1);
-    },
+    }
 
     _wrapText(ctx, text, x, y, maxWidth, lineHeight) {
         const words = text.split('');
@@ -335,22 +325,7 @@ const ReActAnimation = {
         for (let i = 0; i < lines.length; i++) {
             ctx.fillText(lines[i], x, y - totalH / 2 + (i + 0.5) * lineHeight);
         }
-    },
-
-    _roundRect(ctx, x, y, w, h, r) {
-        ctx.beginPath();
-        ctx.moveTo(x + r, y);
-        ctx.lineTo(x + w - r, y);
-        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-        ctx.lineTo(x + w, y + h - r);
-        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-        ctx.lineTo(x + r, y + h);
-        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-        ctx.lineTo(x, y + r);
-        ctx.quadraticCurveTo(x, y, x + r, y);
-        ctx.closePath();
     }
-};
+}
 
-window.Animations = window.Animations || {};
-window.Animations['ch4-react-loop'] = ReActAnimation;
+registerAnimation('ch4-react-loop', () => new Ch4ReActLoop());

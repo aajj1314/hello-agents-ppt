@@ -17,6 +17,12 @@ import './animations/ch14-task-tree.js';
 import './animations/ch15-cybertown.js';
 import './animations/ch5-lowcode.js';
 import './animations/ch16-capstone.js';
+import './animations/ch1-agent-types.js';
+import './animations/ch4-react-loop.js';
+import './animations/ch7-framework.js';
+import './animations/ch8-memory.js';
+import './animations/ch10-protocol.js';
+import './animations/ch13-travel.js';
 
 if (document.getElementById('slideStage')) {
     document.addEventListener('DOMContentLoaded', () => {

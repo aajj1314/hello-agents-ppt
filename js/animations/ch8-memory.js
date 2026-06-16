@@ -2,44 +2,33 @@
  * CH8: Memory & Retrieval Animation
  * Visualizes data flowing: Input → Short-Term Memory → Long-Term Memory → Retrieval → LLM
  */
-const Ch8Memory = {
-    canvas: null, ctx: null, width: 0, height: 0,
-    isPlaying: false, speed: 1, animationId: null,
-    particles: [],
-    lastSpawnTime: 0,
+import { CanvasAnimation } from './canvas-animation.js';
+import { registerAnimation } from './animation-registry.js';
 
-    stages: [
-        { key: 'input', name: '输入', color: '#6366F1', x: 0.08, y: 0.5 },
-        { key: 'stm', name: 'STM', color: '#3B82F6', x: 0.32, y: 0.5 },
-        { key: 'ltm', name: 'LTM', color: '#10B981', x: 0.62, y: 0.5 },
-        { key: 'retrieval', name: '检索', color: '#F59E0B', x: 0.62, y: 0.2 },
-        { key: 'llm', name: 'LLM', color: '#8B5CF6', x: 0.88, y: 0.5 }
-    ],
+class Ch8Memory extends CanvasAnimation {
+    constructor() {
+        super();
+        this.isPlaying = false;
+        this.speed = 1;
+        this.animationId = null;
+        this.particles = [];
+        this.lastSpawnTime = 0;
+
+        this.stages = [
+            { key: 'input', name: '输入', color: '#6366F1', x: 0.08, y: 0.5 },
+            { key: 'stm', name: 'STM', color: '#3B82F6', x: 0.32, y: 0.5 },
+            { key: 'ltm', name: 'LTM', color: '#10B981', x: 0.62, y: 0.5 },
+            { key: 'retrieval', name: '检索', color: '#F59E0B', x: 0.62, y: 0.2 },
+            { key: 'llm', name: 'LLM', color: '#8B5CF6', x: 0.88, y: 0.5 }
+        ];
+    }
 
     init(canvas) {
-        this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
-        this._resize();
+        super.init(canvas);
         this._setupControls();
-        window.addEventListener('resize', () => this._resize());
+        window.addEventListener('resize', () => { this._resize(); this.draw(); });
         this.draw();
-    },
-
-    _resize() {
-        if (!this.canvas) return;
-        const container = this.canvas.parentElement;
-        const dpr = window.devicePixelRatio || 1;
-        const logicalW = container.clientWidth;
-        const logicalH = container.clientHeight || 420;
-        this.canvas.style.width = logicalW + 'px';
-        this.canvas.style.height = logicalH + 'px';
-        this.canvas.width = logicalW * dpr;
-        this.canvas.height = logicalH * dpr;
-        this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        this.width = logicalW;
-        this.height = logicalH;
-        this.draw();
-    },
+    }
 
     _setupControls() {
         const animId = 'ch8-memory';
@@ -53,7 +42,7 @@ const Ch8Memory = {
         if (speedSlider) speedSlider.addEventListener('input', (e) => {
             this.speed = parseFloat(e.target.value) || 1;
         });
-    },
+    }
 
     togglePlay() {
         this.isPlaying = !this.isPlaying;
@@ -61,7 +50,7 @@ const Ch8Memory = {
         if (btn) btn.textContent = this.isPlaying ? '⏸ 暂停' : '▶ 播放';
         if (this.isPlaying) this._loop();
         else cancelAnimationFrame(this.animationId);
-    },
+    }
 
     reset() {
         this.isPlaying = false;
@@ -70,7 +59,15 @@ const Ch8Memory = {
         const btn = document.getElementById('btn-play-ch8-memory');
         if (btn) btn.textContent = '▶ 播放';
         this.draw();
-    },
+    }
+
+    play() {
+        this.togglePlay();
+    }
+
+    setSpeed(v) {
+        this.speed = v;
+    }
 
     _loop() {
         if (!this.isPlaying) return;
@@ -97,7 +94,7 @@ const Ch8Memory = {
         this.particles = this.particles.filter(p => !(p.segIdx >= p.path.length - 2 && p.seg >= 1));
         this.draw();
         this.animationId = requestAnimationFrame(() => this._loop());
-    },
+    }
 
     _spawnFromInput() {
         const input = { x: this.stages[0].x * this.width, y: this.stages[0].y * this.height };
@@ -118,17 +115,13 @@ const Ch8Memory = {
             path: [ltm, ret, llm],
             color: '#F59E0B', kind: 'retrieve'
         });
-    },
-
-    _isDarkTheme() {
-        return document.documentElement.getAttribute('data-theme') === 'dark';
-    },
+    }
 
     draw() {
         const ctx = this.ctx;
         const w = this.width;
         const h = this.height;
-        const isDark = this._isDarkTheme();
+        const isDark = this.isDarkTheme();
         const bg = isDark ? '#1E293B' : '#F8FAFC';
         const textColor = isDark ? '#F8FAFC' : '#0F172A';
         const subTextColor = isDark ? '#CBD5E1' : '#475569';
@@ -177,7 +170,7 @@ const Ch8Memory = {
             ctx.fill();
             // card
             ctx.fillStyle = p.color;
-            this._roundRect(ctx, p.x - boxW / 2, p.y - boxH / 2, boxW, boxH, 10);
+            this.roundRect(ctx, p.x - boxW / 2, p.y - boxH / 2, boxW, boxH, 10);
             ctx.fill();
             ctx.strokeStyle = '#1E293B';
             ctx.lineWidth = 1.5;
@@ -205,22 +198,7 @@ const Ch8Memory = {
         ctx.font = '12px sans-serif';
         ctx.textAlign = 'left';
         ctx.fillText('数据流动：输入 → 短期记忆 → 长期记忆 → 检索增强 → 注入 LLM 上下文', 16, h - 18);
-    },
-
-    _roundRect(ctx, x, y, w, h, r) {
-        ctx.beginPath();
-        ctx.moveTo(x + r, y);
-        ctx.lineTo(x + w - r, y);
-        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-        ctx.lineTo(x + w, y + h - r);
-        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-        ctx.lineTo(x + r, y + h);
-        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-        ctx.lineTo(x, y + r);
-        ctx.quadraticCurveTo(x, y, x + r, y);
-        ctx.closePath();
     }
-};
+}
 
-window.Animations = window.Animations || {};
-window.Animations['ch8-memory'] = Ch8Memory;
+registerAnimation('ch8-memory', () => new Ch8Memory());

@@ -2,48 +2,39 @@
  * CH13: Multi-Agent Travel Assistant Collaboration
  * Task allocation from Planner -> Booking / Advisor
  */
-const Ch13Travel = {
-    canvas: null, ctx: null, width: 0, height: 0,
-    step: 0, isPlaying: false, speed: 1, animationId: null, lastStepTime: 0,
-    particles: [],
+import { CanvasAnimation } from './canvas-animation.js';
+import { registerAnimation } from './animation-registry.js';
 
-    agents: [
-        { key: 'planner', name: 'Planner', desc: '行程规划', color: '#6366F1', rel: { x: 0.5, y: 0.22 } },
-        { key: 'booking', name: 'Booking', desc: '预订服务',   color: '#3B82F6', rel: { x: 0.22, y: 0.72 } },
-        { key: 'advisor', name: 'Advisor', desc: '旅行建议',   color: '#10B981', rel: { x: 0.78, y: 0.72 } }
-    ],
+class Ch13Travel extends CanvasAnimation {
+    constructor() {
+        super();
+        this.step = 0;
+        this.isPlaying = false;
+        this.speed = 1;
+        this.animationId = null;
+        this.lastStepTime = 0;
+        this.particles = [];
 
-    tasks: [
-        { from: 0, to: 1, text: 'Task: 预订机票 & 酒店' },
-        { from: 0, to: 2, text: 'Task: 推荐景点 & 餐厅' },
-        { from: 1, to: 0, text: 'Result: 预订完成' },
-        { from: 2, to: 0, text: 'Result: 建议清单' }
-    ],
+        this.agents = [
+            { key: 'planner', name: 'Planner', desc: '行程规划', color: '#6366F1', rel: { x: 0.5, y: 0.22 } },
+            { key: 'booking', name: 'Booking', desc: '预订服务',   color: '#3B82F6', rel: { x: 0.22, y: 0.72 } },
+            { key: 'advisor', name: 'Advisor', desc: '旅行建议',   color: '#10B981', rel: { x: 0.78, y: 0.72 } }
+        ];
+
+        this.tasks = [
+            { from: 0, to: 1, text: 'Task: 预订机票 & 酒店' },
+            { from: 0, to: 2, text: 'Task: 推荐景点 & 餐厅' },
+            { from: 1, to: 0, text: 'Result: 预订完成' },
+            { from: 2, to: 0, text: 'Result: 建议清单' }
+        ];
+    }
 
     init(canvas) {
-        this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
-        this._resize();
+        super.init(canvas);
         this._setupControls();
-        window.addEventListener('resize', () => this._resize());
+        window.addEventListener('resize', () => { this._resize(); this.draw(); });
         this.draw();
-    },
-
-    _resize() {
-        if (!this.canvas) return;
-        const container = this.canvas.parentElement;
-        const dpr = window.devicePixelRatio || 1;
-        const logicalW = container.clientWidth;
-        const logicalH = container.clientHeight || 420;
-        this.canvas.style.width = logicalW + 'px';
-        this.canvas.style.height = logicalH + 'px';
-        this.canvas.width = logicalW * dpr;
-        this.canvas.height = logicalH * dpr;
-        this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        this.width = logicalW;
-        this.height = logicalH;
-        this.draw();
-    },
+    }
 
     _setupControls() {
         const animId = 'ch13-travel';
@@ -57,7 +48,7 @@ const Ch13Travel = {
         if (speedSlider) speedSlider.addEventListener('input', (e) => {
             this.speed = parseFloat(e.target.value) || 1;
         });
-    },
+    }
 
     togglePlay() {
         this.isPlaying = !this.isPlaying;
@@ -65,7 +56,7 @@ const Ch13Travel = {
         if (btn) btn.textContent = this.isPlaying ? '⏸ 暂停' : '▶ 播放';
         if (this.isPlaying) this._loop();
         else cancelAnimationFrame(this.animationId);
-    },
+    }
 
     _loop() {
         if (!this.isPlaying) return;
@@ -85,7 +76,7 @@ const Ch13Travel = {
         this.particles = this.particles.filter(p => p.t < 1);
         this.draw();
         this.animationId = requestAnimationFrame(() => this._loop());
-    },
+    }
 
     stepForward() {
         this.step = (this.step + 1) % this.tasks.length;
@@ -94,7 +85,7 @@ const Ch13Travel = {
         const to = { x: this.agents[t.to].rel.x * this.width, y: this.agents[t.to].rel.y * this.height };
         this.particles.push({ from, to, t: 0, color: this.agents[t.to].color });
         this.draw();
-    },
+    }
 
     reset() {
         this.step = 0;
@@ -105,17 +96,21 @@ const Ch13Travel = {
         const btn = document.getElementById('btn-play-ch13-travel');
         if (btn) btn.textContent = '▶ 播放';
         this.draw();
-    },
+    }
 
-    _isDarkTheme() {
-        return document.documentElement.getAttribute('data-theme') === 'dark';
-    },
+    play() {
+        this.togglePlay();
+    }
+
+    setSpeed(v) {
+        this.speed = v;
+    }
 
     draw() {
         const ctx = this.ctx;
         const w = this.width;
         const h = this.height;
-        const isDark = this._isDarkTheme();
+        const isDark = this.isDarkTheme();
         const bg = isDark ? '#1E293B' : '#F8FAFC';
         const textColor = isDark ? '#F8FAFC' : '#0F172A';
         const subTextColor = isDark ? '#CBD5E1' : '#475569';
@@ -208,7 +203,6 @@ const Ch13Travel = {
         const cur = this.tasks[this.step];
         ctx.fillText('当前任务 (' + (this.step + 1) + '/' + this.tasks.length + '): ' + cur.text, 16, h - 14);
     }
-};
+}
 
-window.Animations = window.Animations || {};
-window.Animations['ch13-travel'] = Ch13Travel;
+registerAnimation('ch13-travel', () => new Ch13Travel());

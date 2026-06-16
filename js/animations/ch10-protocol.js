@@ -2,51 +2,42 @@
  * CH10: Agent Communication Protocol Animation
  * Sequential message exchange between Host <-> Client <-> Server
  */
-const Ch10Protocol = {
-    canvas: null, ctx: null, width: 0, height: 0,
-    step: 0, isPlaying: false, speed: 1, animationId: null, lastStepTime: 0,
+import { CanvasAnimation } from './canvas-animation.js';
+import { registerAnimation } from './animation-registry.js';
 
-    actors: [
-        { key: 'host',   name: 'Host',   color: '#6366F1' },
-        { key: 'client', name: 'Client', color: '#3B82F6' },
-        { key: 'server', name: 'Server', color: '#10B981' }
-    ],
+class Ch10Protocol extends CanvasAnimation {
+    constructor() {
+        super();
+        this.step = 0;
+        this.isPlaying = false;
+        this.speed = 1;
+        this.animationId = null;
+        this.lastStepTime = 0;
 
-    messages: [
-        { from: 0, to: 1, text: 'Initialize()' },
-        { from: 1, to: 2, text: 'Connect()' },
-        { from: 2, to: 1, text: 'ACK()' },
-        { from: 1, to: 0, text: 'Ready()' },
-        { from: 0, to: 1, text: 'ToolCall()' },
-        { from: 1, to: 2, text: 'Invoke()' },
-        { from: 2, to: 1, text: 'Result()' },
-        { from: 1, to: 0, text: 'Return()' }
-    ],
+        this.actors = [
+            { key: 'host',   name: 'Host',   color: '#6366F1' },
+            { key: 'client', name: 'Client', color: '#3B82F6' },
+            { key: 'server', name: 'Server', color: '#10B981' }
+        ];
+
+        this.messages = [
+            { from: 0, to: 1, text: 'Initialize()' },
+            { from: 1, to: 2, text: 'Connect()' },
+            { from: 2, to: 1, text: 'ACK()' },
+            { from: 1, to: 0, text: 'Ready()' },
+            { from: 0, to: 1, text: 'ToolCall()' },
+            { from: 1, to: 2, text: 'Invoke()' },
+            { from: 2, to: 1, text: 'Result()' },
+            { from: 1, to: 0, text: 'Return()' }
+        ];
+    }
 
     init(canvas) {
-        this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
-        this._resize();
+        super.init(canvas);
         this._setupControls();
-        window.addEventListener('resize', () => this._resize());
+        window.addEventListener('resize', () => { this._resize(); this.draw(); });
         this.draw();
-    },
-
-    _resize() {
-        if (!this.canvas) return;
-        const container = this.canvas.parentElement;
-        const dpr = window.devicePixelRatio || 1;
-        const logicalW = container.clientWidth;
-        const logicalH = container.clientHeight || 420;
-        this.canvas.style.width = logicalW + 'px';
-        this.canvas.style.height = logicalH + 'px';
-        this.canvas.width = logicalW * dpr;
-        this.canvas.height = logicalH * dpr;
-        this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        this.width = logicalW;
-        this.height = logicalH;
-        this.draw();
-    },
+    }
 
     _setupControls() {
         const animId = 'ch10-protocol';
@@ -60,7 +51,7 @@ const Ch10Protocol = {
         if (speedSlider) speedSlider.addEventListener('input', (e) => {
             this.speed = parseFloat(e.target.value) || 1;
         });
-    },
+    }
 
     togglePlay() {
         this.isPlaying = !this.isPlaying;
@@ -68,7 +59,7 @@ const Ch10Protocol = {
         if (btn) btn.textContent = this.isPlaying ? '⏸ 暂停' : '▶ 播放';
         if (this.isPlaying) this._loop();
         else cancelAnimationFrame(this.animationId);
-    },
+    }
 
     _loop() {
         if (!this.isPlaying) return;
@@ -81,12 +72,12 @@ const Ch10Protocol = {
         }
         this.draw();
         this.animationId = requestAnimationFrame(() => this._loop());
-    },
+    }
 
     stepForward() {
         this.step = (this.step + 1) % this.messages.length;
         this.draw();
-    },
+    }
 
     reset() {
         this.step = 0;
@@ -96,17 +87,21 @@ const Ch10Protocol = {
         const btn = document.getElementById('btn-play-ch10-protocol');
         if (btn) btn.textContent = '▶ 播放';
         this.draw();
-    },
+    }
 
-    _isDarkTheme() {
-        return document.documentElement.getAttribute('data-theme') === 'dark';
-    },
+    play() {
+        this.togglePlay();
+    }
+
+    setSpeed(v) {
+        this.speed = v;
+    }
 
     draw() {
         const ctx = this.ctx;
         const w = this.width;
         const h = this.height;
-        const isDark = this._isDarkTheme();
+        const isDark = this.isDarkTheme();
         const bg = isDark ? '#1E293B' : '#F8FAFC';
         const textColor = isDark ? '#F8FAFC' : '#0F172A';
         const subTextColor = isDark ? '#CBD5E1' : '#475569';
@@ -122,7 +117,7 @@ const Ch10Protocol = {
         this.actors.forEach((a, i) => {
             const x = colXs[i];
             ctx.fillStyle = a.color;
-            this._roundRect(ctx, x - 55, 8, 110, 32, 8);
+            this.roundRect(ctx, x - 55, 8, 110, 32, 8);
             ctx.fill();
             ctx.strokeStyle = '#1E293B';
             ctx.lineWidth = 1.5;
@@ -186,22 +181,7 @@ const Ch10Protocol = {
         ctx.font = '12px sans-serif';
         ctx.textAlign = 'left';
         ctx.fillText('消息序号: ' + (this.step + 1) + ' / ' + this.messages.length + ' 当前: ' + current.text, 16, h - 10);
-    },
-
-    _roundRect(ctx, x, y, w, h, r) {
-        ctx.beginPath();
-        ctx.moveTo(x + r, y);
-        ctx.lineTo(x + w - r, y);
-        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-        ctx.lineTo(x + w, y + h - r);
-        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-        ctx.lineTo(x + r, y + h);
-        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-        ctx.lineTo(x, y + r);
-        ctx.quadraticCurveTo(x, y, x + r, y);
-        ctx.closePath();
     }
-};
+}
 
-window.Animations = window.Animations || {};
-window.Animations['ch10-protocol'] = Ch10Protocol;
+registerAnimation('ch10-protocol', () => new Ch10Protocol());
