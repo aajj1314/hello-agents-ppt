@@ -1,6 +1,7 @@
 // js/slides-main.js - slides.html entry
 import { SlideEngine } from './slides/slide-engine.js';
-import { bindThemeToggle } from './theme.js';
+import { bindThemeToggle, syncThemeIcons } from './theme.js';
+import { ICONS } from './core/icons.js';
 
 import { mountTocSidebar, toggleToc, updateTocHighlight } from './features/toc-sidebar.js';
 import { mountSearch } from './features/search.js';
@@ -24,9 +25,22 @@ import './animations/ch8-memory.js';
 import './animations/ch10-protocol.js';
 import './animations/ch13-travel.js';
 
+// Inject SVG icons into the static nav buttons so the page is
+// emoji-free even before JS finishes loading the data.
+function injectNavIcons() {
+    const set = (id, svg) => { const el = document.getElementById(id); if (el) el.innerHTML = svg; };
+    set('btnHome', ICONS.home);
+    set('btnPrev', ICONS['chevron-left']);
+    set('btnNext', ICONS['chevron-right']);
+    set('btnPrevBottom', `<span class="bottom-btn__icon" aria-hidden="true">${ICONS['arrow-left']}</span><span>上一页</span>`);
+    set('btnNextBottom', `<span>下一页</span><span class="bottom-btn__icon" aria-hidden="true">${ICONS['arrow-right']}</span>`);
+}
+
 if (document.getElementById('slideStage')) {
     document.addEventListener('DOMContentLoaded', () => {
+        injectNavIcons();
         bindThemeToggle();
+        syncThemeIcons();
         bindShortcuts();
         registerShortcut('Home', () => window.slideEngine?.goTo(0));
         registerShortcut('End', () => window.slideEngine?.goTo(window.slideEngine.slides.length - 1));

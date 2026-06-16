@@ -1,3 +1,6 @@
+// js/features/search.js — Search modal with SVG icon (no emoji)
+import { ICONS, resolveIcon } from '../core/icons.js';
+
 let _index = null;
 let _navigate = null;
 
@@ -20,7 +23,8 @@ export function mountSearch(getIndex, navigate) {
     const btn = document.createElement('button');
     btn.className = 'search-toggle';
     btn.setAttribute('aria-label', '搜索');
-    btn.textContent = '🔍';
+    btn.setAttribute('title', '搜索 (Ctrl/Cmd + K)');
+    btn.innerHTML = ICONS.search;
     btn.addEventListener('click', () => openSearch());
     header.appendChild(btn);
 }
@@ -30,13 +34,32 @@ export async function openSearch() {
 
     const modal = document.createElement('div');
     modal.className = 'search-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', '搜索');
+    const inputWrap = document.createElement('div');
+    inputWrap.className = 'search-input-wrap';
     const input = document.createElement('input');
     input.className = 'search-input';
     input.type = 'text';
     input.placeholder = '搜索章节、slide、题目…';
+    input.setAttribute('aria-label', '搜索关键词');
+    const inputIcon = document.createElement('span');
+    inputIcon.className = 'search-input-icon';
+    inputIcon.setAttribute('aria-hidden', 'true');
+    inputIcon.innerHTML = ICONS.search;
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'search-close';
+    closeBtn.type = 'button';
+    closeBtn.setAttribute('aria-label', '关闭搜索');
+    closeBtn.innerHTML = ICONS.close;
+    closeBtn.addEventListener('click', () => closeSearch());
+    inputWrap.appendChild(inputIcon);
+    inputWrap.appendChild(input);
+    inputWrap.appendChild(closeBtn);
     const list = document.createElement('div');
     list.className = 'search-list';
-    modal.appendChild(input);
+    modal.appendChild(inputWrap);
     modal.appendChild(list);
     document.body.appendChild(modal);
     input.focus();

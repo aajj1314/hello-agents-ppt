@@ -3,65 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello-Agents 交互式学习 PPT</title>
+    <meta name="description" content="Hello-Agents 交互式学习平台：基于 Aurora + 玻璃拟态设计，从零开始构建 AI 智能体。">
+    <meta name="theme-color" content="#1E1B4B">
+    <title>Hello-Agents · 交互式学习平台</title>
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/themes.css">
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/a11y.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
 <body>
+    <a class="skip-link" href="#chapterGrid">跳转到章节列表</a>
+
+    <!-- Scroll progress (top) -->
+    <div class="scroll-progress" aria-hidden="true">
+        <div class="scroll-progress__bar" id="scrollProgressBar"></div>
+    </div>
+
     <div class="app">
-        <header class="hero-banner">
-            <div class="hero-tag">✦ AI Agent 系列教程</div>
+        <!-- Sticky project navigation (scroll-spy) -->
+        <nav class="sticky-nav" id="stickyNav" aria-label="章节导航">
+            <div class="sticky-nav__inner">
+                <a href="#top" class="sticky-nav__brand" aria-label="Hello-Agents 首页">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M12 2 L4 7 v10 l8 5 8-5 V7 z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    <span>Hello-Agents</span>
+                </a>
+                <div class="sticky-nav__chips" id="chapterChips" role="tablist" aria-label="章节快捷导航"></div>
+                <div class="sticky-nav__progress" aria-live="polite" aria-atomic="true">
+                    <svg class="sticky-nav__progress-ring" viewBox="0 0 36 36" aria-hidden="true">
+                        <circle cx="18" cy="18" r="15" fill="none" stroke="rgba(124,58,237,0.20)" stroke-width="3"></circle>
+                        <circle id="navProgressRing" cx="18" cy="18" r="15" fill="none" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" transform="rotate(-90 18 18)" stroke-dasharray="94.2" stroke-dashoffset="94.2"></circle>
+                    </svg>
+                    <span id="navProgressText">0%</span>
+                </div>
+            </div>
+        </nav>
+
+        <a id="top"></a>
+
+        <!-- Hero -->
+        <header class="hero-banner reveal" id="heroBanner">
+            <div class="hero-tag" aria-hidden="true">
+                <span class="hero-tag__dot"></span>
+                <span>AI Agent · 交互式教程</span>
+            </div>
             <h1>Hello-Agents</h1>
-            <p class="subtitle">从零开始构建智能体 · 交互式学习平台</p>
+            <p class="subtitle">从零开始构建智能体 · 16 章系统化课程，包含交互动画、配套测验与代码示例。</p>
 
             <div class="hero-stats" id="heroStats" role="group" aria-label="学习统计">
-                <div class="stat-card">
-                    <div class="stat-value" id="statChapters" aria-live="polite">0</div>
-                    <div class="stat-label">章节</div>
+                <div class="stat-tile">
+                    <div class="stat-tile__value" id="statChapters" aria-live="polite">0</div>
+                    <div class="stat-tile__label">章节</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="statPages" aria-live="polite">0</div>
-                    <div class="stat-label">幻灯片</div>
+                <div class="stat-tile">
+                    <div class="stat-tile__value" id="statPages" aria-live="polite">0</div>
+                    <div class="stat-tile__label">幻灯片</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="statAnimations" aria-live="polite">0</div>
-                    <div class="stat-label">交互动画</div>
+                <div class="stat-tile">
+                    <div class="stat-tile__value" id="statAnimations" aria-live="polite">0</div>
+                    <div class="stat-tile__label">交互动画</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="statQuizzes" aria-live="polite">0</div>
-                    <div class="stat-label">测验</div>
+                <div class="stat-tile">
+                    <div class="stat-tile__value" id="statQuizzes" aria-live="polite">0</div>
+                    <div class="stat-tile__label">测验</div>
                 </div>
             </div>
 
             <div class="progress-overview" id="heroProgress">
                 <span id="heroProgressLabel">整体进度</span>
-                <div class="progress-bar-hero" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="heroProgressBar">
+                <div class="progress-bar-hero" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="heroProgressBar" aria-label="整体学习进度">
                     <div class="fill" id="heroProgressFill" style="width: 0%"></div>
                 </div>
                 <span id="heroProgressText">0%</span>
             </div>
         </header>
 
+        <h2 class="section-heading reveal">
+            <span class="section-heading__accent" aria-hidden="true"></span>
+            <span>章节导航</span>
+            <span class="section-heading__hint">滚动浏览 · 点击进入学习</span>
+        </h2>
+
         <main class="chapter-grid" id="chapterGrid" aria-label="章节列表"></main>
 
         <footer class="app-footer">
-            <button class="btn btn-primary" id="btnStart" aria-label="开始学习">
-                <span class="btn-icon">🚀</span>
+            <button class="btn btn-primary" id="btnStart" aria-label="开始学习第一章">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polygon points="6 4 20 12 6 20 6 4" fill="currentColor"></polygon>
+                </svg>
                 <span>开始学习</span>
             </button>
-            <button class="btn btn-secondary" id="btnContinue" aria-label="继续上次学习">
-                <span class="btn-icon">📖</span>
+            <button class="btn btn-secondary" id="btnContinue" aria-label="继续上次学习进度">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                </svg>
                 <span>继续上次</span>
             </button>
-            <button class="btn btn-danger" id="btnReset" aria-label="重置学习进度">
-                <span class="btn-icon">↺</span>
+            <button class="btn btn-danger" id="btnReset" aria-label="重置全部学习进度">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="1 4 1 10 7 10"></polyline>
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                </svg>
                 <span>重置进度</span>
             </button>
         </footer>
     </div>
-    <button class="theme-toggle" id="themeToggle" aria-label="切换主题">🌓</button>
+
+    <button class="theme-toggle" id="themeToggle" aria-label="切换深色 / 浅色主题" title="切换主题">
+        <svg id="themeIconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+        </svg>
+        <svg id="themeIconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </button>
     <script type="module" src="js/main.js"></script>
 </body>
 </html>

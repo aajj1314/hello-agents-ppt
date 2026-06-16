@@ -61,6 +61,7 @@ export class SlideEngine {
         const data = await loadJSON('data/chapters.json');
         this.chapterData = data.chapters.find(c => c.id === this.chapterId);
         if (!this.chapterData) { window.location.href = 'index.html'; return; }
+        this.chapterIndex = data.chapters.findIndex(c => c.id === this.chapterId);
 
         this.slides = this.chapterData.slides;
         const progress = Storage.getChapterProgress(this.chapterId);
@@ -120,6 +121,7 @@ export class SlideEngine {
         });
         el.innerHTML = this.router.route(slide, {
             chapterData: this.chapterData,
+            chapterIndex: this.chapterIndex,
             slideIndex: this.currentIndex,
             slidesLength: this.slides.length
         });
@@ -138,6 +140,7 @@ export class SlideEngine {
             });
             el.innerHTML = this.router.route(slide, {
                 chapterData: this.chapterData,
+                chapterIndex: this.chapterIndex,
                 slideIndex: index,
                 slidesLength: this.slides.length
             });

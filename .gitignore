@@ -3,4 +3,5 @@ node_modules/
 *.log
 .omc/
 .codegraph/
+.trae/
 原始文档/

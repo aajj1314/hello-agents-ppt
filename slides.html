@@ -3,29 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Hello-Agents 幻灯片播放器">
+    <meta name="theme-color" content="#1E1B4B">
     <title>幻灯片 - Hello-Agents</title>
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/slides.css">
     <link rel="stylesheet" href="css/themes.css">
     <link rel="stylesheet" href="css/a11y.css">
     <link rel="stylesheet" href="css/print.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
 <body>
+    <a class="skip-link" href="#slideStage">跳转到幻灯片内容</a>
+
     <div class="slides-app">
-        <header class="slides-nav">
-            <button class="nav-btn" id="btnHome" title="返回首页" aria-label="返回首页">🏠</button>
+        <header class="slides-nav" role="banner">
+            <button class="nav-btn" id="btnHome" title="返回首页" aria-label="返回首页"></button>
             <div class="chapter-info">
                 <div class="ch-title" id="chapterTitle">加载中...</div>
                 <div class="ch-subtitle" id="chapterSubtitle" style="font-size:0.75rem;opacity:0.75;letter-spacing:0.05em;">&nbsp;</div>
-                <div class="ch-progress-text" id="slideProgress">1 / 1</div>
+                <div class="ch-progress-text" id="slideProgress" aria-live="polite">1 / 1</div>
             </div>
-            <div style="display: flex; gap: 0.5rem;">
-                <button class="nav-btn" id="btnPrev" title="上一页 (←)" aria-label="上一页">◀</button>
-                <button class="nav-btn" id="btnNext" title="下一页 (→)" aria-label="下一页">▶</button>
+            <div class="slides-nav__controls">
+                <button class="nav-btn" id="btnPrev" title="上一页 (←)" aria-label="上一页"></button>
+                <button class="nav-btn" id="btnNext" title="下一页 (→)" aria-label="下一页"></button>
             </div>
         </header>
 
-        <div class="progress-top-bar" id="progressBar" role="progressbar" aria-valuemin="0" aria-label="幻灯片进度">
+        <div class="progress-top-bar" id="progressBar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="幻灯片进度">
             <div class="fill" style="width: 0%"></div>
         </div>
 
@@ -34,16 +40,24 @@
         </main>
 
         <footer class="slides-bottom-nav">
-            <button class="bottom-btn" id="btnPrevBottom" aria-label="上一页">← 上一页</button>
-            <div class="kbd-shortcuts">
+            <button class="bottom-btn" id="btnPrevBottom" aria-label="上一页"></button>
+            <div class="kbd-shortcuts" aria-hidden="true">
                 <kbd class="kbd">←</kbd><kbd class="kbd">→</kbd>
                 <span>切换页面</span>
             </div>
-            <button class="bottom-btn primary" id="btnNextBottom" aria-label="下一页">下一页 →</button>
+            <button class="bottom-btn primary" id="btnNextBottom" aria-label="下一页"></button>
         </footer>
     </div>
 
-    <button class="theme-toggle" id="themeToggle" aria-label="切换主题">🌓</button>
+    <button class="theme-toggle" id="themeToggle" aria-label="切换深色 / 浅色主题" title="切换主题">
+        <svg id="themeIconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+        </svg>
+        <svg id="themeIconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </button>
 
     <script type="module" src="js/slides-main.js"></script>
 </body>
