@@ -15,6 +15,8 @@ import './animations/ch11-rl-feedback.js';
 import './animations/ch12-radar.js';
 import './animations/ch14-task-tree.js';
 import './animations/ch15-cybertown.js';
+import './animations/ch5-lowcode.js';
+import './animations/ch16-capstone.js';
 
 if (document.getElementById('slideStage')) {
     document.addEventListener('DOMContentLoaded', () => {

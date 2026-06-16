@@ -615,7 +615,7 @@
           "animation": "ch5-lowcode",
           "media": {
             "video": "ch5/coze-demo.mp4",
-            "canvasFallback": false
+            "canvasFallback": true
           }
         },
         {
@@ -2374,7 +2374,7 @@
           "animation": "ch16-capstone",
           "media": {
             "video": "ch16/demo.mp4",
-            "canvasFallback": false
+            "canvasFallback": true
           }
         },
         {
