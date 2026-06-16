@@ -7,9 +7,6 @@ export const renderQuiz = (slide, ctx) => `
         <p class="quiz-subtitle">完成测验巩固本章知识</p>
     </div>
     <div class="quiz-container" id="quiz-container">
-        <div style="text-align:center;padding:2rem;color:var(--text-muted)">点击下方按钮开始测验</div>
-    </div>
-    <div class="quiz-actions">
-        <button class="btn btn-primary" id="quizStart">开始测验</button>
+        <div style="text-align:center;padding:2rem;color:var(--text-muted)">加载测验中...</div>
     </div>
 </div>`;
