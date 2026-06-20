@@ -1,0 +1,298 @@
+{
+  "terms": [
+    {
+      "term": "Agent",
+      "plain_definition": "能感知环境、自己思考并使用工具的 AI 系统",
+      "analogy": "像一位能自主完成任务的数字员工",
+      "chapter": "ch1"
+    },
+    {
+      "term": "LLM Agent",
+      "plain_definition": "以大语言模型为大脑，会推理、会调用工具的智能体",
+      "analogy": "像一位读过海量书籍、还能随时查资料的助理",
+      "chapter": "ch1"
+    },
+    {
+      "term": "简单反射型智能体",
+      "plain_definition": "只看当前情况，按固定规则立刻行动，不记过去也不想未来",
+      "analogy": "像自动门，感应到人就开，没感应就关",
+      "chapter": "ch1"
+    },
+    {
+      "term": "基于模型的反射型智能体",
+      "plain_definition": "会维护一份对世界的内部记录，根据历史状态做决定",
+      "analogy": "像开车时看后视镜和导航，而不只是看眼前的路",
+      "chapter": "ch1"
+    },
+    {
+      "term": "基于目标的智能体",
+      "plain_definition": "以实现某个目标为导向，选择能最快到达目标的行动",
+      "analogy": "像导航软件，目标是目的地，会自动选最优路线",
+      "chapter": "ch1"
+    },
+    {
+      "term": "基于效用的智能体",
+      "plain_definition": "不只追求目标，还要在众多方案里选最划算的一个",
+      "analogy": "像精打细算的旅行者，会权衡时间、金钱和舒适度",
+      "chapter": "ch1"
+    },
+    {
+      "term": "学习型智能体",
+      "plain_definition": "能从经验里吸取教训，越做越好的智能体",
+      "analogy": "像下棋越下越强的棋手，输多了就长记性",
+      "chapter": "ch1"
+    },
+    {
+      "term": "PEAS",
+      "plain_definition": "描述智能体的四个要素：性能、环境、执行器、传感器",
+      "analogy": "像给机器人写岗位说明书：要干什么、在哪干、用什么干、能感知什么",
+      "chapter": "ch1"
+    },
+    {
+      "term": "Workflow",
+      "plain_definition": "步骤预先定好的自动化流程",
+      "analogy": "像工厂流水线，每道工序已经排好顺序",
+      "chapter": "ch5"
+    },
+    {
+      "term": "ReAct",
+      "plain_definition": "让模型一边推理一边行动，交替进行的智能体范式",
+      "analogy": "像侦探破案：先思考线索，再出去调查，拿到新线索再思考",
+      "chapter": "ch4"
+    },
+    {
+      "term": "Plan-and-Solve",
+      "plain_definition": "先把任务拆成计划，再一步一步执行的范式",
+      "analogy": "像做菜先看菜谱、备料，再按步骤下锅",
+      "chapter": "ch4"
+    },
+    {
+      "term": "Reflection",
+      "plain_definition": "智能体检查自己的输出，发现错误后重新修正",
+      "analogy": "像写完作文自己检查一遍，改错别字和不通顺的句子",
+      "chapter": "ch4"
+    },
+    {
+      "term": "CoT",
+      "plain_definition": "让模型把思考过程一步一步写出来的提示方法",
+      "analogy": "像老师要求你写出解题步骤，而不只是写答案",
+      "chapter": "ch3"
+    },
+    {
+      "term": "Tool Use",
+      "plain_definition": "模型调用外部工具来补齐自己不会或做不到的事",
+      "analogy": "像厨师不会种菜，但可以打电话叫外卖送食材",
+      "chapter": "ch4"
+    },
+    {
+      "term": "Memory",
+      "plain_definition": "智能体记住过去对话和经验的能力",
+      "analogy": "像聊天对象记得你昨天说过的话，不会每次都从头问",
+      "chapter": "ch8"
+    },
+    {
+      "term": "RAG",
+      "plain_definition": "先在外部知识库里查到相关资料，再让模型生成答案",
+      "analogy": "像开卷考试：先翻书找答案，再组织语言答题",
+      "chapter": "ch8"
+    },
+    {
+      "term": "Vector DB",
+      "plain_definition": "把文本等数据变成向量，按意思相似度检索的数据库",
+      "analogy": "像一个按“感觉像”而不是按关键词找书的书架",
+      "chapter": "ch8"
+    },
+    {
+      "term": "Embedding",
+      "plain_definition": "把文字或图片转成一串数字，让计算机能比较语义相似度",
+      "analogy": "像给每道菜贴上一个“口味坐标”，相似的菜会靠得很近",
+      "chapter": "ch3"
+    },
+    {
+      "term": "Context",
+      "plain_definition": "模型当前能看到的全部输入信息",
+      "analogy": "像聊天窗口里已经说过的话，模型靠这些理解你现在在说什么",
+      "chapter": "ch9"
+    },
+    {
+      "term": "Prompt",
+      "plain_definition": "你给模型的输入指令",
+      "analogy": "像给助理下的任务单，越清楚越能拿到想要的结果",
+      "chapter": "ch9"
+    },
+    {
+      "term": "Token",
+      "plain_definition": "模型处理文本时的最小单位，可能是字、词或词的一部分",
+      "analogy": "像乐高积木块，模型用这些块拼装成句子和段落",
+      "chapter": "ch3"
+    },
+    {
+      "term": "LLM",
+      "plain_definition": "在大规模文本上训练出来的大型语言模型",
+      "analogy": "像读过整个图书馆的学者，能写文章、回答问题、总结资料",
+      "chapter": "ch3"
+    },
+    {
+      "term": "MCP",
+      "plain_definition": "让 AI 用统一方式连接文件、数据库和 API 的开放协议",
+      "analogy": "像 USB-C 接口，一个口就能连键盘、硬盘、显示器",
+      "chapter": "ch10"
+    },
+    {
+      "term": "A2A",
+      "plain_definition": "让不同智能体之间互相通信协作的协议",
+      "analogy": "像公司不同部门的同事用统一格式发邮件协作",
+      "chapter": "ch10"
+    },
+    {
+      "term": "ANP",
+      "plain_definition": "面向智能体在开放网络中互相发现和协作的协议",
+      "analogy": "像互联网上的“名片交换系统”，让陌生 Agent 找到彼此能干什么",
+      "chapter": "ch10"
+    },
+    {
+      "term": "RLHF",
+      "plain_definition": "让人给模型输出打分，再用强化学习把模型训练得更符合人类偏好",
+      "analogy": "像训练导盲犬，做对了给奖励，做错了纠正",
+      "chapter": "ch11"
+    },
+    {
+      "term": "GRPO",
+      "plain_definition": "一种不用额外价值网络就能优化模型策略的强化学习算法",
+      "analogy": "像小组比赛后直接看排名定进步，不用单独请裁判",
+      "chapter": "ch11"
+    },
+    {
+      "term": "SFT",
+      "plain_definition": "用人工写好的高质量示例来微调模型",
+      "analogy": "像让学生照着标准答案练习，掌握答题格式",
+      "chapter": "ch11"
+    },
+    {
+      "term": "LoRA",
+      "plain_definition": "只训练少量额外参数就能让大模型适应新任务的方法",
+      "analogy": "像给自行车加一个可拆卸的变速套件，不用换整辆车",
+      "chapter": "ch12"
+    },
+    {
+      "term": "微调",
+      "plain_definition": "在特定任务数据上继续训练预训练模型",
+      "analogy": "像通用厨师专门去学做川菜，手艺更对味",
+      "chapter": "ch11"
+    },
+    {
+      "term": "幻觉",
+      "plain_definition": "模型自信地生成错误或虚构的内容",
+      "analogy": "像一个没去过巴黎的人，凭想象给你讲埃菲尔铁塔内部结构",
+      "chapter": "ch3"
+    },
+    {
+      "term": "多智能体系统",
+      "plain_definition": "多个智能体互相协作或竞争来完成复杂任务",
+      "analogy": "像一个项目组，策划、设计、开发各自分工又互相配合",
+      "chapter": "ch10"
+    },
+    {
+      "term": "Agent Card",
+      "plain_definition": "描述一个智能体能做什么、怎么联系它的说明卡片",
+      "analogy": "像餐厅门口的菜单和营业时间，告诉你提供什么服务",
+      "chapter": "ch10"
+    },
+    {
+      "term": "JSON-RPC",
+      "plain_definition": "一种让程序通过网络互相调用函数的轻量协议",
+      "analogy": "像远程点餐：你报菜名，厨房做好后把菜送回来",
+      "chapter": "ch10"
+    },
+    {
+      "term": "长期记忆",
+      "plain_definition": "智能体能够长期保存并反复调用的知识",
+      "analogy": "像硬盘里存的文件，关机后也不会丢",
+      "chapter": "ch8"
+    },
+    {
+      "term": "短期记忆",
+      "plain_definition": "只保留当前对话或任务中的临时信息",
+      "analogy": "像脑子里的临时便签，聊完这轮就可能扔掉",
+      "chapter": "ch8"
+    },
+    {
+      "term": "检索",
+      "plain_definition": "根据问题从大量资料中找出相关内容",
+      "analogy": "像图书馆管理员按主题帮你找书",
+      "chapter": "ch8"
+    },
+    {
+      "term": "提示工程",
+      "plain_definition": "通过优化输入提示词，让模型输出更好的结果",
+      "analogy": "像学会怎么向厨师描述口味，才能做出最合口的菜",
+      "chapter": "ch9"
+    },
+    {
+      "term": "零样本提示",
+      "plain_definition": "不给例子，直接让模型按指令完成任务",
+      "analogy": "像直接说“请写一封请假条”，不拿范文",
+      "chapter": "ch9"
+    },
+    {
+      "term": "少样本提示",
+      "plain_definition": "给模型几个例子，让它按同样风格完成任务",
+      "analogy": "像给朋友看三篇范文，让他照着写",
+      "chapter": "ch9"
+    },
+    {
+      "term": "系统提示",
+      "plain_definition": "设定模型角色和行为规则的背景指令",
+      "analogy": "像给演员设定人设：你现在是一位严谨的律师",
+      "chapter": "ch9"
+    },
+    {
+      "term": "温度",
+      "plain_definition": "控制模型输出随机性的参数",
+      "analogy": "像调咖啡机的奶泡浓度，温度高更随机有创意，温度低更稳定保守",
+      "chapter": "ch3"
+    },
+    {
+      "term": "Top-p",
+      "plain_definition": "让模型只在概率累计达到阈值的最可能词中选择",
+      "analogy": "像只从“热门候选名单”里挑答案，避免太离谱的选项",
+      "chapter": "ch3"
+    },
+    {
+      "term": "强化学习",
+      "plain_definition": "让智能体通过试错和奖励信号学会决策",
+      "analogy": "像训练小狗坐下，做对了给零食，做错了重来",
+      "chapter": "ch11"
+    },
+    {
+      "term": "奖励模型",
+      "plain_definition": "给模型输出打分，判断哪个答案更好的辅助模型",
+      "analogy": "像作文评分老师，给不同作文排个好坏顺序",
+      "chapter": "ch11"
+    },
+    {
+      "term": "策略",
+      "plain_definition": "智能体在不同状态下选择行动的规则",
+      "analogy": "像下棋时的套路：看到这种局面就走这一步",
+      "chapter": "ch11"
+    },
+    {
+      "term": "价值网络",
+      "plain_definition": "估计某个状态或行动未来能带来多少奖励的网络",
+      "analogy": "像棋局中的形势判断，告诉你这一步长远看好不好",
+      "chapter": "ch11"
+    },
+    {
+      "term": "监督学习",
+      "plain_definition": "用带标签的数据训练模型，让它学会输入到输出的映射",
+      "analogy": "像学生对照标准答案反复练习，直到学会做题",
+      "chapter": "ch11"
+    },
+    {
+      "term": "注意力机制",
+      "plain_definition": "让模型在处理一句话时关注最相关的词",
+      "analogy": "像阅读时眼睛会自然停在关键词上，而不是每个字都看一样久",
+      "chapter": "ch3"
+    }
+  ]
+}

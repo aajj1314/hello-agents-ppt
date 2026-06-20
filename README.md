@@ -28,7 +28,7 @@ python3 -m http.server 8080
 
 ```bash
 npm install
-npm test        # 103 tests (vitest + jsdom)
+npm test        # 26 test files, 145 passed | 1 skipped (146) (vitest + jsdom)
 ```
 
 ## 项目总览
