@@ -1,6 +1,16 @@
 /**
- * CH15: Cybertown - AI Agent Town Grid
- * Visualizes a 2D pixel-style office town with NPC agents
+ * CH15: Cybertown — 2D 像素小镇 + NPC 好感度 + 对话气泡
+ *
+ * 视觉概念:
+ *  - 主体保留: 2D 像素小镇 (建筑 + 树木 + 道路 + 多个 NPC 圆点)
+ *  - 强化一: 好感度显示  - 每个 NPC 头顶显示心形数字 (0-100),
+ *                              颜色随好感度变化 (灰 → 绿 → 金 → 紫)
+ *  - 强化二: 对话气泡     - 点击 NPC 弹出圆角矩形 + 三角箭头气泡,
+ *                              气泡内显示 NPC 台词 + 玩家选项
+ *                              "夸他" → 好感度 +5  /  "怼他" → 好感度 -3
+ *  - 强化三: 记忆 log     - 右侧滚动条显示所有对话历史 (最多 8 条)
+ *  - 播放模式: 自动依次点击每个 NPC + 选"夸他", 展示好感度累积
+ *  - 鼠标 hover NPC → 显示"性格 + 职业" tooltip
  */
 import { CanvasAnimation } from './canvas-animation.js';
 import { registerAnimation } from './animation-registry.js';
@@ -8,83 +18,385 @@ import { registerAnimation } from './animation-registry.js';
 class Ch15Cybertown extends CanvasAnimation {
     constructor() {
         super();
-        this.npcs = [];
+        this.animId = 'ch15-cybertown';
+
+        // Playback state
+        this._playing = false;
+        this._rafId = null;
+        this._playIdx = 0;          // which NPC is the auto-play currently visiting
+        this._playPhase = 'idle';   // 'idle' | 'opening' | 'waiting' | 'choosing' | 'closing'
+        this._playTimer = 0;        // time accumulator for current phase
+        this.speed = 1;
+
+        // Interaction state
+        this._selectedIdx = -1;     // index of NPC whose dialogue bubble is open
+        this._hoveringNpc = -1;     // index of NPC under the mouse (for tooltip)
+        this._npcRects = [];        // hit-test circles, recomputed in draw()
+
+        // Memory log (most recent first). Each entry:
+        //   { time, npcName, action, delta, score, level }
+        this._memLog = [];
+
+        // ---- NPC list ----
+        // 4 个 NPC: 张三 / 李四 / 王五 + 学习者
+        this.npcs = [
+            {
+                name: '张三', role: 'Python工程师',
+                personality: '严谨 · 热爱代码',
+                affinity: 12, color: '#6366F1',
+                quotes: [
+                    '这个 bug 真是见鬼了,已经调试两小时了…',
+                    '我刚给 SimpleAgent 重构了消息循环,跑通了!',
+                    '记住,代码可读性比"聪明"更重要。',
+                    '今天先 merge 一下 PR,晚上再看个新需求。'
+                ]
+            },
+            {
+                name: '李四', role: '产品经理',
+                personality: '外向 · 注重用户',
+                affinity: 24, color: '#3B82F6',
+                quotes: [
+                    '这个功能的优先级需要重新评估一下。',
+                    '我们得先做用户调研,再排开发计划。',
+                    '为什么用户要在这一步点击"确认"呢?',
+                    '和开发同学对一下 v2 的需求列表。'
+                ]
+            },
+            {
+                name: '王五', role: 'UI设计师',
+                personality: '温和 · 富有创意',
+                affinity: 8, color: '#10B981',
+                quotes: [
+                    '这杯咖啡的拉花真不错,灵感来了!',
+                    '圆角再小一点,留白再多一点…',
+                    '今天主色定成这个 #6366F1,看着舒服。',
+                    '我先把新版的对话气泡设计稿画出来。'
+                ]
+            },
+            {
+                name: '访客', role: '学习者',
+                personality: '好奇 · 正在成长',
+                affinity: 4, color: '#F59E0B',
+                quotes: [
+                    '我正在学 HelloAgents 框架,有点吃力…',
+                    '请问 Agent 和普通 LLM 调用有啥区别?',
+                    '我试着做了一个简单的 SimpleAgent demo!',
+                    '记忆系统是这套框架最让我惊艳的部分。'
+                ]
+            }
+        ];
+
+        // ---- Town static scenery (re-generated on resize) ----
         this.buildings = [];
         this.trees = [];
-        this.agentParticles = [];
-        this.time = 0;
-        this.animationId = null;
-        this.isRunning = false;
     }
 
+    // -----------------------------------------------------------------
+    //  lifecycle
+    // -----------------------------------------------------------------
     init(canvas) {
         super.init(canvas);
         this._generateTown();
-        this.draw();
-        this.startAmbient();
+        this._setupControls();
+        this._setupCanvasEvents();
         window.addEventListener('resize', () => {
             this._resize();
             this._generateTown();
             this.draw();
         });
+        this.draw();
     }
 
+    _setupControls() {
+        const playBtn  = document.getElementById('btn-play-'  + this.animId);
+        const resetBtn = document.getElementById('btn-reset-' + this.animId);
+        const stepBtn  = document.getElementById('btn-step-'  + this.animId);
+        const speedSld = document.getElementById('speed-'     + this.animId);
+        if (playBtn)  playBtn.addEventListener('click',  () => this.togglePlay());
+        if (resetBtn) resetBtn.addEventListener('click', () => this.reset());
+        if (stepBtn)  stepBtn.addEventListener('click',  () => this.stepForward());
+        if (speedSld) speedSld.addEventListener('input',  (e) => {
+            this.speed = parseFloat(e.target.value) || 1;
+        });
+    }
+
+    _setupCanvasEvents() {
+        if (!this.canvas) return;
+        this.canvas.addEventListener('mousedown',  (e) => this._onMouseDown(e));
+        this.canvas.addEventListener('mousemove',  (e) => this._onMouseMove(e));
+        this.canvas.addEventListener('mouseup',    (e) => this._onMouseUp(e));
+        this.canvas.addEventListener('mouseleave', ()  => this._onMouseLeave());
+        this.canvas.addEventListener('touchstart', (e) => {
+            if (e.touches[0]) {
+                e.preventDefault();
+                this._onMouseDown(this._touchToMouseEvent(e.touches[0]));
+            }
+        }, { passive: false });
+        this.canvas.addEventListener('touchmove', (e) => {
+            if (e.touches[0]) this._onMouseMove(this._touchToMouseEvent(e.touches[0]));
+        }, { passive: true });
+        this.canvas.addEventListener('touchend', () => this._onMouseUp());
+    }
+
+    _touchToMouseEvent(touch) {
+        return { clientX: touch.clientX, clientY: touch.clientY };
+    }
+
+    // -----------------------------------------------------------------
+    //  playback API
+    // -----------------------------------------------------------------
+    togglePlay() {
+        if (this._playing) {
+            this._playing = false;
+            cancelAnimationFrame(this._rafId);
+            this._playPhase = 'idle';
+            this._setPlayButtonLabel('▶ 播放');
+            return;
+        }
+        // If a bubble is open, close it before starting playback
+        this._selectedIdx = -1;
+        this._playing = true;
+        this._playIdx = 0;
+        this._playPhase = 'opening';
+        this._playTimer = 0;
+        this._setPlayButtonLabel('⏸ 暂停');
+        this._loop();
+    }
+
+    _loop() {
+        if (!this._playing) return;
+        const phaseDur = 0.9;          // seconds per phase (scaled by speed)
+        this._playTimer += 0.016 * (this.speed || 1);
+
+        if (this._playTimer >= phaseDur) {
+            this._playTimer = 0;
+            this._advancePlayPhase();
+        }
+        this.draw();
+        this._rafId = requestAnimationFrame(() => this._loop());
+    }
+
+    _advancePlayPhase() {
+        const idx = this._playIdx;
+        switch (this._playPhase) {
+            case 'opening':
+                this._selectedIdx = idx;
+                this._playPhase = 'waiting';
+                break;
+            case 'waiting':
+                this._playPhase = 'choosing';
+                break;
+            case 'choosing':
+                // Always "夸他" in play mode
+                this._applyAffinity(idx, +5, '夸他 (自动)');
+                this._playPhase = 'closing';
+                break;
+            case 'closing':
+                this._selectedIdx = -1;
+                this._playIdx = (this._playIdx + 1) % this.npcs.length;
+                this._playPhase = 'opening';
+                // After completing a full loop, stop auto-play
+                if (this._playIdx === 0) {
+                    this._playing = false;
+                    cancelAnimationFrame(this._rafId);
+                    this._playPhase = 'idle';
+                    this._setPlayButtonLabel('▶ 播放');
+                }
+                break;
+        }
+    }
+
+    stepForward() {
+        // Pick the next NPC and "夸" them once (like one frame of auto-play)
+        if (this._selectedIdx >= 0) {
+            // If a bubble is open, apply a +5 to that NPC
+            this._applyAffinity(this._selectedIdx, +5, '夸他 (步进)');
+            this._selectedIdx = -1;
+        } else {
+            this._selectedIdx = this._playIdx % this.npcs.length;
+            this._playIdx = (this._playIdx + 1) % this.npcs.length;
+        }
+        this.draw();
+    }
+
+    reset() {
+        this._playing = false;
+        cancelAnimationFrame(this._rafId);
+        this._playIdx = 0;
+        this._playPhase = 'idle';
+        this._selectedIdx = -1;
+        this._hoveringNpc = -1;
+        this._memLog = [];
+        // Reset all affinity scores
+        this.npcs.forEach((n, i) => { n.affinity = [12, 24, 8, 4][i] || 10; });
+        this._setPlayButtonLabel('▶ 播放');
+        this.canvas.style.cursor = 'default';
+        this.draw();
+    }
+
+    setSpeed(v) { this.speed = v; }
+    play()      { if (!this._playing) this.togglePlay(); }
+    pause()     { if (this._playing)  this.togglePlay(); }
+    step()      { this.stepForward(); }
+
+    _setPlayButtonLabel(label) {
+        const btn = document.getElementById('btn-play-' + this.animId);
+        if (btn) btn.textContent = label;
+    }
+
+    // -----------------------------------------------------------------
+    //  mouse / touch interaction
+    // -----------------------------------------------------------------
+    _canvasPoint(e) {
+        const rect = this.canvas.getBoundingClientRect();
+        return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    }
+
+    _onMouseDown(e) {
+        if (!this.ctx) return;
+        const { x, y } = this._canvasPoint(e);
+
+        // If a bubble is open, check the buttons inside it first
+        if (this._selectedIdx >= 0) {
+            const btn = this._hitTestBubbleButton(x, y);
+            if (btn === 'praise') {
+                this._applyAffinity(this._selectedIdx, +5, '夸他');
+                this._selectedIdx = -1;
+                this.canvas.style.cursor = 'default';
+                this.draw();
+                return;
+            } else if (btn === 'scold') {
+                this._applyAffinity(this._selectedIdx, -3, '怼他');
+                this._selectedIdx = -1;
+                this.canvas.style.cursor = 'default';
+                this.draw();
+                return;
+            } else if (btn === 'close') {
+                this._selectedIdx = -1;
+                this.canvas.style.cursor = 'default';
+                this.draw();
+                return;
+            }
+            // Click outside the bubble: close it
+            const bub = this._bubbleRect();
+            if (bub && this._pointInRect(x, y, bub)) {
+                // Click was inside the bubble (but not on a button) - do nothing
+                return;
+            }
+            this._selectedIdx = -1;
+            this.canvas.style.cursor = 'default';
+            this.draw();
+            return;
+        }
+
+        // Otherwise: check if click landed on an NPC
+        const idx = this._hitTestNpc(x, y);
+        if (idx >= 0) {
+            // Pause any auto-play so the user can take over
+            if (this._playing) {
+                this._playing = false;
+                cancelAnimationFrame(this._rafId);
+                this._playPhase = 'idle';
+                this._setPlayButtonLabel('▶ 播放');
+            }
+            this._selectedIdx = idx;
+            this.draw();
+        }
+    }
+
+    _onMouseMove(e) {
+        if (!this.ctx) return;
+        const { x, y } = this._canvasPoint(e);
+
+        // If a bubble is open, show pointer cursor over its buttons
+        if (this._selectedIdx >= 0) {
+            const btn = this._hitTestBubbleButton(x, y);
+            if (btn) {
+                this.canvas.style.cursor = 'pointer';
+            } else {
+                this.canvas.style.cursor = 'default';
+            }
+            return;
+        }
+
+        // Otherwise: update hover state over an NPC
+        const idx = this._hitTestNpc(x, y);
+        if (idx !== this._hoveringNpc) {
+            this._hoveringNpc = idx;
+            this.canvas.style.cursor = idx >= 0 ? 'pointer' : 'default';
+            this.draw();
+        }
+    }
+
+    _onMouseUp() {
+        // nothing special — mousedown handles everything
+    }
+
+    _onMouseLeave() {
+        if (this._hoveringNpc !== -1) {
+            this._hoveringNpc = -1;
+            this.canvas.style.cursor = 'default';
+            this.draw();
+        }
+    }
+
+    _hitTestNpc(x, y) {
+        for (const r of this._npcRects) {
+            const dx = x - r.x, dy = y - r.y;
+            if (dx * dx + dy * dy <= r.r * r.r) return r.idx;
+        }
+        return -1;
+    }
+
+    _pointInRect(x, y, rect) {
+        return x >= rect.x && x <= rect.x + rect.w &&
+               y >= rect.y && y <= rect.y + rect.h;
+    }
+
+    // -----------------------------------------------------------------
+    //  town generation
+    // -----------------------------------------------------------------
     _generateTown() {
         const w = this.width;
         const h = this.height;
         const dark = this.isDarkTheme();
 
-        // Generate buildings (office blocks)
-        this.buildings = [];
-        const buildingPositions = [
-            { x: 0.15, y: 0.25, w: 0.18, h: 0.20, color: dark ? '#334155' : '#6366F1', label: '研发部' },
-            { x: 0.42, y: 0.20, w: 0.20, h: 0.22, color: dark ? '#1E40AF' : '#3B82F6', label: '产品部' },
-            { x: 0.70, y: 0.25, w: 0.16, h: 0.18, color: dark ? '#065F46' : '#10B981', label: '设计部' },
-            { x: 0.30, y: 0.60, w: 0.14, h: 0.16, color: dark ? '#7C2D12' : '#F59E0B', label: '咖啡厅' },
-            { x: 0.55, y: 0.58, w: 0.15, h: 0.14, color: dark ? '#6B21A8' : '#8B5CF6', label: '会议室' }
+        // Buildings
+        const bPositions = [
+            { x: 0.04, y: 0.30, w: 0.16, h: 0.18, color: dark ? '#334155' : '#6366F1', label: '研发部' },
+            { x: 0.24, y: 0.26, w: 0.17, h: 0.20, color: dark ? '#1E40AF' : '#3B82F6', label: '产品部' },
+            { x: 0.45, y: 0.30, w: 0.14, h: 0.17, color: dark ? '#065F46' : '#10B981', label: '设计部' },
+            { x: 0.06, y: 0.62, w: 0.13, h: 0.14, color: dark ? '#7C2D12' : '#F59E0B', label: '咖啡厅' },
+            { x: 0.24, y: 0.60, w: 0.13, h: 0.13, color: dark ? '#6B21A8' : '#8B5CF6', label: '会议室' },
+            { x: 0.42, y: 0.60, w: 0.13, h: 0.13, color: dark ? '#0F766E' : '#14B8A6', label: '休息区' }
         ];
+        this.buildings = bPositions.map(p => ({
+            x: p.x * w, y: p.y * h, w: p.w * w, h: p.h * h,
+            color: p.color, label: p.label,
+            windows: this._generateWindows(p.x * w, p.y * h, p.w * w, p.h * h)
+        }));
 
-        buildingPositions.forEach(p => {
-            this.buildings.push({
-                x: p.x * w, y: p.y * h,
-                w: p.w * w, h: p.h * h,
-                color: p.color,
-                label: p.label,
-                windows: this._generateWindows(p.x * w, p.y * h, p.w * w, p.h * h)
-            });
-        });
-
-        // Generate trees
-        this.trees = [];
-        const treePositions = [
-            { x: 0.05, y: 0.50 }, { x: 0.08, y: 0.55 },
-            { x: 0.92, y: 0.45 }, { x: 0.88, y: 0.52 },
-            { x: 0.50, y: 0.85 }, { x: 0.45, y: 0.88 },
-            { x: 0.20, y: 0.12 }, { x: 0.78, y: 0.10 }
+        // Trees
+        const tPositions = [
+            { x: 0.02, y: 0.50 }, { x: 0.06, y: 0.54 },
+            { x: 0.21, y: 0.12 }, { x: 0.39, y: 0.11 },
+            { x: 0.58, y: 0.50 }, { x: 0.59, y: 0.55 }
         ];
-        treePositions.forEach(p => {
-            this.trees.push({ x: p.x * w, y: p.y * h, size: 10 + Math.random() * 8 });
-        });
-
-        // Generate NPC agents
-        this.npcs = [
-            { x: 0.32, y: 0.35, name: '张三', role: 'Python工程师', color: '#6366F1', dir: 1, speed: 0.3 + Math.random() * 0.2, offset: 0 },
-            { x: 0.55, y: 0.32, name: '李四', role: '产品经理', color: '#3B82F6', dir: -1, speed: 0.2 + Math.random() * 0.2, offset: 0 },
-            { x: 0.78, y: 0.35, name: '王五', role: 'UI设计师', color: '#10B981', dir: 1, speed: 0.25 + Math.random() * 0.2, offset: 0 },
-            { x: 0.40, y: 0.70, name: '访客', role: '学习者', color: '#F59E0B', dir: -1, speed: 0.15 + Math.random() * 0.15, offset: 0 }
-        ];
+        this.trees = tPositions.map(p => ({
+            x: p.x * w, y: p.y * h, size: 8 + Math.random() * 6
+        }));
     }
 
     _generateWindows(bx, by, bw, bh) {
         const windows = [];
-        const cols = Math.floor(bw / 28);
-        const rows = Math.floor(bh / 22);
-        const padX = 10, padY = 12;
+        const cols = Math.max(2, Math.floor(bw / 26));
+        const rows = Math.max(2, Math.floor(bh / 22));
+        const padX = 8, padY = 10;
         for (let r = 0; r < rows && r < 4; r++) {
             for (let c = 0; c < cols && c < 5; c++) {
                 windows.push({
-                    x: bx + padX + c * 28 + (bw - cols * 28) / 2,
-                    y: by + padY + r * 22 + (bh - rows * 22) / 2,
+                    x: bx + padX + c * 22 + (bw - cols * 22) / 2,
+                    y: by + padY + r * 18 + (bh - rows * 18) / 2,
                     lit: Math.random() > 0.3
                 });
             }
@@ -92,246 +404,597 @@ class Ch15Cybertown extends CanvasAnimation {
         return windows;
     }
 
-    startAmbient() {
-        this.isRunning = true;
-        const loop = () => {
-            if (!this.isRunning) return;
-            this.time += 0.016;
-            this.npcs.forEach((npc, i) => {
-                npc.offset += npc.speed * 0.008 * npc.dir;
-                if (Math.abs(npc.offset) > 40) npc.dir *= -1;
-            });
-            // Random sparkle agents
-            if (Math.random() < 0.06) {
-                this.agentParticles.push({
-                    x: Math.random() * this.width,
-                    y: Math.random() * this.height,
-                    life: 1,
-                    speed: 0.005 + Math.random() * 0.01
-                });
-            }
-            this.agentParticles.forEach(p => p.life -= p.speed);
-            this.agentParticles = this.agentParticles.filter(p => p.life > 0);
-            this.draw();
-            this.animationId = requestAnimationFrame(loop);
-        };
-        this.animationId = requestAnimationFrame(loop);
+    // -----------------------------------------------------------------
+    //  affinity helpers
+    // -----------------------------------------------------------------
+    _affinityLevel(score) {
+        if (score <= 20) return { name: '陌生',   color: '#94A3B8' };
+        if (score <= 40) return { name: '熟悉',   color: '#86EFAC' };
+        if (score <= 60) return { name: '友好',   color: '#10B981' };
+        if (score <= 80) return { name: '亲密',   color: '#F59E0B' };
+        return                  { name: '挚友',   color: '#A855F7' };
     }
 
-    play() {
-        if (!this.isRunning) this.startAmbient();
-    }
-
-    step() {
-        this.time += 0.1;
-        this.npcs.forEach((npc) => {
-            npc.offset += npc.speed * 0.03 * npc.dir;
-            if (Math.abs(npc.offset) > 40) npc.dir *= -1;
+    _applyAffinity(idx, delta, actionLabel) {
+        const npc = this.npcs[idx];
+        if (!npc) return;
+        npc.affinity = Math.max(0, Math.min(100, npc.affinity + delta));
+        const level = this._affinityLevel(npc.affinity);
+        const now = new Date();
+        const hh = now.getHours().toString().padStart(2, '0');
+        const mm = now.getMinutes().toString().padStart(2, '0');
+        const ss = now.getSeconds().toString().padStart(2, '0');
+        this._memLog.unshift({
+            time: `${hh}:${mm}:${ss}`,
+            npcName: npc.name,
+            action: actionLabel,
+            delta: (delta > 0 ? '+' : '') + delta,
+            score: npc.affinity,
+            level: level.name
         });
-        this.draw();
+        if (this._memLog.length > 8) this._memLog.length = 8;
     }
 
-    reset() {
-        this.isRunning = false;
-        if (this.animationId) cancelAnimationFrame(this.animationId);
-        this.time = 0;
-        this.agentParticles = [];
-        this._generateTown();
-        this.draw();
+    // -----------------------------------------------------------------
+    //  layout helpers
+    // -----------------------------------------------------------------
+    _layout() {
+        // Layout regions inside the canvas.
+        // Left ~62% = town area, right ~32% = memory log panel.
+        const w = this.width;
+        const h = this.height;
+        const titleH  = 28;
+        const footerH = 22;
+        const padX    = 12;
+        const sidebarW = Math.max(200, Math.min(260, w * 0.32));
+        const sidebarX = w - sidebarW - padX;
+        const townX    = padX;
+        const townW    = Math.max(280, sidebarX - padX - 12);
+        const townY    = titleH + 4;
+        const townH    = h - titleH - footerH - 8;
+        return { w, h, titleH, footerH, padX, sidebarX, sidebarW, townX, townW, townY, townH };
     }
 
-    setSpeed(v) {
-        this.npcs.forEach(npc => {
-            npc.speed = (0.15 + Math.random() * 0.2) * v;
-        });
+    _bubbleRect() {
+        if (this._selectedIdx < 0) return null;
+        const lay = this._layout();
+        const npcR = this._npcRects[this._selectedIdx];
+        if (!npcR) return null;
+        const bw = 240, bh = 116;
+        // Default: above the NPC
+        let bx = npcR.x - bw / 2;
+        let by = npcR.y - npcR.r - bh - 14;
+        // Clamp inside the town area
+        if (bx < lay.townX + 4) bx = lay.townX + 4;
+        if (bx + bw > lay.townX + lay.townW - 4) bx = lay.townX + lay.townW - bw - 4;
+        if (by < lay.townY + 4) by = npcR.y + npcR.r + 14;   // flip below NPC
+        return { x: bx, y: by, w: bw, h: bh, npcX: npcR.x, npcY: npcR.y, npcR: npcR.r };
     }
 
-    _resize() {
-        const oldW = this.width;
-        super._resize();
-        if (oldW !== this.width) {
-            this._generateTown();
+    _hitTestBubbleButton(x, y) {
+        const bub = this._bubbleRect();
+        if (!bub) return null;
+        // Two buttons at the bottom of the bubble
+        const btnY = bub.y + bub.h - 36;
+        const btnH = 26;
+        const padX = 10;
+        const btnW = (bub.w - padX * 3) / 2;
+        const praiseX = bub.x + padX;
+        const scoldX  = praiseX + btnW + padX;
+        if (y >= btnY && y <= btnY + btnH) {
+            if (x >= praiseX && x <= praiseX + btnW) return 'praise';
+            if (x >= scoldX  && x <= scoldX  + btnW) return 'scold';
         }
+        // Close (×) in the top-right corner
+        const closeX = bub.x + bub.w - 22;
+        const closeY = bub.y + 4;
+        if (x >= closeX && x <= closeX + 18 &&
+            y >= closeY && y <= closeY + 18) {
+            return 'close';
+        }
+        return null;
     }
 
+    // -----------------------------------------------------------------
+    //  main draw
+    // -----------------------------------------------------------------
     draw() {
+        if (!this.ctx) return;
         const ctx = this.ctx;
         const w = this.width;
         const h = this.height;
         const dark = this.isDarkTheme();
 
-        ctx.clearRect(0, 0, w, h);
+        // Palette
+        const bg        = dark ? '#0F172A' : '#F8FAFC';
+        const textColor = dark ? '#F1F5F9' : '#0F172A';
+        const subColor  = dark ? '#94A3B8' : '#475569';
+        const borderCol = dark ? 'rgba(148,163,184,0.25)' : 'rgba(100,116,139,0.25)';
+        const panelBg   = dark ? 'rgba(30,41,59,0.6)' : 'rgba(241,245,249,0.85)';
 
-        // Background - grass
-        const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
-        if (dark) {
-            bgGrad.addColorStop(0, '#0F172A');
-            bgGrad.addColorStop(0.5, '#1E293B');
-            bgGrad.addColorStop(1, '#0F172A');
-        } else {
-            bgGrad.addColorStop(0, '#E0F2FE');
-            bgGrad.addColorStop(0.5, '#F0FDF4');
-            bgGrad.addColorStop(1, '#ECFDF5');
-        }
-        ctx.fillStyle = bgGrad;
+        // Background
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = bg;
         ctx.fillRect(0, 0, w, h);
 
-        // Grid lines (town roads)
-        ctx.strokeStyle = dark ? 'rgba(148,163,184,0.12)' : 'rgba(148,163,184,0.20)';
+        // Title
+        ctx.fillStyle = textColor;
+        ctx.font = 'bold 14px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillText('🏙️ 赛博小镇  ·  AI Agent Town + 好感度系统', 16, 6);
+        ctx.fillStyle = subColor;
+        ctx.font = '10px sans-serif';
+        ctx.fillText('点击 NPC 弹出对话气泡  ·  悬停查看性格  ·  播放自动夸人', 16, 24);
+
+        const lay = this._layout();
+
+        // ---- Town panel (left) ----
+        this._drawTown(ctx, lay.townX, lay.townY, lay.townW, lay.townH, textColor, subColor, borderCol, dark);
+
+        // ---- Memory log (right) ----
+        this._drawMemoryLog(ctx, lay.sidebarX, lay.townY, lay.sidebarW, lay.townH, textColor, subColor, borderCol, panelBg, dark);
+
+        // ---- Footer ----
+        this._drawFooter(ctx, w, h, subColor, textColor);
+
+        // ---- Dialogue bubble (on top of everything) ----
+        if (this._selectedIdx >= 0) {
+            this._drawBubble(ctx, textColor, subColor, borderCol, dark);
+        }
+
+        // ---- Hover tooltip (very top layer) ----
+        if (this._hoveringNpc >= 0 && this._selectedIdx < 0) {
+            this._drawNpcTooltip(ctx, this._hoveringNpc, textColor, subColor, borderCol, dark);
+        }
+    }
+
+    // -----------------------------------------------------------------
+    //  town draw
+    // -----------------------------------------------------------------
+    _drawTown(ctx, x, y, w, h, textColor, subColor, borderCol, dark) {
+        // Panel background
+        ctx.fillStyle = dark ? 'rgba(30,41,59,0.40)' : 'rgba(241,245,249,0.55)';
+        this.roundRect(ctx, x, y, w, h, 10);
+        ctx.fill();
+        ctx.strokeStyle = borderCol;
         ctx.lineWidth = 1;
-        const gridSize = 60;
-        for (let x = 0; x < w; x += gridSize) {
-            ctx.beginPath();
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, h);
-            ctx.stroke();
-        }
-        for (let y = 0; y < h; y += gridSize) {
-            ctx.beginPath();
-            ctx.moveTo(0, y);
-            ctx.lineTo(w, y);
-            ctx.stroke();
-        }
+        this.roundRect(ctx, x, y, w, h, 10);
+        ctx.stroke();
 
-        // Horizontal roads with labels
+        // Roads
+        const roadY1 = y + h * 0.48;
+        const roadY2 = y + h * 0.80;
         ctx.fillStyle = dark ? 'rgba(148,163,184,0.25)' : 'rgba(226,232,240,0.7)';
-        ctx.fillRect(0, h * 0.48, w, 8);
-        ctx.fillRect(0, h * 0.80, w, 8);
+        ctx.fillRect(x + 4, roadY1, w - 8, 6);
+        ctx.fillRect(x + 4, roadY2, w - 8, 6);
 
-        // Draw trees
-        this.trees.forEach(tree => {
-            const s = tree.size;
-            // Trunk
+        // Trees
+        for (const tree of this.trees) {
             ctx.fillStyle = dark ? '#5D4037' : '#8D6E63';
             ctx.fillRect(tree.x - 2, tree.y - 2, 4, 8);
-            // Canopy
             ctx.beginPath();
-            ctx.arc(tree.x, tree.y - 6, s * 0.7, 0, Math.PI * 2);
+            ctx.arc(tree.x, tree.y - 6, tree.size * 0.7, 0, Math.PI * 2);
             ctx.fillStyle = dark ? '#2D6A4F' : '#4ADE80';
             ctx.fill();
             ctx.beginPath();
-            ctx.arc(tree.x - 4, tree.y - 4, s * 0.5, 0, Math.PI * 2);
+            ctx.arc(tree.x - 4, tree.y - 4, tree.size * 0.5, 0, Math.PI * 2);
             ctx.fillStyle = dark ? '#40916C' : '#86EFAC';
             ctx.fill();
-        });
+        }
 
-        // Draw buildings
-        this.buildings.forEach(b => {
-            // Building body
+        // Buildings
+        for (const b of this.buildings) {
             const grad = ctx.createLinearGradient(b.x, b.y, b.x + b.w, b.y + b.h);
-            const bright = dark ? 40 : 20;
-            grad.addColorStop(0, this._lightenColor(b.color, bright));
+            grad.addColorStop(0, this._lightenColor(b.color, 20));
             grad.addColorStop(1, b.color);
             this.roundRect(ctx, b.x, b.y, b.w, b.h, 6);
             ctx.fillStyle = grad;
             ctx.fill();
             ctx.strokeStyle = dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.15)';
-            ctx.lineWidth = 1.5;
+            ctx.lineWidth = 1.2;
             ctx.stroke();
-
-            // Roof accent
-            this.roundRect(ctx, b.x + 4, b.y + 4, b.w - 8, 6, 2);
-            ctx.fillStyle = dark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.3)';
-            ctx.fill();
-
             // Windows
-            b.windows.forEach(win => {
+            for (const win of b.windows) {
                 ctx.fillStyle = win.lit
                     ? (dark ? '#FBBF24' : '#FEF08A')
                     : (dark ? '#1E293B' : '#E2E8F0');
-                ctx.fillRect(win.x, win.y, 14, 10);
-                ctx.strokeStyle = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)';
-                ctx.lineWidth = 0.5;
-                ctx.strokeRect(win.x, win.y, 14, 10);
-                // Window cross
-                ctx.beginPath();
-                ctx.moveTo(win.x + 7, win.y);
-                ctx.lineTo(win.x + 7, win.y + 10);
-                ctx.moveTo(win.x, win.y + 5);
-                ctx.lineTo(win.x + 14, win.y + 5);
-                ctx.strokeStyle = dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
-                ctx.stroke();
-            });
-
-            // Building label
-            ctx.fillStyle = dark ? '#E2E8F0' : '#FFFFFF';
-            ctx.font = 'bold 12px sans-serif';
+                ctx.fillRect(win.x, win.y, 12, 9);
+            }
+            // Label
+            ctx.fillStyle = dark ? '#E2E8F0' : '#1E293B';
+            ctx.font = 'bold 10px sans-serif';
             ctx.textAlign = 'center';
-            ctx.textBaseline = 'bottom';
-            ctx.fillText(b.label, b.x + b.w / 2, b.y + b.h + 14);
-        });
+            ctx.textBaseline = 'top';
+            ctx.fillText(b.label, b.x + b.w / 2, b.y + b.h + 3);
+        }
 
-        // Agent particles (floating data dots)
-        this.agentParticles.forEach(p => {
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, 3 + (1 - p.life) * 3, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(99, 102, 241, ${p.life * 0.6})`;
-            ctx.fill();
-        });
+        // NPC positions (within the town area)
+        const positions = [
+            { x: x + w * 0.18, y: y + h * 0.38 },
+            { x: x + w * 0.36, y: y + h * 0.36 },
+            { x: x + w * 0.55, y: y + h * 0.38 },
+            { x: x + w * 0.10, y: y + h * 0.68 }
+        ].map(p => ({
+            x: Math.max(x + 28, Math.min(x + w - 28, p.x)),
+            y: Math.max(y + 50, Math.min(y + h - 40, p.y))
+        }));
 
-        // Draw NPC agents (animated)
-        this.npcs.forEach((npc, idx) => {
-            const baseX = npc.x * w + npc.offset;
-            const baseY = npc.y * h + Math.sin(this.time * 2 + idx) * 2;
+        // Draw NPCs (slight bobbing for life)
+        const t = performance.now() / 600;
+        this._npcRects = [];
+        for (let i = 0; i < this.npcs.length; i++) {
+            const npc = this.npcs[i];
+            const p = positions[i];
+            const bob = Math.sin(t + i * 1.3) * 1.5;
             const r = 18;
+            const cx = p.x;
+            const cy = p.y + bob;
+            const isSelected = i === this._selectedIdx;
+            const isHover = i === this._hoveringNpc;
+            const level = this._affinityLevel(npc.affinity);
+
+            this._npcRects.push({ idx: i, x: cx, y: cy, r: r + 4 });
 
             // Shadow
             ctx.beginPath();
-            ctx.ellipse(baseX, baseY + r + 2, r * 0.7, 4, 0, 0, Math.PI * 2);
-            ctx.fillStyle = dark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.1)';
+            ctx.ellipse(cx, cy + r + 1, r * 0.7, 3, 0, 0, Math.PI * 2);
+            ctx.fillStyle = dark ? 'rgba(0,0,0,0.35)' : 'rgba(0,0,0,0.12)';
             ctx.fill();
 
-            // Body circle
-            const grad = ctx.createRadialGradient(baseX - 4, baseY - 4, 2, baseX, baseY, r);
+            // Halo on hover / selected
+            if (isHover || isSelected) {
+                ctx.beginPath();
+                ctx.arc(cx, cy, r + 5, 0, Math.PI * 2);
+                ctx.fillStyle = npc.color + (isSelected ? '44' : '22');
+                ctx.fill();
+            }
+
+            // Body circle (radial gradient for that "pixel" glow)
+            const grad = ctx.createRadialGradient(cx - 4, cy - 4, 2, cx, cy, r);
             grad.addColorStop(0, this._lightenColor(npc.color, 40));
             grad.addColorStop(1, npc.color);
             ctx.beginPath();
-            ctx.arc(baseX, baseY, r, 0, Math.PI * 2);
+            ctx.arc(cx, cy, r, 0, Math.PI * 2);
             ctx.fillStyle = grad;
             ctx.fill();
-            ctx.strokeStyle = dark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)';
-            ctx.lineWidth = 2;
+            ctx.strokeStyle = isSelected ? '#FFFFFF' : (dark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.25)');
+            ctx.lineWidth = isSelected ? 2.5 : 1.5;
             ctx.stroke();
 
-            // Agent icon (simplified face)
+            // Face emoji
             ctx.fillStyle = '#FFFFFF';
             ctx.font = '12px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText('🤖', baseX, baseY - 1);
+            ctx.fillText('🤖', cx, cy - 1);
 
-            // Name label
+            // Affinity heart + number badge above the NPC
+            this._drawAffinityBadge(ctx, cx, cy - r - 12, npc.affinity, level);
+
+            // Name + role below the NPC
             ctx.fillStyle = dark ? '#F1F5F9' : '#0F172A';
-            ctx.font = 'bold 11px sans-serif';
+            ctx.font = 'bold 10px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'top';
-            ctx.fillText(npc.name, baseX, baseY + r + 4);
-
-            // Role label
-            ctx.fillStyle = dark ? '#94A3B8' : '#64748B';
+            ctx.fillText(npc.name, cx, cy + r + 4);
+            ctx.fillStyle = subColor;
             ctx.font = '9px sans-serif';
-            ctx.fillText(npc.role, baseX, baseY + r + 18);
-        });
-
-        // Title
-        ctx.fillStyle = dark ? '#F1F5F9' : '#0F172A';
-        ctx.font = 'bold 18px sans-serif';
-        ctx.textAlign = 'left';
-        ctx.textBaseline = 'top';
-        ctx.fillText('🏙️ 赛博小镇', 16, 16);
-
-        ctx.fillStyle = dark ? '#94A3B8' : '#64748B';
-        ctx.font = '12px sans-serif';
-        ctx.fillText('AI Agent Town - ' + this.npcs.length + ' 位居民', 16, 42);
-
-        // Time indicator
-        const hour = Math.floor(this.time * 10 % 24);
-        ctx.fillStyle = dark ? '#94A3B8' : '#64748B';
-        ctx.font = '12px sans-serif';
-        ctx.textAlign = 'right';
-        ctx.fillText(`🕐 ${hour.toString().padStart(2, '0')}:00`, w - 16, 16);
+            ctx.fillText(npc.role, cx, cy + r + 16);
+        }
     }
 
+    _drawAffinityBadge(ctx, cx, cy, score, level) {
+        const padX = 5;
+        const text = `♥ ${score}`;
+        ctx.font = 'bold 10px sans-serif';
+        const tw = ctx.measureText(text).width;
+        const bw = tw + padX * 2 + 4;
+        const bh = 16;
+        const bx = cx - bw / 2;
+        const by = cy - bh / 2;
+
+        // Background pill (dark backdrop for legibility on any theme)
+        ctx.fillStyle = 'rgba(15,23,42,0.78)';
+        this.roundRect(ctx, bx, by, bw, bh, 8);
+        ctx.fill();
+        // Colored ring (matches the affinity level color)
+        ctx.strokeStyle = level.color;
+        ctx.lineWidth = 1.5;
+        this.roundRect(ctx, bx, by, bw, bh, 8);
+        ctx.stroke();
+
+        // Heart + number
+        ctx.fillStyle = level.color;
+        ctx.font = 'bold 10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, cx, cy + 0.5);
+    }
+
+    // -----------------------------------------------------------------
+    //  dialogue bubble
+    // -----------------------------------------------------------------
+    _drawBubble(ctx, textColor, subColor, borderCol, dark) {
+        const bub = this._bubbleRect();
+        if (!bub) return;
+        const npc = this.npcs[this._selectedIdx];
+        if (!npc) return;
+        const level = this._affinityLevel(npc.affinity);
+
+        // Bubble shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.20)';
+        this.roundRect(ctx, bub.x + 1, bub.y + 2, bub.w, bub.h, 10);
+        ctx.fill();
+
+        // Bubble body
+        ctx.fillStyle = dark ? '#1E293B' : '#FFFFFF';
+        this.roundRect(ctx, bub.x, bub.y, bub.w, bub.h, 10);
+        ctx.fill();
+        ctx.strokeStyle = npc.color;
+        ctx.lineWidth = 1.5;
+        this.roundRect(ctx, bub.x, bub.y, bub.w, bub.h, 10);
+        ctx.stroke();
+
+        // Pointer triangle (toward the NPC)
+        const triY = (bub.y < bub.npcY) ? bub.y + bub.h : bub.y;
+        const triDir = (bub.y < bub.npcY) ? 1 : -1;
+        const triCx = Math.max(bub.x + 14, Math.min(bub.x + bub.w - 14, bub.npcX));
+        ctx.beginPath();
+        ctx.moveTo(triCx, triY);
+        ctx.lineTo(triCx - 6, triY + triDir * 8);
+        ctx.lineTo(triCx + 6, triY + triDir * 8);
+        ctx.closePath();
+        ctx.fillStyle = dark ? '#1E293B' : '#FFFFFF';
+        ctx.fill();
+        ctx.strokeStyle = npc.color;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Header strip (NPC name + level badge)
+        // We use a clipped rect to keep the top-left/top-right rounded corners
+        // that match the bubble body. The base class roundRect takes a single
+        // radius, so we just clip and use a regular rectangle for the header.
+        ctx.save();
+        ctx.beginPath();
+        this.roundRect(ctx, bub.x, bub.y, bub.w, bub.h, 10);
+        ctx.clip();
+        ctx.fillStyle = npc.color;
+        ctx.fillRect(bub.x, bub.y, bub.w, 22);
+        ctx.restore();
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`${npc.name}  ·  ${npc.role}`, bub.x + 10, bub.y + 11);
+        // Level pill on the right
+        ctx.font = 'bold 9px sans-serif';
+        const lblW = ctx.measureText(level.name).width + 10;
+        ctx.fillStyle = 'rgba(255,255,255,0.25)';
+        this.roundRect(ctx, bub.x + bub.w - lblW - 28, bub.y + 4, lblW, 14, 7);
+        ctx.fill();
+        ctx.fillStyle = '#FFFFFF';
+        ctx.textAlign = 'center';
+        ctx.fillText(level.name, bub.x + bub.w - lblW / 2 - 28, bub.y + 11);
+
+        // Close (×) button
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('×', bub.x + bub.w - 14, bub.y + 11);
+
+        // Dialogue text (NPC quote, wrapped)
+        const quote = npc.quotes[Math.floor(performance.now() / 3000) % npc.quotes.length];
+        ctx.fillStyle = textColor;
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        const lines = this._wrapCJK(ctx, `"${quote}"`, bub.w - 20);
+        let lineY = bub.y + 30;
+        for (const line of lines.slice(0, 3)) {
+            ctx.fillText(line, bub.x + 10, lineY);
+            lineY += 14;
+        }
+
+        // ---- Two action buttons (夸他 / 怼他) ----
+        const btnY = bub.y + bub.h - 36;
+        const btnH = 26;
+        const padX = 10;
+        const btnW = (bub.w - padX * 3) / 2;
+        const praiseX = bub.x + padX;
+        const scoldX  = praiseX + btnW + padX;
+
+        // 夸他 (praise) — green
+        ctx.fillStyle = '#10B981';
+        this.roundRect(ctx, praiseX, btnY, btnW, btnH, 6);
+        ctx.fill();
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('👍 夸他  (+5)', praiseX + btnW / 2, btnY + btnH / 2 + 1);
+
+        // 怼他 (scold) — red
+        ctx.fillStyle = '#EF4444';
+        this.roundRect(ctx, scoldX, btnY, btnW, btnH, 6);
+        ctx.fill();
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('👎 怼他  (-3)', scoldX + btnW / 2, btnY + btnH / 2 + 1);
+
+        // Hint line
+        ctx.fillStyle = subColor;
+        ctx.font = '9px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('点击外部关闭', bub.x + bub.w / 2, bub.y + bub.h - 6);
+    }
+
+    // -----------------------------------------------------------------
+    //  memory log (right sidebar)
+    // -----------------------------------------------------------------
+    _drawMemoryLog(ctx, x, y, w, h, textColor, subColor, borderCol, panelBg, dark) {
+        // Panel
+        ctx.fillStyle = panelBg;
+        this.roundRect(ctx, x, y, w, h, 10);
+        ctx.fill();
+        ctx.strokeStyle = borderCol;
+        ctx.lineWidth = 1;
+        this.roundRect(ctx, x, y, w, h, 10);
+        ctx.stroke();
+
+        const padX = 12;
+        let cursorY = y + 10;
+
+        // Title
+        ctx.fillStyle = textColor;
+        ctx.font = 'bold 12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillText('📜  记忆日志  Memory Log', x + padX, cursorY);
+        cursorY += 18;
+
+        // Subtitle / counter
+        ctx.fillStyle = subColor;
+        ctx.font = '9px sans-serif';
+        ctx.fillText(`最近 ${this._memLog.length} / 8 条对话`, x + padX, cursorY);
+        cursorY += 14;
+
+        // Separator
+        ctx.strokeStyle = borderCol;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x + padX, cursorY);
+        ctx.lineTo(x + w - padX, cursorY);
+        ctx.stroke();
+        cursorY += 6;
+
+        // Each log entry
+        const rowH = 26;
+        if (this._memLog.length === 0) {
+            ctx.fillStyle = subColor;
+            ctx.font = 'italic 10px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('还没有对话记录  ·  点击 NPC 开始', x + w / 2, cursorY + 20);
+        } else {
+            for (let i = 0; i < this._memLog.length; i++) {
+                const e = this._memLog[i];
+                const entryY = cursorY + i * rowH;
+                if (entryY + rowH > y + h - 6) break;     // don't overflow panel
+
+                // Left color stripe
+                const positive = e.delta.startsWith('+');
+                const stripeCol = positive ? '#10B981' : '#EF4444';
+                ctx.fillStyle = stripeCol;
+                ctx.fillRect(x + padX, entryY + 2, 2, rowH - 6);
+
+                // Time + NPC name
+                ctx.fillStyle = textColor;
+                ctx.font = 'bold 9px sans-serif';
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'top';
+                ctx.fillText(`${e.time}  ${e.npcName}`, x + padX + 8, entryY + 1);
+
+                // Action (truncated to fit)
+                const actionText = e.action.length > 12 ? e.action.slice(0, 12) + '…' : e.action;
+                ctx.fillStyle = subColor;
+                ctx.font = '9px sans-serif';
+                ctx.fillText(actionText, x + padX + 8, entryY + 12);
+
+                // Delta + score on the right
+                ctx.fillStyle = stripeCol;
+                ctx.font = 'bold 9px sans-serif';
+                ctx.textAlign = 'right';
+                ctx.fillText(e.delta, x + w - padX - 4, entryY + 1);
+                ctx.fillStyle = subColor;
+                ctx.font = '8px sans-serif';
+                ctx.fillText(`${e.score}/100 · ${e.level}`, x + w - padX - 4, entryY + 12);
+            }
+        }
+    }
+
+    // -----------------------------------------------------------------
+    //  hover tooltip (NPC personality + role)
+    // -----------------------------------------------------------------
+    _drawNpcTooltip(ctx, idx, textColor, subColor, borderCol, dark) {
+        const npc = this.npcs[idx];
+        if (!npc) return;
+        const rect = this._npcRects[idx];
+        if (!rect) return;
+
+        const text1 = npc.name + ' · ' + npc.role;
+        const text2 = '性格: ' + npc.personality;
+        const text3 = '好感度: ' + npc.affinity + ' / 100  (' + this._affinityLevel(npc.affinity).name + ')';
+
+        ctx.font = 'bold 10px sans-serif';
+        const w1 = ctx.measureText(text1).width;
+        ctx.font = '9px sans-serif';
+        const w2 = ctx.measureText(text2).width;
+        const w3 = ctx.measureText(text3).width;
+        const tw = Math.max(w1, w2, w3) + 16;
+        const th = 46;
+        let tx = rect.x - tw / 2;
+        let ty = rect.y - rect.r - th - 8;
+        if (tx < 8) tx = 8;
+        if (tx + tw > this.width - 8) tx = this.width - tw - 8;
+        if (ty < 8) ty = rect.y + rect.r + 8;
+
+        ctx.fillStyle = dark ? 'rgba(15,23,42,0.96)' : 'rgba(255,255,255,0.96)';
+        this.roundRect(ctx, tx, ty, tw, th, 8);
+        ctx.fill();
+        ctx.strokeStyle = npc.color;
+        ctx.lineWidth = 1.5;
+        this.roundRect(ctx, tx, ty, tw, th, 8);
+        ctx.stroke();
+
+        ctx.fillStyle = npc.color;
+        ctx.font = 'bold 10px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillText(text1, tx + 8, ty + 6);
+        ctx.fillStyle = textColor;
+        ctx.font = '9px sans-serif';
+        ctx.fillText(text2, tx + 8, ty + 21);
+        ctx.fillStyle = subColor;
+        ctx.fillText(text3, tx + 8, ty + 33);
+    }
+
+    // -----------------------------------------------------------------
+    //  footer
+    // -----------------------------------------------------------------
+    _drawFooter(ctx, w, h, subColor, textColor) {
+        ctx.fillStyle = subColor;
+        ctx.font = '10px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'bottom';
+
+        // Compute average affinity for footer status
+        const avg = this.npcs.reduce((s, n) => s + n.affinity, 0) / this.npcs.length;
+        let status;
+        if (this._playing) {
+            const phaseLabel = ({
+                opening:  '正在打开气泡',
+                waiting:  '等待玩家',
+                choosing: '自动选 夸他',
+                closing:  '关闭气泡',
+                idle:     '播放中'
+            })[this._playPhase] || '播放中';
+            status = `▶ ${phaseLabel}  ·  NPC ${this._playIdx + 1}/${this.npcs.length}  ·  速度 ×${this.speed.toFixed(1)}`;
+        } else if (this._selectedIdx >= 0) {
+            status = `💬 与 ${this.npcs[this._selectedIdx].name} 对话中  ·  点击按钮或外部区域`;
+        } else {
+            status = 'Godot + FastAPI + HelloAgents  ·  5 级好感度: 陌生→熟悉→友好→亲密→挚友';
+        }
+        ctx.fillText(status, 16, h - 6);
+        ctx.textAlign = 'right';
+        ctx.fillText('平均好感度: ' + avg.toFixed(1) + ' / 100', w - 16, h - 6);
+        ctx.textAlign = 'left';
+    }
+
+    // -----------------------------------------------------------------
+    //  color helpers
+    // -----------------------------------------------------------------
     _lightenColor(hex, percent) {
         const num = parseInt(hex.replace('#', ''), 16);
         const amt = Math.round(2.55 * percent);
@@ -341,12 +1004,22 @@ class Ch15Cybertown extends CanvasAnimation {
         return `rgb(${R},${G},${B})`;
     }
 
-    destroy() {
-        this.isRunning = false;
-        if (this.animationId) {
-            cancelAnimationFrame(this.animationId);
-            this.animationId = null;
+    // CJK-aware character wrap (each char is its own unit so it works for both
+    // Chinese and English without breaking in the middle of a word).
+    _wrapCJK(ctx, text, maxWidth) {
+        const lines = [];
+        let line = '';
+        for (const ch of text) {
+            const test = line + ch;
+            if (ctx.measureText(test).width > maxWidth && line.length > 0) {
+                lines.push(line);
+                line = ch;
+            } else {
+                line = test;
+            }
         }
+        if (line) lines.push(line);
+        return lines;
     }
 }
 

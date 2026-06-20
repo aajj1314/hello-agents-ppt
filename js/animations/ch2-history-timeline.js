@@ -1,190 +1,302 @@
 /**
- * CH2: History Timeline Animation
- * Interactive timeline of AI Agent development milestones
+ * CH2: AI Agent History Timeline - "Problem-Driven" Evolution Ladder
+ *
+ * Renders 9 milestones (1950 Turing Test -> 2023 AutoGPT) arranged left-to-right
+ * with 4 era color bands (萌芽期 / 符号主义 / 深度学习 / LLM时代) as background.
+ *
+ * Modes:
+ *  - Auto play: sequentially highlight each milestone, advance automatically.
+ *  - Click: toggle a node; on selected, show the "问题 → 解决" before/after card.
+ *
+ * Controls (bound by id):
+ *   btn-play-ch2-history-timeline     toggle play/pause
+ *   btn-step-ch2-history-timeline     advance to next milestone
+ *   btn-reset-ch2-history-timeline   rewind to start
+ *   speed-ch2-history-timeline        playback speed multiplier
  */
-const Ch2HistoryTimeline = {
-    canvas: null, ctx: null, width: 0, height: 0,
-    selectedIndex: -1,
-    hoverIndex: -1,
+import { CanvasAnimation } from './canvas-animation.js';
+import { registerAnimation } from './animation-registry.js';
 
-    milestones: [
-        { year: '1950', title: '图灵测试', desc: '图灵提出"机器能否思考"的判定标准，开创AI思想先河。' },
-        { year: '1956', title: '达特茅斯会议', desc: 'AI学科正式诞生。麦卡锡、明斯基等科学家齐聚，符号主义兴起。' },
-        { year: '1966', title: 'ELIZA', desc: '魏泽鲍姆开发首个对话程序。基于模式匹配的聊天机器人，产生著名的"ELIZA效应"。' },
-        { year: '1980s', title: '专家系统', desc: 'MYCIN、XCON等专家系统实现商业化成功。知识库+推理机的符号AI达到鼎盛。' },
-        { year: '1997', title: 'Deep Blue', desc: 'IBM深蓝击败国际象棋世界冠军卡斯帕罗夫，符号主义+搜索算法的重大胜利。' },
-        { year: '2016', title: 'AlphaGo', desc: 'DeepMind AlphaGo击败围棋世界冠军李世石。强化学习+深度学习的里程碑。' },
-        { year: '2017', title: 'Transformer', desc: 'Google发表"Attention Is All You Need"，提出Transformer架构，LLM时代基石。' },
-        { year: '2022', title: 'ChatGPT', desc: 'OpenAI发布ChatGPT，LLM驱动的对话智能体引爆全球AI热潮。' },
-        { year: '2023', title: 'AutoGPT', desc: '自主LLM Agent框架兴起，推动Agent技术栈大爆发。' }
-    ],
+class Ch2HistoryTimeline extends CanvasAnimation {
+    constructor() {
+        super();
+        this.speed = 1;
+        this._playing = false;
+        this._rafId = null;
+        this._activeIndex = -1;     // currently highlighted milestone in play mode
+        this._selectedIndex = -1;   // user-clicked milestone (locks details card)
+        this._hoverIndex = -1;
+        this._lastTick = 0;
+        this._holdTime = 0;         // accumulated time on current milestone (ms)
+        this._holdDuration = 2400;  // ms per milestone during auto-play
+    }
 
-    // Color for each era
-    getEraColor(i) {
-        const isDark = this._isDarkTheme();
-        if (i <= 1) return isDark ? '#60A5FA' : '#3B82F6';      // Blue: early AI
-        if (i <= 4) return isDark ? '#F59E0B' : '#D97706';      // Amber: symbolism
-        if (i <= 5) return isDark ? '#10B981' : '#059669';      // Green: RL era
-        return isDark ? '#A78BFA' : '#7C3AED';                   // Purple: LLM era
-    },
+    /* ---------------------------------------------------------------
+     *  Milestone data: 9 nodes, 4 eras
+     * ------------------------------------------------------------- */
+    get milestones() {
+        return [
+            { year: '1950', title: '图灵测试',        era: 0,
+              desc: '图灵提出"机器能否思考"的判定标准，AI 思想先河。',
+              before: '哲学思辨："机器能思考吗？"',
+              after:  '可操作的判定标准：模仿游戏。' },
+            { year: '1956', title: '达特茅斯会议',    era: 0,
+              desc: '麦卡锡、明斯基等正式提出"Artificial Intelligence" 一词，学科诞生。',
+              before: '没有统一的"AI"概念，散落在数学/控制论/语言学。',
+              after:  'AI 作为独立学科登上舞台。' },
+            { year: '1966', title: 'ELIZA',          era: 1,
+              desc: '魏泽鲍姆开发首个对话程序。模式匹配 + 句式替换，无任何语义理解。',
+              before: '无法让机器"说人话"。',
+              after:  '模式匹配即可制造"理解"假象（ELIZA 效应）。' },
+            { year: '1980s', title: '专家系统',       era: 1,
+              desc: 'MYCIN / XCON 等实现商业化。知识库 + 推理机的符号 AI 达到鼎盛。',
+              before: '无法把专家经验系统化部署到生产环境。',
+              after:  '知识可编码、推理可执行，垂直领域效率倍增。' },
+            { year: '1997', title: 'Deep Blue',      era: 1,
+              desc: 'IBM 深蓝击败国际象棋世界冠军卡斯帕罗夫，符号主义 + 搜索登顶。',
+              before: '机器在国际象棋这种"知识+搜索"任务上不可战胜人类。',
+              after:  '暴力搜索 + 评估函数战胜世界冠军。' },
+            { year: '2016', title: 'AlphaGo',         era: 2,
+              desc: 'DeepMind AlphaGo 击败李世石。强化学习 + 深度网络让机器学会"直觉"。',
+              before: '围棋复杂度 10^170，符号搜索完全失效。',
+              after:  '策略网络 + 价值网络把"直觉"学了出来。' },
+            { year: '2017', title: 'Transformer',     era: 3,
+              desc: 'Google 发表 "Attention Is All You Need"，自注意力成为 LLM 通用骨架。',
+              before: 'RNN/LSTM 长依赖训练慢、难并行。',
+              after:  '自注意力 + 并行预训练，模型规模可堆。' },
+            { year: '2022', title: 'ChatGPT',         era: 3,
+              desc: 'OpenAI 发布 ChatGPT。RLHF 让 LLM 真正"听懂人话"，引爆全球 AI 热潮。',
+              before: '语言模型只会续写，不会按指令办事。',
+              after:  '指令对齐 + 多轮对话，LLM 走入大众。' },
+            { year: '2023', title: 'AutoGPT',         era: 3,
+              desc: '自主 LLM Agent 框架兴起：LLM 自己拆解目标、调用工具、循环执行。',
+              before: 'LLM 只会"说"，不会"做"。',
+              after:  'LLM 拆任务 + 调工具 + 自我评估，Agent 技术栈大爆发。' }
+        ];
+    }
 
-    getEraLabel(i) {
-        if (i <= 1) return '萌芽期';
-        if (i <= 4) return '符号主义';
-        if (i <= 5) return '深度学习';
-        return 'LLM时代';
-    },
+    get eras() {
+        return [
+            { id: 0, label: '萌芽期',   from: 0, to: 1,
+              color: { light: '#3B82F6', dark: '#60A5FA' },
+              fill:  { light: 'rgba(59,130,246,0.06)',  dark: 'rgba(96,165,250,0.07)'  } },
+            { id: 1, label: '符号主义', from: 2, to: 4,
+              color: { light: '#D97706', dark: '#F59E0B' },
+              fill:  { light: 'rgba(217,119,6,0.06)',   dark: 'rgba(245,158,11,0.07)'  } },
+            { id: 2, label: '深度学习', from: 5, to: 5,
+              color: { light: '#059669', dark: '#10B981' },
+              fill:  { light: 'rgba(5,150,105,0.07)',   dark: 'rgba(16,185,129,0.08)'  } },
+            { id: 3, label: 'LLM 时代', from: 6, to: 8,
+              color: { light: '#7C3AED', dark: '#A78BFA' },
+              fill:  { light: 'rgba(124,58,237,0.06)',  dark: 'rgba(167,139,250,0.07)' } }
+        ];
+    }
 
+    /* ---------------------------------------------------------------
+     *  Lifecycle
+     * ------------------------------------------------------------- */
     init(canvas) {
-        this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
+        super.init(canvas);
+        this._setupCanvasEvents();
         this._setupControls();
-        this._resize();
-        window.addEventListener('resize', () => this._resize());
+        window.addEventListener('resize', () => { this._resize(); this.draw(); });
         this.draw();
-    },
+    }
 
-    _resize() {
+    _setupCanvasEvents() {
         if (!this.canvas) return;
-        const container = this.canvas.parentElement;
-        const dpr = window.devicePixelRatio || 1;
-        const logicalW = container.clientWidth;
-        const logicalH = container.clientHeight || 420;
-        this.canvas.style.width = logicalW + 'px';
-        this.canvas.style.height = logicalH + 'px';
-        this.canvas.width = logicalW * dpr;
-        this.canvas.height = logicalH * dpr;
-        this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        this.width = logicalW;
-        this.height = logicalH;
-        this.draw();
-    },
-
-    _setupControls() {
         this.canvas.addEventListener('click', (e) => this._handleClick(e));
         this.canvas.addEventListener('mousemove', (e) => this._handleHover(e));
         this.canvas.addEventListener('mouseleave', () => {
-            this.hoverIndex = -1;
+            this._hoverIndex = -1;
             this.canvas.style.cursor = 'default';
             this.draw();
         });
-    },
+    }
 
+    _setupControls() {
+        const animId = 'ch2-history-timeline';
+        const playBtn   = document.getElementById('btn-play-' + animId);
+        const stepBtn   = document.getElementById('btn-step-' + animId);
+        const resetBtn  = document.getElementById('btn-reset-' + animId);
+        const speedEl   = document.getElementById('speed-' + animId);
+
+        if (playBtn)  playBtn.addEventListener('click', () => this.togglePlay());
+        if (stepBtn)  stepBtn.addEventListener('click', () => this.stepForward());
+        if (resetBtn) resetBtn.addEventListener('click', () => this.reset());
+        if (speedEl)  speedEl.addEventListener('input', (e) => {
+            this.speed = parseFloat(e.target.value) || 1;
+        });
+    }
+
+    /* ---------------------------------------------------------------
+     *  Playback controls (compatible with base interface)
+     * ------------------------------------------------------------- */
+    togglePlay() {
+        if (this._playing) {
+            this.pause();
+        } else {
+            this.play();
+        }
+    }
+
+    play() {
+        // If at end, restart from beginning
+        if (this._activeIndex >= this.milestones.length - 1) {
+            this._activeIndex = -1;
+            this._holdTime = 0;
+        }
+        this._playing = true;
+        this._lastTick = performance.now();
+        const btn = document.getElementById('btn-play-ch2-history-timeline');
+        if (btn) btn.textContent = '暂停';
+        this._loop();
+    }
+
+    pause() {
+        this._playing = false;
+        if (this._rafId) {
+            cancelAnimationFrame(this._rafId);
+            this._rafId = null;
+        }
+        const btn = document.getElementById('btn-play-ch2-history-timeline');
+        if (btn) btn.textContent = '播放';
+    }
+
+    _loop() {
+        if (!this._playing) return;
+        const now = performance.now();
+        const dt = now - this._lastTick;
+        this._lastTick = now;
+        this._holdTime += dt * (this.speed || 1);
+
+        if (this._holdTime >= this._holdDuration) {
+            this._holdTime = 0;
+            this._activeIndex++;
+            if (this._activeIndex >= this.milestones.length) {
+                // End of playback - pause and highlight last node
+                this._activeIndex = this.milestones.length - 1;
+                this.pause();
+                this.draw();
+                return;
+            }
+        }
+        this.draw();
+        this._rafId = requestAnimationFrame(() => this._loop());
+    }
+
+    stepForward() {
+        this.pause();
+        if (this._activeIndex < this.milestones.length - 1) {
+            this._activeIndex++;
+        }
+        this._holdTime = 0;
+        this.draw();
+    }
+
+    reset() {
+        this.pause();
+        this._activeIndex = -1;
+        this._selectedIndex = -1;
+        this._holdTime = 0;
+        this.draw();
+    }
+
+    setSpeed(v) {
+        this.speed = v;
+    }
+
+    step() {
+        this.stepForward();
+    }
+
+    /* ---------------------------------------------------------------
+     *  Hit-testing & interaction
+     * ------------------------------------------------------------- */
     _getPositions() {
         const w = this.width;
         const h = this.height;
         const count = this.milestones.length;
         const positions = [];
-        const margin = 50;
+        const margin = Math.max(48, w * 0.05);
         const usableW = w - margin * 2;
         const spacing = usableW / (count - 1);
-        const timelineY = h * 0.42;
+        const timelineY = h * 0.4;
 
         for (let i = 0; i < count; i++) {
             const x = margin + i * spacing;
-            // Alternate nodes above/below timeline
-            const yOff = (i % 2 === 0) ? -50 : 50;
-            positions.push({ x, y: timelineY, labelY: timelineY + yOff });
+            // Alternate above/below the timeline for legibility
+            const yOff = (i % 2 === 0) ? -1 : 1;
+            const labelY = timelineY + yOff * Math.max(46, h * 0.12);
+            positions.push({ x, y: timelineY, labelY, dir: yOff });
         }
         return positions;
-    },
+    }
+
+    _hitTest(x, y) {
+        const positions = this._getPositions();
+        const hitR = 22;
+        for (let i = positions.length - 1; i >= 0; i--) {
+            const p = positions[i];
+            const dx = x - p.x;
+            const dy = y - p.y;
+            if (Math.sqrt(dx * dx + dy * dy) <= hitR) return i;
+        }
+        return -1;
+    }
 
     _handleClick(e) {
         const rect = this.canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        const positions = this._getPositions();
-        const hitR = 18;
-
-        for (let i = positions.length - 1; i >= 0; i--) {
-            const p = positions[i];
-            const dx = x - p.x;
-            const dy = y - p.y;
-            if (Math.sqrt(dx * dx + dy * dy) <= hitR) {
-                this.selectedIndex = this.selectedIndex === i ? -1 : i;
-                this.draw();
-                return;
-            }
+        const idx = this._hitTest(x, y);
+        if (idx >= 0) {
+            this._selectedIndex = (this._selectedIndex === idx) ? -1 : idx;
+        } else {
+            this._selectedIndex = -1;
         }
-        // Click on background: deselect
-        this.selectedIndex = -1;
         this.draw();
-    },
+    }
 
     _handleHover(e) {
         const rect = this.canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        const positions = this._getPositions();
-        const hitR = 18;
-        let found = -1;
-
-        for (let i = positions.length - 1; i >= 0; i--) {
-            const p = positions[i];
-            const dx = x - p.x;
-            const dy = y - p.y;
-            if (Math.sqrt(dx * dx + dy * dy) <= hitR) {
-                found = i;
-                break;
-            }
-        }
-
-        if (found !== this.hoverIndex) {
-            this.hoverIndex = found;
-            this.canvas.style.cursor = found >= 0 ? 'pointer' : 'default';
+        const idx = this._hitTest(x, y);
+        if (idx !== this._hoverIndex) {
+            this._hoverIndex = idx;
+            this.canvas.style.cursor = idx >= 0 ? 'pointer' : 'default';
             this.draw();
         }
-    },
+    }
 
-    _isDarkTheme() {
-        return document.documentElement.getAttribute('data-theme') === 'dark';
-    },
+    /* ---------------------------------------------------------------
+     *  Color helpers
+     * ------------------------------------------------------------- */
+    _eraColor(eraId) {
+        const era = this.eras[eraId];
+        return this.isDarkTheme() ? era.color.dark : era.color.light;
+    }
 
-    _roundRect(ctx, x, y, w, h, r) {
-        ctx.beginPath();
-        ctx.moveTo(x + r, y);
-        ctx.lineTo(x + w - r, y);
-        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-        ctx.lineTo(x + w, y + h - r);
-        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-        ctx.lineTo(x + r, y + h);
-        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-        ctx.lineTo(x, y + r);
-        ctx.quadraticCurveTo(x, y, x + r, y);
-        ctx.closePath();
-    },
+    _eraFill(eraId) {
+        const era = this.eras[eraId];
+        return this.isDarkTheme() ? era.fill.dark : era.fill.light;
+    }
 
-    _wrapText(ctx, text, x, y, maxWidth, lineHeight) {
-        const words = text.split('');
-        let line = '';
-        const lines = [];
-        for (let n = 0; n < words.length; n++) {
-            const testLine = line + words[n];
-            const metrics = ctx.measureText(testLine);
-            if (metrics.width > maxWidth && n > 0) {
-                lines.push(line);
-                line = words[n];
-            } else {
-                line = testLine;
-            }
-        }
-        lines.push(line);
-        const totalH = lines.length * lineHeight;
-        for (let i = 0; i < lines.length; i++) {
-            ctx.fillText(lines[i], x, y - totalH / 2 + (i + 0.5) * lineHeight);
-        }
-    },
-
+    /* ---------------------------------------------------------------
+     *  Drawing
+     * ------------------------------------------------------------- */
     draw() {
         const ctx = this.ctx;
         const w = this.width;
         const h = this.height;
-        const isDark = this._isDarkTheme();
-        const bg = isDark ? '#1E293B' : '#F8FAFC';
-        const textColor = isDark ? '#F8FAFC' : '#0F172A';
-        const subTextColor = isDark ? '#CBD5E1' : '#475569';
-        const cardBg = isDark ? '#334155' : '#FFFFFF';
-        const borderColor = isDark ? '#475569' : '#E2E8F0';
+        const dark = this.isDarkTheme();
+        const bg = dark ? '#0F172A' : '#F8FAFC';
+        const textColor = dark ? '#F1F5F9' : '#0F172A';
+        const subText = dark ? '#94A3B8' : '#475569';
+        const cardBg = dark ? '#1E293B' : '#FFFFFF';
+        const border = dark ? '#334155' : '#E2E8F0';
+        const track = dark ? '#334155' : '#CBD5E1';
 
         ctx.clearRect(0, 0, w, h);
         ctx.fillStyle = bg;
@@ -192,160 +304,245 @@ const Ch2HistoryTimeline = {
 
         const positions = this._getPositions();
         const timelineY = positions[0].y;
-        const nodeR = Math.min(16, w * 0.018);
-        const labelOffset = 30;
+        const baseNodeR = Math.max(8, Math.min(14, w * 0.014));
 
-        // Era background bands
-        const eraColors = [
-            isDark ? 'rgba(96,165,250,0.06)' : 'rgba(59,130,246,0.05)',
-            isDark ? 'rgba(245,158,11,0.06)' : 'rgba(217,119,6,0.05)',
-            isDark ? 'rgba(16,185,129,0.06)' : 'rgba(5,150,105,0.05)',
-            isDark ? 'rgba(167,139,250,0.06)' : 'rgba(124,58,237,0.05)'
-        ];
+        // ---- Era background bands ---------------------------------------
+        for (const era of this.eras) {
+            const x0 = positions[era.from].x;
+            const x1 = positions[era.to].x;
+            const bandY = h * 0.18;
+            const bandH = h * 0.66;
+            ctx.fillStyle = this._eraFill(era.id);
+            ctx.fillRect(x0 - 6, bandY, (x1 - x0) + 12, bandH);
 
-        // Draw horizontal timeline line
+            // Era label at top of band
+            ctx.fillStyle = this._eraColor(era.id);
+            ctx.font = 'bold 11px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(era.label, (x0 + x1) / 2, bandY + 6);
+        }
+
+        // ---- Timeline backbone ------------------------------------------
         ctx.beginPath();
         ctx.moveTo(positions[0].x, timelineY);
         ctx.lineTo(positions[positions.length - 1].x, timelineY);
-        ctx.strokeStyle = isDark ? '#475569' : '#CBD5E1';
-        ctx.lineWidth = 3;
+        ctx.strokeStyle = track;
+        ctx.lineWidth = 2.5;
         ctx.stroke();
 
-        // Draw nodes and labels
+        // Tick marks at each node position
         for (let i = 0; i < positions.length; i++) {
             const p = positions[i];
-            const isSelected = i === this.selectedIndex;
-            const isHover = i === this.hoverIndex;
-            const color = this.getEraColor(i);
-            const r = isSelected ? nodeR * 1.4 : (isHover ? nodeR * 1.2 : nodeR);
-
-            // Connection line from node to label
-            const labelDir = (i % 2 === 0) ? -1 : 1;
-            const labelY = timelineY + labelDir * labelOffset;
-
             ctx.beginPath();
-            ctx.moveTo(p.x, timelineY);
-            ctx.lineTo(p.x, labelY);
-            ctx.strokeStyle = isSelected ? color : (isDark ? '#475569' : '#CBD5E1');
-            ctx.lineWidth = isSelected ? 2 : 1.5;
+            ctx.moveTo(p.x, timelineY - 4);
+            ctx.lineTo(p.x, timelineY + 4);
+            ctx.strokeStyle = track;
+            ctx.lineWidth = 1;
             ctx.stroke();
+        }
 
-            // Glow effect for selected/hover
-            if (isSelected || isHover) {
+        // ---- Connection line from node to its label --------------------
+        const labelOffset = 32;
+        for (let i = 0; i < positions.length; i++) {
+            const p = positions[i];
+            const isActive = (i === this._activeIndex);
+            const isSelected = (i === this._selectedIndex);
+            const color = this._eraColor(this.milestones[i].era);
+
+            const y1 = timelineY + p.dir * 8;
+            const y2 = p.labelY - p.dir * labelOffset;
+            ctx.beginPath();
+            ctx.moveTo(p.x, y1);
+            ctx.lineTo(p.x, y2);
+            ctx.strokeStyle = (isActive || isSelected) ? color : track;
+            ctx.lineWidth = (isActive || isSelected) ? 2 : 1.2;
+            ctx.stroke();
+        }
+
+        // ---- Nodes -----------------------------------------------------
+        for (let i = 0; i < positions.length; i++) {
+            const p = positions[i];
+            const ms = this.milestones[i];
+            const color = this._eraColor(ms.era);
+            const isActive = (i === this._activeIndex);
+            const isSelected = (i === this._selectedIndex);
+            const isHover = (i === this._hoverIndex);
+            const emphasized = isActive || isSelected || isHover;
+
+            let r = baseNodeR;
+            if (isSelected) r = baseNodeR * 1.5;
+            else if (isActive) r = baseNodeR * 1.3 + Math.sin(performance.now() / 200) * 1.5;
+            else if (isHover) r = baseNodeR * 1.2;
+
+            // Outer halo when emphasized
+            if (emphasized) {
                 ctx.beginPath();
-                ctx.arc(p.x, timelineY, r + 8, 0, Math.PI * 2);
-                ctx.fillStyle = color + '30';
+                ctx.arc(p.x, p.y, r + 10, 0, Math.PI * 2);
+                ctx.fillStyle = color + (dark ? '35' : '28');
                 ctx.fill();
             }
 
-            // Node circle
+            // Soft inner ring
             ctx.beginPath();
-            ctx.arc(p.x, timelineY, r, 0, Math.PI * 2);
-            const grad = ctx.createRadialGradient(p.x - r * 0.3, timelineY - r * 0.3, r * 0.1, p.x, timelineY, r);
+            ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+            const grad = ctx.createRadialGradient(
+                p.x - r * 0.35, p.y - r * 0.35, r * 0.1,
+                p.x, p.y, r
+            );
             grad.addColorStop(0, '#FFFFFF');
             grad.addColorStop(1, color);
             ctx.fillStyle = grad;
             ctx.fill();
-            ctx.strokeStyle = isSelected ? '#FFFFFF' : borderColor;
-            ctx.lineWidth = isSelected ? 3 : 2;
+
+            ctx.strokeStyle = emphasized ? color : border;
+            ctx.lineWidth = emphasized ? 3 : 1.5;
             ctx.stroke();
 
-            // Year label above/below
-            ctx.fillStyle = isSelected ? color : subTextColor;
-            ctx.font = (isSelected ? 'bold ' : '') + Math.max(11, Math.min(13, w * 0.014)) + 'px sans-serif';
+            // Year label (closer to node)
+            ctx.fillStyle = emphasized ? color : subText;
+            ctx.font = (emphasized ? 'bold ' : '') + Math.max(10, Math.min(12, w * 0.013)) + 'px sans-serif';
             ctx.textAlign = 'center';
-            ctx.textBaseline = labelDir === -1 ? 'bottom' : 'top';
-            ctx.fillText(this.milestones[i].year, p.x, labelY + labelDir * -4);
+            ctx.textBaseline = p.dir === -1 ? 'bottom' : 'top';
+            ctx.fillText(ms.year, p.x, p.y + p.dir * (r + 4) - p.dir * 0);
 
-            // Title label
-            const titleY = labelY + labelDir * (labelOffset + 4);
-            ctx.fillStyle = isSelected ? textColor : subTextColor;
-            ctx.font = (isSelected ? 'bold ' : '') + Math.max(10, Math.min(12, w * 0.013)) + 'px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = labelDir === -1 ? 'bottom' : 'top';
-            ctx.fillText(this.milestones[i].title, p.x, titleY + labelDir * 4);
+            // Title (further out)
+            ctx.fillStyle = emphasized ? textColor : subText;
+            ctx.font = (emphasized ? 'bold ' : '') + Math.max(10, Math.min(12, w * 0.0125)) + 'px sans-serif';
+            ctx.textBaseline = p.dir === -1 ? 'bottom' : 'top';
+            ctx.fillText(ms.title, p.x, p.y + p.dir * (r + 18));
         }
 
-        // Detail panel for selected item
-        if (this.selectedIndex >= 0) {
-            const ms = this.milestones[this.selectedIndex];
-            const panelX = w * 0.06;
-            const panelW = w * 0.88;
-            const panelY = h * 0.52;
-            const panelH = h * 0.38;
+        // ---- Bottom detail / instruction card --------------------------
+        const showDetails = this._selectedIndex >= 0;
+        const cardX = w * 0.04;
+        const cardW = w * 0.92;
+        const cardY = h * 0.72;
+        const cardH = h - cardY - 12;
 
-            // Card background
-            ctx.fillStyle = cardBg;
-            ctx.strokeStyle = this.getEraColor(this.selectedIndex);
-            ctx.lineWidth = 2;
-            this._roundRect(ctx, panelX, panelY, panelW, panelH, 12);
-            ctx.fill();
-            ctx.stroke();
+        this.roundRect(ctx, cardX, cardY, cardW, cardH, 10);
+        ctx.fillStyle = cardBg;
+        ctx.fill();
+        ctx.strokeStyle = showDetails
+            ? this._eraColor(this.milestones[this._selectedIndex].era)
+            : border;
+        ctx.lineWidth = showDetails ? 2 : 1;
+        ctx.stroke();
 
-            // Era badge
-            const eraLabel = this.getEraLabel(this.selectedIndex);
-            const eraColor = this.getEraColor(this.selectedIndex);
-            ctx.fillStyle = eraColor + '40';
-            this._roundRect(ctx, panelX + 16, panelY + 16, 70, 26, 13);
-            ctx.fill();
-            ctx.fillStyle = textColor;
-            ctx.font = 'bold 11px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(eraLabel, panelX + 51, panelY + 29);
-
-            // Title
-            ctx.fillStyle = textColor;
-            ctx.font = 'bold 18px sans-serif';
-            ctx.textAlign = 'left';
-            ctx.textBaseline = 'alphabetic';
-            const titleStr = ms.year + ' — ' + ms.title;
-            ctx.fillText(titleStr, panelX + 100, panelY + 36);
-
-            // Description
-            ctx.fillStyle = subTextColor;
-            ctx.font = '14px sans-serif';
-            const descX = panelX + 16;
-            const descY = panelY + 80;
-            const maxTextW = panelW - 40;
-            const lines = this._wrapText(ctx, ms.desc, descX, descY, maxTextW, 20);
-            ctx.textAlign = 'left';
-            ctx.textBaseline = 'top';
-            let lineY = descY;
-            for (const line of lines) {
-                ctx.fillText(line, descX, lineY);
-                lineY += 22;
-            }
+        if (showDetails) {
+            this._drawDetailsCard(cardX, cardY, cardW, cardH,
+                this.milestones[this._selectedIndex], cardBg, textColor, subText, border);
         } else {
-            // Instruction
-            ctx.fillStyle = subTextColor;
-            ctx.font = '13px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'alphabetic';
-            ctx.fillText('点击时间节点查看详情 · 从符号主义到LLM Agent的演进历程', w / 2, h - 20);
-        }
-
-        // Era legend at top
-        const legendY = 16;
-        const legendItems = [
-            { label: '萌芽期', color: isDark ? '#60A5FA' : '#3B82F6' },
-            { label: '符号主义', color: isDark ? '#F59E0B' : '#D97706' },
-            { label: '深度学习', color: isDark ? '#10B981' : '#059669' },
-            { label: 'LLM时代', color: isDark ? '#A78BFA' : '#7C3AED' }
-        ];
-        let legendX = w / 2 - (legendItems.length * 70);
-        for (const item of legendItems) {
-            ctx.fillStyle = item.color;
-            ctx.fillRect(legendX, legendY, 12, 12);
-            ctx.fillStyle = subTextColor;
-            ctx.font = '11px sans-serif';
-            ctx.textAlign = 'left';
-            ctx.textBaseline = 'top';
-            ctx.fillText(item.label, legendX + 18, legendY);
-            legendX += 90;
+            this._drawInstructionCard(cardX, cardY, cardW, cardH, textColor, subText);
         }
     }
-};
 
-window.Animations = window.Animations || {};
-window.Animations['ch2-history-timeline'] = Ch2HistoryTimeline;
+    _drawInstructionCard(x, y, w, h, textColor, subText) {
+        const ctx = this.ctx;
+        ctx.fillStyle = textColor;
+        ctx.font = 'bold 13px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillText('问题驱动的演进阶梯', x + 16, y + 12);
+
+        ctx.fillStyle = subText;
+        ctx.font = '11px sans-serif';
+        const tipLines = [
+            '播放：依次高亮 9 个里程碑节点，看 70 年 AI 发展的演进。',
+            '点击：展开节点查看"上一代痛点 → 本代方案"对比。',
+            '单步：跳到下一个里程碑。'
+        ];
+        let ty = y + 34;
+        for (const line of tipLines) {
+            ctx.fillText('- ' + line, x + 16, ty);
+            ty += 16;
+        }
+    }
+
+    _drawDetailsCard(x, y, w, h, ms, cardBg, textColor, subText, border) {
+        const ctx = this.ctx;
+        const era = this.eras[ms.era];
+        const accent = this._eraColor(ms.era);
+
+        // Era badge
+        const badgeW = 64;
+        const badgeH = 22;
+        const badgeX = x + 14;
+        const badgeY = y + 12;
+        this.roundRect(ctx, badgeX, badgeY, badgeW, badgeH, 11);
+        ctx.fillStyle = accent + (this.isDarkTheme() ? '30' : '22');
+        ctx.fill();
+        ctx.fillStyle = accent;
+        ctx.font = 'bold 11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(era.label, badgeX + badgeW / 2, badgeY + badgeH / 2);
+
+        // Title (year + name)
+        ctx.fillStyle = textColor;
+        ctx.font = 'bold 14px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(ms.year + '  ·  ' + ms.title, badgeX + badgeW + 12, badgeY + badgeH / 2);
+
+        // Description (top line, single short sentence)
+        ctx.fillStyle = subText;
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        const descLines = this.wrapText(ctx, ms.desc, x + 16, y + 42, w - 32, 15);
+        let ly = y + 42;
+        for (const line of descLines) {
+            ctx.fillText(line, x + 16, ly);
+            ly += 15;
+        }
+
+        // Before / After two-column compare
+        const cmpY = ly + 6;
+        const colW = (w - 32 - 12) / 2;
+        const colH = h - (cmpY - y) - 12;
+
+        // Before column
+        this.roundRect(ctx, x + 14, cmpY, colW, colH, 8);
+        ctx.fillStyle = this.isDarkTheme() ? '#3F1D1D' : '#FEF2F2';
+        ctx.fill();
+        ctx.strokeStyle = this.isDarkTheme() ? '#7F1D1D' : '#FCA5A5';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.fillStyle = this.isDarkTheme() ? '#FCA5A5' : '#B91C1C';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.textBaseline = 'top';
+        ctx.fillText('上一代痛点', x + 22, cmpY + 8);
+        ctx.fillStyle = textColor;
+        ctx.font = '11px sans-serif';
+        const beforeLines = this.wrapText(ctx, ms.before, x + 22, cmpY + 24, colW - 16, 14);
+        let by = cmpY + 24;
+        for (const line of beforeLines) {
+            ctx.fillText(line, x + 22, by);
+            by += 14;
+        }
+
+        // After column
+        const ax2 = x + 14 + colW + 12;
+        this.roundRect(ctx, ax2, cmpY, colW, colH, 8);
+        ctx.fillStyle = this.isDarkTheme() ? '#1E3A2A' : '#F0FDF4';
+        ctx.fill();
+        ctx.strokeStyle = this.isDarkTheme() ? '#15803D' : '#86EFAC';
+        ctx.stroke();
+
+        ctx.fillStyle = this.isDarkTheme() ? '#86EFAC' : '#15803D';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText('本代突破', ax2 + 8, cmpY + 8);
+        ctx.fillStyle = textColor;
+        ctx.font = '11px sans-serif';
+        const afterLines = this.wrapText(ctx, ms.after, ax2 + 8, cmpY + 24, colW - 16, 14);
+        let ay = cmpY + 24;
+        for (const line of afterLines) {
+            ctx.fillText(line, ax2 + 8, ay);
+            ay += 14;
+        }
+    }
+}
+
+registerAnimation('ch2-history-timeline', () => new Ch2HistoryTimeline());
