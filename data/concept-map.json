@@ -1,0 +1,315 @@
+{
+  "concepts": [
+    {
+      "id": "agent",
+      "name": "Agent（智能体）",
+      "aliases": ["智能体"],
+      "first_appears": "ch1",
+      "related": ["llm-agent", "peas", "simple-reflex-agent", "tool-use"],
+      "definition_short": "能感知环境、自主推理并使用工具达成目标的系统",
+      "definition_long": "智能体区别于普通程序之处在于，它会持续与环境交互，根据感知到的信息决定下一步行动，而不只是执行固定流程。"
+    },
+    {
+      "id": "llm-agent",
+      "name": "LLM Agent",
+      "aliases": ["大模型智能体"],
+      "first_appears": "ch1",
+      "related": ["agent", "react", "tool-use", "memory"],
+      "definition_short": "以大语言模型为大脑的智能体",
+      "definition_long": "LLM Agent 把大语言模型作为推理中枢，通过提示词接收任务、规划步骤、调用工具并生成回复。"
+    },
+    {
+      "id": "simple-reflex-agent",
+      "name": "简单反射型智能体",
+      "aliases": ["Simple Reflex Agent"],
+      "first_appears": "ch1",
+      "related": ["model-based-reflex-agent", "agent"],
+      "definition_short": "只看当前感知，按条件-动作规则立即反应",
+      "definition_long": "类似于自动门感应到人即打开，不记忆过去状态，也不考虑未来目标。"
+    },
+    {
+      "id": "model-based-reflex-agent",
+      "name": "基于模型的反射型智能体",
+      "aliases": ["Model-based Reflex Agent"],
+      "first_appears": "ch1",
+      "related": ["simple-reflex-agent", "memory", "agent"],
+      "definition_short": "维护内部世界模型，根据历史状态做反应",
+      "definition_long": "它不只依赖当前感知，还会记录环境变化，从而处理部分可观测或动态场景。"
+    },
+    {
+      "id": "goal-based-agent",
+      "name": "基于目标的智能体",
+      "aliases": ["Goal-based Agent"],
+      "first_appears": "ch1",
+      "related": ["utility-based-agent", "plan-and-solve", "agent"],
+      "definition_short": "以实现某个目标为驱动选择行动",
+      "definition_long": "它会评估不同行动能否让目标更快达成，常用于路径规划、任务分解等场景。"
+    },
+    {
+      "id": "utility-based-agent",
+      "name": "基于效用的智能体",
+      "aliases": ["Utility-based Agent"],
+      "first_appears": "ch1",
+      "related": ["goal-based-agent", "mdp", "agent"],
+      "definition_short": "在多个可行方案中选择效用最高的方案",
+      "definition_long": "当目标有多种实现路径时，它用效用函数权衡成本、收益与风险，选出最优解。"
+    },
+    {
+      "id": "learning-agent",
+      "name": "学习型智能体",
+      "aliases": ["Learning Agent"],
+      "first_appears": "ch1",
+      "related": ["rlhf", "grpo", "sft", "agent"],
+      "definition_short": "能从经验中改进自身行为的智能体",
+      "definition_long": "它通过反馈不断调整策略，越用越聪明，是强化学习与智能体结合的核心形态。"
+    },
+    {
+      "id": "peas",
+      "name": "PEAS 模型",
+      "aliases": ["Performance/Environment/Actuators/Sensors"],
+      "first_appears": "ch1",
+      "related": ["agent", "mdp"],
+      "definition_short": "描述智能体四要素：性能、环境、执行器、传感器",
+      "definition_long": "PEAS 帮助设计者系统性地界定一个智能体该感知什么、能做什么、目标是什么。"
+    },
+    {
+      "id": "mdp",
+      "name": "MDP",
+      "aliases": ["马尔可夫决策过程"],
+      "first_appears": "ch11",
+      "related": ["rlhf", "utility-based-agent", "grpo"],
+      "definition_short": "用于描述序贯决策问题的数学模型",
+      "definition_long": "MDP 用状态、动作、奖励和转移概率形式化智能体与环境的交互，是强化学习的基础。"
+    },
+    {
+      "id": "workflow",
+      "name": "Workflow",
+      "aliases": ["工作流"],
+      "first_appears": "ch5",
+      "related": ["agent", "llm-agent"],
+      "definition_short": "预定义步骤的自动化流程",
+      "definition_long": "与智能体不同，Workflow 的行动序列在运行前已基本确定，适合规则明确、重复性高的任务。"
+    },
+    {
+      "id": "react",
+      "name": "ReAct",
+      "aliases": ["Reasoning + Acting"],
+      "first_appears": "ch4",
+      "related": ["plan-and-solve", "reflection", "tool-use", "cot"],
+      "definition_short": "推理与行动交替执行的智能体范式",
+      "definition_long": "ReAct 让模型在思考（Thought）和行动（Action）之间反复迭代，每步行动都基于最新观察。"
+    },
+    {
+      "id": "plan-and-solve",
+      "name": "Plan-and-Solve",
+      "aliases": ["计划再执行"],
+      "first_appears": "ch4",
+      "related": ["react", "goal-based-agent", "reflection"],
+      "definition_short": "先制定整体计划，再按步骤执行的范式",
+      "definition_long": "适合任务步骤清晰、需要全局规划的场景，先拆解目标再逐步完成。"
+    },
+    {
+      "id": "reflection",
+      "name": "Reflection",
+      "aliases": ["自我反思"],
+      "first_appears": "ch4",
+      "related": ["react", "plan-and-solve", "rlhf"],
+      "definition_short": "智能体检查自身输出并修正错误的机制",
+      "definition_long": "通过让模型回顾中间结果，发现不一致或错误后重新生成答案，显著提升质量。"
+    },
+    {
+      "id": "cot",
+      "name": "CoT",
+      "aliases": ["Chain-of-Thought", "思维链"],
+      "first_appears": "ch3",
+      "related": ["react", "prompt", "llm"],
+      "definition_short": "让模型把推理过程显式写出来的提示技术",
+      "definition_long": "通过“一步一步想”的提示，CoT 让模型展示中间推理步骤，提升复杂问题准确率。"
+    },
+    {
+      "id": "tool-use",
+      "name": "Tool Use",
+      "aliases": ["工具调用"],
+      "first_appears": "ch4",
+      "related": ["react", "mcp", "llm-agent"],
+      "definition_short": "智能体调用外部工具扩展自身能力",
+      "definition_long": "当模型本身无法直接获取实时数据或执行计算时，可调用搜索、计算器、数据库等工具。"
+    },
+    {
+      "id": "memory",
+      "name": "Memory",
+      "aliases": ["记忆"],
+      "first_appears": "ch8",
+      "related": ["rag", "vector-db", "llm-agent"],
+      "definition_short": "智能体存储和调用过往信息的能力",
+      "definition_long": "记忆让多轮对话保持连贯，也让智能体在长期任务中积累知识与偏好。"
+    },
+    {
+      "id": "rag",
+      "name": "RAG",
+      "aliases": ["检索增强生成"],
+      "first_appears": "ch8",
+      "related": ["vector-db", "memory", "embedding"],
+      "definition_short": "先检索外部知识再生成回答的技术",
+      "definition_long": "RAG 把用户问题转成检索查询，从知识库找到相关文档后交给模型生成答案，减少幻觉。"
+    },
+    {
+      "id": "vector-db",
+      "name": "Vector DB",
+      "aliases": ["向量数据库"],
+      "first_appears": "ch8",
+      "related": ["rag", "embedding", "memory"],
+      "definition_short": "用向量存储和检索语义相似数据的数据库",
+      "definition_long": "它将文本或图片等转成高维向量，按语义相似度快速检索，是 RAG 的核心基础设施。"
+    },
+    {
+      "id": "embedding",
+      "name": "Embedding",
+      "aliases": ["嵌入向量"],
+      "first_appears": "ch3",
+      "related": ["vector-db", "rag", "llm"],
+      "definition_short": "把文本或对象映射成数值向量的表示方法",
+      "definition_long": "Embedding 让计算机用向量距离衡量语义相似度，是检索和推荐的基础。"
+    },
+    {
+      "id": "context",
+      "name": "Context",
+      "aliases": ["上下文"],
+      "first_appears": "ch9",
+      "related": ["prompt", "token", "llm-agent"],
+      "definition_short": "模型当前可见的全部输入信息",
+      "definition_long": "上下文长度有限，如何组织关键信息直接影响模型输出质量。"
+    },
+    {
+      "id": "prompt",
+      "name": "Prompt",
+      "aliases": ["提示词"],
+      "first_appears": "ch9",
+      "related": ["cot", "context", "llm"],
+      "definition_short": "给模型的输入指令",
+      "definition_long": "提示词不仅包含问题，也可包含角色、示例、格式要求和约束条件。"
+    },
+    {
+      "id": "token",
+      "name": "Token",
+      "aliases": ["词元"],
+      "first_appears": "ch3",
+      "related": ["context", "llm", "prompt"],
+      "definition_short": "模型处理文本时的最小单位",
+      "definition_long": "Token 可能是字、词或子词，模型按 Token 计费和限制上下文长度。"
+    },
+    {
+      "id": "llm",
+      "name": "LLM",
+      "aliases": ["大语言模型"],
+      "first_appears": "ch3",
+      "related": ["llm-agent", "token", "prompt"],
+      "definition_short": "在海量文本上训练的大型语言模型",
+      "definition_long": "LLM 能生成、理解和推理自然语言，是当代 AI 应用的核心引擎。"
+    },
+    {
+      "id": "mcp",
+      "name": "MCP",
+      "aliases": ["Model Context Protocol"],
+      "first_appears": "ch10",
+      "related": ["a2a", "anp", "tool-use"],
+      "definition_short": "连接 AI 与外部工具的开放协议",
+      "definition_long": "MCP 让模型以统一方式访问文件、数据库、API 等资源，降低工具集成成本。"
+    },
+    {
+      "id": "a2a",
+      "name": "A2A",
+      "aliases": ["Agent-to-Agent"],
+      "first_appears": "ch10",
+      "related": ["mcp", "anp", "agent"],
+      "definition_short": "智能体之间相互通信的协议",
+      "definition_long": "A2A 让不同厂商或任务的 Agent 能协作完成复杂工作，如多个专家协同。"
+    },
+    {
+      "id": "anp",
+      "name": "ANP",
+      "aliases": ["Agent Network Protocol"],
+      "first_appears": "ch10",
+      "related": ["a2a", "mcp", "agent"],
+      "definition_short": "面向智能体网络的通信协议",
+      "definition_long": "ANP 关注智能体在开放网络中的发现、身份认证与能力协商。"
+    },
+    {
+      "id": "rlhf",
+      "name": "RLHF",
+      "aliases": ["人类反馈强化学习"],
+      "first_appears": "ch11",
+      "related": ["sft", "grpo", "learning-agent"],
+      "definition_short": "用人类偏好训练模型的强化学习方法",
+      "definition_long": "先让人类对模型输出排序，再用强化学习优化模型，使其更符合人类期望。"
+    },
+    {
+      "id": "grpo",
+      "name": "GRPO",
+      "aliases": ["Group Relative Policy Optimization"],
+      "first_appears": "ch11",
+      "related": ["rlhf", "learning-agent", "mdp"],
+      "definition_short": "无需价值网络即可优化策略的强化学习算法",
+      "definition_long": "GRPO 通过组内采样对比估计优势，降低了大模型强化学习的计算开销。"
+    },
+    {
+      "id": "sft",
+      "name": "SFT",
+      "aliases": ["监督微调"],
+      "first_appears": "ch11",
+      "related": ["rlhf", "lora", "llm"],
+      "definition_short": "用标注数据对预训练模型进行有监督训练",
+      "definition_long": "SFT 让通用模型学会特定任务格式和风格，是对齐训练的基础步骤。"
+    },
+    {
+      "id": "lora",
+      "name": "LoRA",
+      "aliases": ["低秩适配"],
+      "first_appears": "ch12",
+      "related": ["sft", "llm", "fine-tuning"],
+      "definition_short": "只训练少量低秩参数即可微调大模型的方法",
+      "definition_long": "LoRA 冻结原模型大部分权重，通过插入小型适配层实现高效微调，节省显存。"
+    },
+    {
+      "id": "fine-tuning",
+      "name": "微调",
+      "aliases": ["Fine-tuning"],
+      "first_appears": "ch11",
+      "related": ["lora", "sft", "llm"],
+      "definition_short": "在特定任务数据上继续训练预训练模型",
+      "definition_long": "微调让通用模型掌握垂直领域知识或特定输出格式，是模型落地的重要步骤。"
+    }
+  ],
+  "chapter_links": [
+    {
+      "from": "ch1",
+      "to": "ch4",
+      "reason": "学完 Agent 基础，看 ReAct 是怎么把'推理'和'行动'连起来的"
+    },
+    {
+      "from": "ch4",
+      "to": "ch8",
+      "reason": "掌握 ReAct 后，用 Memory/RAG 让 Agent 拥有长期知识"
+    },
+    {
+      "from": "ch8",
+      "to": "ch9",
+      "reason": "记忆变多后，必须学会管理上下文窗口"
+    },
+    {
+      "from": "ch9",
+      "to": "ch10",
+      "reason": "上下文工程之后，看 Agent 如何通过协议与外部世界协作"
+    },
+    {
+      "from": "ch10",
+      "to": "ch11",
+      "reason": "Agent 能协作后，用 RLHF/GRPO 让它从反馈中学习"
+    },
+    {
+      "from": "ch11",
+      "to": "ch13",
+      "reason": "理论学完，动手搭建旅行助手项目"
+    }
+  ]
+}
