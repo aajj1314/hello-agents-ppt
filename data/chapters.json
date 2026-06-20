@@ -624,12 +624,22 @@
         {
           "type": "content",
           "title": "为什么需要范式？",
-          "content": "范式为智能体的思考与行动提供了结构化的框架，帮助LLM更好地推理和决策。没有范式的LLM可能会产生幻觉，无法有效利用工具。"
+          "content": "你可以把范式理解为智能体的'思考习惯'。就像人类开会要有议程、做饭要有菜谱，大模型如果缺乏结构化框架，就会边想边飘：要么凭空编造答案（幻觉），要么反复绕圈解不出题。范式把'想什么、做什么、怎么改'固定成可重复的流程，让智能体从一次性问答工具变成能连续推理、调用工具、自我纠错的系统。本章学习的三种范式——ReAct、Plan-and-Solve、Reflection——正是工业界最常用的三种'思考习惯'，也是后续实战项目的理论基础。"
         },
         {
           "type": "content",
           "title": "什么是 ReAct？",
-          "content": "ReAct = Reasoning + Acting\n\n这是一种将推理（Thought）与行动（Action）紧密结合的范式。智能体在思考后执行操作，从操作结果中观察（Observation），再基于观察继续思考。"
+          "content": "ReAct = Reasoning + Acting，你可以把它理解成让大模型'边想边做'。它把推理（Thought）、行动（Action）和观察（Observation）串成一个循环：模型先在心里盘算'下一步该干嘛'，然后执行一个工具调用，再把工具返回的新信息读进去，继续盘算下一步。Thought 是内心独白，Action 是对外操作，Observation 是环境反馈。三者不断交替，智能体就能像侦探破案一样，在行动中推进推理。这个概念由 Shunyu Yao 等人在 2022 年提出，已成为构建工具型智能体的基础范式。"
+        },
+        {
+          "type": "content",
+          "title": "为什么需要 ReAct？",
+          "content": "大模型有两个常见毛病：一是'闭卷考试'，只能依赖训练数据，遇到最新股价、今天天气就胡说；二是'只会说不会干'，给了数学题也不按计算器。ReAct 的出现正是为了解决这两个问题。它让模型在拿不准时主动调用搜索引擎、天气 API 或计算器，把'观察到的真实信息'作为下一步推理的依据。就像医生问诊不会只凭记忆开药，而是要先看检查报告。学完 ReAct，你就能理解聊天机器人和 AI 助手为什么能查天气、查快递、调用代码解释器——CH13 的旅行助手和 CH14 的研究助手都基于这个范式与外部工具交互。"
+        },
+        {
+          "type": "content",
+          "title": "ReAct 三件套：Thought / Action / Observation",
+          "content": "下面是一段用户问'华为最新的手机是哪一款？'时，ReAct 智能体的真实思考轨迹。\n\nThought：这个问题需要最新信息，我现有知识可能不够，应该上网搜索。\nAction：Search[华为最新手机型号]\nObservation：搜索结果列出 HUAWEI Pura 80 Pro+、HUAWEI Mate 70 等。\nThought：信息已足够，我可以总结答案了。\nAction：Finish[华为最新手机包括 Pura 80 Pro+ 与 Mate 70 系列，主打影像与旗舰体验。]\n\n每一轮都遵循'思考→行动→观察'：Thought 决定方向，Action 改变环境，Observation 修正认知。这个循环不断追加到历史记录中，直到模型认为任务完成。掌握三件套，你就掌握了 ReAct 的脉搏。"
         },
         {
           "type": "animation",
@@ -638,118 +648,88 @@
         },
         {
           "type": "content",
-          "title": "ReAct 的核心优势",
-          "content": "• 透明性：每一步思考和行动都可见\n• 可调试：便于追踪问题和改进\n• 高效性：通过工具调用获取真实信息\n• 抗幻觉：基于真实观察而非凭空想象"
+          "title": "ReAct 实战：查询实时信息",
+          "content": "在我们的代码实现中，ReAct 智能体通过 ToolExecutor 注册 Search 工具，然后在 ReActAgent 的 run 方法里循环：格式化提示词 → 调用 LLM → 解析 Thought/Action → 执行工具 → 把 Observation 写回历史。当用户问'华为最新的手机是哪一款？它的主要卖点是什么？'时，智能体第一步就意识到知识不足，调用 SerpApi 搜索；第二步根据搜索结果总结答案。整个过程透明可追踪，每一步的'内心独白'都打印在终端里。这就是 ReAct 的高可解释性——你知道它为什么调用搜索，也知道它依据什么下结论。"
         },
         {
           "type": "content",
-          "title": "ReAct 在现实中的应用",
-          "content": "案例：智能客服助手\n1. 用户问：今天北京天气如何？\n2. Thought：需要查询实时天气\n3. Action：调用天气API\n4. Observation：北京今天多云，25°C\n5. Thought：已获取信息，整理回答\n6. Action：生成自然语言回复"
+          "title": "ReAct 的局限与调试技巧",
+          "content": "ReAct 不是银弹。它对底层 LLM 的指令遵循能力要求很高：如果模型不按要求输出 'Thought: ... Action: ...' 格式，解析就会失败；任务步骤多时会多次调用模型，延迟和成本明显上升；而且'走一步看一步'容易陷入局部最优，缺乏全局规划。调试时建议：把完整提示词打印出来，检查历史和格式；把 LLM 原始输出打印出来，看是否遵循模板；检查工具输入输出格式是否一致；必要时加入 few-shot 示例；并把 temperature 设为 0 以降低随机性。掌握这些技巧，才能把 ReAct 从玩具变成生产工具。"
         },
         {
           "type": "content",
-          "title": "Plan-and-Solve 范式",
-          "content": "Plan-and-Solve = Planning + Execution\n\n先制定详细计划，再逐步执行。适合需要多步骤解决的复杂任务。\n\n流程：\n1. 分析问题\n2. 制定计划\n3. 执行步骤\n4. 验证结果"
+          "title": "为什么需要 Plan-and-Solve？",
+          "content": "ReAct 适合边想边做，但遇到'写一份完整的研究报告'或'解一道多步应用题'时，模型容易想到哪写到哪，前后矛盾、遗漏步骤。Plan-and-Solve 就是用来解决这个问题的：它让智能体先像项目经理一样列出步骤清单，再像执行团队一样按部就班完成。生活类比是装修房子——你不会一进屋就刷墙，而是先画设计图、列施工清单：拆改→水电→泥瓦→油漆→软装。Plan-and-Solve 让 AI 也按这张'施工表'工作，保证复杂任务的目标一致性和结构完整性。CH14 的 DeepResearch 在撰写研究报告前，也会先制定检索与写作计划。"
         },
         {
           "type": "content",
-          "title": "Reflection 范式",
-          "content": "Reflection = Self-Evaluation + Improvement\n\n让智能体具备自我反思能力。通过评估和修正来优化结果。\n\n流程：\n1. 生成初步答案\n2. 自我评估质量\n3. 发现问题和不足\n4. 修正和改进\n5. 生成最终答案"
+          "title": "Plan-and-Solve 范式详解",
+          "content": "Plan-and-Solve 由 Lei Wang 等人在 2023 年提出，核心是把任务解耦成两个阶段。规划阶段（Planning）：LLM 接收完整问题，输出一个结构化步骤列表，如 ['计算周二销量', '计算周三销量', '计算总销量']。执行阶段（Solving）：智能体严格按照计划逐一执行，每一步都可依赖前一步结果。我们的实现中用 Planner 类生成 Python 列表格式的计划，用 Executor 类维护历史状态并调用 LLM 解决当前步骤。这种'先谋后动'特别适合多步数学应用题、报告撰写、代码生成等结构性强、可清晰分解的任务。"
+        },
+        {
+          "type": "content",
+          "title": "Plan-and-Solve 实战：分步解应用题",
+          "content": "问题：一个水果店周一卖 15 个苹果，周二卖的是周一两倍，周三比周二少 5 个，三天共卖多少？\n\nPlan：['计算周二销量', '计算周三销量', '计算总销量']\n执行步骤1：周二 = 15 × 2 = 30\n执行步骤2：周三 = 30 − 5 = 25\n执行步骤3：总计 = 15 + 30 + 25 = 70\n\n在代码中，Planner 把问题拆成列表，Executor 循环调用 LLM，并把每一步结果追加到 history 里供下一步使用。你可以清晰看到信息如何传递：步骤2用步骤1的'30'，步骤3用步骤2的'25'。这种'流水线'式执行让复杂推理不再东一榔头西一棒槌，显著提升可预期性和正确率。"
+        },
+        {
+          "type": "content",
+          "title": "Plan-and-Solve 的适用边界",
+          "content": "Plan-and-Solve 的优势是结构清晰、目标一致，但代价是灵活性不足。如果执行到一半发现某步无法完成，或者外部环境发生变化，静态计划不会自动调整。例如预订旅行时，机票价格突然上涨，原计划的航班步骤就需要重规划。此外，如果任务本身难以一次性拆解（比如开放式探索），规划阶段就会难产。解决思路是引入'动态重规划'：每执行几步后让模型重新评估计划是否仍然合理，必要时更新步骤列表。在简单数学题里静态计划够用，但在真实业务中往往需要 Plan + ReAct 的混合模式。"
+        },
+        {
+          "type": "content",
+          "title": "为什么需要 Reflection？",
+          "content": "人类写完文章会校对，解完题会验算，第一稿很少完美。但普通 LLM 往往是'一次定稿'，即使答案有事实错误、逻辑漏洞或效率问题，也不会主动回头修改。Reflection 机制就是给智能体装上'自我审稿'能力。它让 AI 生成初稿后，换一副'评审员'的眼镜重新审视结果，找出错误、漏洞或优化空间，再据此修改，反复迭代直到满意。当你用 AI 写业务代码、生成重要邮件或研究报告时，Reflection 能自动发现并修正初稿问题，显著降低人工复审成本。CH15 的赛博小镇也会用类似机制让 NPC 行为不断进化。"
+        },
+        {
+          "type": "content",
+          "title": "Reflection 范式详解",
+          "content": "Reflection 的核心是'执行→反思→优化'三步循环。执行（Execution）：用 ReAct 或 Plan-and-Solve 生成初稿。反思（Reflection）：调用一个独立的'评审员'LLM，从事实性错误、逻辑漏洞、效率问题、遗漏信息等维度评估初稿，输出结构化反馈。优化（Refinement）：把初稿和反馈一起喂给模型，生成修订稿。这个循环可以重复多次，直到反馈认为'无需改进'或达到最大迭代次数。我们的代码中用 Memory 模块保存每次执行和反思的轨迹，让评审员能看到完整迭代历史，从而提出更精准的建议。"
+        },
+        {
+          "type": "content",
+          "title": "Reflection 实战：优化素数代码",
+          "content": "任务：编写一个 Python 函数，找出 1 到 n 之间的所有素数。\n\n执行（初稿）：模型写了一个简单试除法，时间复杂度 O(n√n)。\n反思：评审员指出'每个数都试除效率太低，建议用埃拉托斯特尼筛法'。\n优化：改为筛法实现，时间复杂度降到 O(n log log n)。\n再反思：评审员确认已最优，终止迭代。\n\n在代码中，ReflectionAgent 初始化时调用 INITIAL_PROMPT_TEMPLATE 生成初稿，再用 REFLECT_PROMPT_TEMPLATE 和 REFINE_PROMPT_TEMPLATE 反复迭代。Memory 类记录每轮代码和反馈，形成可追溯的优化轨迹。这个案例说明 Reflection 不仅能改错，更能把'能用'的方案升级为'优秀'的方案。"
+        },
+        {
+          "type": "content",
+          "title": "Reflection 的成本与收益",
+          "content": "Reflection 是'以成本换质量'的策略。成本方面：每轮迭代至少额外调用两次 LLM（反思一次、优化一次），API 费用和延迟都会显著增加；同时需要为执行、反思、优化三个阶段分别设计高质量提示词，工程复杂度更高。收益方面：它能把'合格'的初稿迭代成'优秀'的终稿，修复事实错误、逻辑漏洞和性能瓶颈，显著提升复杂任务的可靠性和准确率。因此 Reflection 适合对质量要求极高、实时性要求不高的场景，比如生成关键业务代码、技术报告、科研分析或重要决策材料。如果只是快速问答，用 ReAct 更划算。"
         },
         {
           "type": "content",
           "title": "三种范式对比",
-          "content": "| 范式 | 特点 | 适用场景 |\n|------|------|----------|\n| ReAct | 边思考边行动 | 动态环境、需要实时信息 |\n| Plan-and-Solve | 先规划后执行 | 结构化任务、流程明确 |\n| Reflection | 自我修正优化 | 需要迭代改进的场景 |"
+          "content": "ReAct、Plan-and-Solve、Reflection 代表了智能体解决问题的三种基本策略。\n\nReAct：像侦探破案，边走边查，根据最新观察动态调整方向。优势是环境适应性和可解释性；劣势是缺乏全局规划、对 LLM 能力强依赖。\n\nPlan-and-Solve：像建筑师施工，先画蓝图再执行。优势是结构清晰、目标一致；劣势是灵活性差，遇到变化需要重规划。\n\nReflection：像作家改稿，执行后自我审稿迭代。优势是质量高、能自我纠错；劣势是成本高、延迟大、提示工程复杂。\n\n| 维度 | ReAct | Plan-and-Solve | Reflection |\n| 策略 | 边想边做 | 先计划后执行 | 执行后反思 |\n| 适用 | 探索性任务 | 结构化任务 | 精准任务 |\n| 容错 | 中 | 低 | 高 |\n| 效率 | 中 | 高 | 低 |"
         },
         {
           "type": "content",
-          "title": "范式选择指南",
-          "content": "选择哪种范式取决于任务类型：\n• 需要实时数据 → ReAct\n• 步骤明确的任务 → Plan-and-Solve\n• 需要高质量输出 → Reflection\n• 复杂任务 → 组合使用多种范式"
+          "title": "如何选范式？决策树",
+          "content": "选范式可以按以下决策树快速判断：\n\n第一步：任务是否需要外部实时数据？\n是 → 优先考虑 ReAct（搜索、API、数据库）。\n否 → 进入第二步。\n\n第二步：任务是否步骤明确、可提前拆解？\n是 → 优先考虑 Plan-and-Solve（数学题、报告、代码生成）。\n否 → 进入第三步。\n\n第三步：结果质量是否要求极高、允许更多时间和成本？\n是 → 优先考虑 Reflection（关键代码、重要报告、科研分析）。\n否 → 使用 ReAct 或 Plan-and-Solve 轻量方案。\n\n复杂任务往往需要组合：先用 Plan-and-Solve 制定总体规划，再用 ReAct 执行每一步，最后用 Reflection 审查结果。下一页就是这样一个组合实例。"
         },
         {
-          "type": "code",
-          "title": "ReAct 完整实现",
-          "language": "python",
-          "code": "class ReActAgent:\n    def __init__(self, llm, tools):\n        self.llm = llm\n        self.tools = tools\n        self.memory = []\n    \n    def think(self, query):\n        \"\"\"生成思考\"\"\"\n        prompt = f\"根据问题和记忆，生成下一步思考：\\n\"\n        prompt += f\"问题：{query}\\n\"\n        prompt += f\"记忆：{self.memory}\\n\"\n        return self.llm.generate(prompt)\n    \n    def act(self, thought):\n        \"\"\"执行行动\"\"\"\n        # 解析思考，选择合适的工具\n        for tool in self.tools:\n            if tool.name in thought:\n                return tool.execute(thought)\n        return None\n    \n    def run(self, query, max_steps=5):\n        for step in range(max_steps):\n            thought = self.think(query)\n            action = self.act(thought)\n            observation = action.result if action else \"无结果\"\n            self.memory.append((thought, action, observation))\n            if self.is_complete(observation):\n                break\n        return self.generate_answer()"
+          "type": "content",
+          "title": "组合范式实例：ReAct + Reflection",
+          "content": "单一范式有局限，组合才能应对真实世界的复杂任务。ReAct + Reflection 的典型结构是：外层用 ReAct 进行多轮工具调用和信息收集，内层用 Reflection 对每一轮生成结果进行自评和修正。例如'帮我查北京到上海明天的高铁，并写一封商务出行邮件'：ReAct 负责调用火车票 API 获取车次和时间；拿到结果后，Reflection 审查邮件草稿是否礼貌、信息是否完整、格式是否正确；如果不满意就重写，满意再把邮件作为 Observation 返回给 ReAct，由 ReAct 决定是否需要进一步查酒店。外循环收集事实，内循环保证质量，两者互补。"
+        },
+        {
+          "type": "content",
+          "title": "组合范式实战：旅行研究助手",
+          "content": "CH13 的旅行助手和 CH14 的研究助手都会用到组合范式。以'规划一次五天四晚的东京亲子游'为例：先用 Plan-and-Solve 制定整体行程框架（Day1 抵达、Day2 迪士尼、Day3 博物馆、Day4 购物、Day5 返程）；然后对每一天用 ReAct 动态查询景点开放时间、交通方式和实时票价；最后用 Reflection 审查整个行程是否合理，比如'连续两天高强度游玩对亲子游太累'或'某段交通换乘次数过多'，并据此调整。组合范式让智能体既有全局视野，又能响应实时变化，还能自我纠错，是构建复杂智能体应用的常用架构。"
+        },
+        {
+          "type": "content",
+          "title": "工具设计：给智能体一双手",
+          "content": "无论是 ReAct、Plan-and-Solve 还是 Reflection，都离不开工具。工具是智能体连接外部世界的'手和脚'。一个良好定义的工具需要三个要素：名称（Name），如 Search 或 Calculator，供 Action 调用；描述（Description），清晰说明工具的用途和触发条件，这是 LLM 判断何时使用该工具的关键；执行逻辑（Execution Logic），真正完成任务的函数。我们的 ToolExecutor 类统一注册和调度工具。工具设计直接影响智能体能力：描述写得太泛，模型会乱调用；返回格式不一致，模型会理解错。设计工具时要像设计 API 接口一样仔细。"
+        },
+        {
+          "type": "content",
+          "title": "从框架使用者到创造者",
+          "content": "你可能会问：市面上已有 LangChain、LlamaIndex 等成熟框架，为什么还要手写 ReAct、Plan-and-Solve？答案有三点。第一，框架封装了很多细节，但直接使用高度抽象的工具不利于理解背后的设计机制。第二，亲手处理输出解析、工具失败重试、死循环防护等问题，是培养系统设计能力的最直接方式。第三，也是最重要的一点：掌握原理后，你才能从'框架使用者'变成'智能体创造者'。当标准组件无法满足复杂需求时，你能深度定制甚至从零构建新智能体。本章的'造轮子'不是为了替代框架，而是为了让你在面对真实项目时胸有成竹。"
         },
         {
           "type": "content",
           "title": "本章小结",
-          "content": "ReAct：将推理与行动结合，形成 Thought-Action-Observation 循环\nPlan-and-Solve：先制定计划再执行，适合结构化任务\nReflection：自我评估和修正，提升输出质量\n根据任务类型选择合适的范式，复杂任务可组合使用"
-        },
-        {
-          "type": "content",
-          "title": "ReAct 深入",
-          "content": "ReAct 让推理和行动交替进行。\n\n**三种思维模式**\n• **线性**：Thought→Action→Observation\n• **分支**：一个Observation触发多个Thought\n• **回溯**：结果为负时回退重新思考\n\n[成功] HotpotQA上ReAct比CoT准确率高15%。"
-        },
-        {
-          "type": "content",
-          "title": "Reflection 深入",
-          "content": "反思让智能体审视输出并改进。\n\n**三个层次**\n1. 结果反思：检查答案是否符合预期\n2. 过程反思：回溯执行步骤的合理性\n3. 元反思：调整整体推理策略\n\n[提示] 反思是提升LLM输出质量最有效手段。"
-        },
-        {
-          "type": "content",
-          "title": "范式组合使用",
-          "content": "组合多种范式达1+1>2效果。\n\n**ReAct+Reflection**：外层ReAct+内层反思，适用复杂推理\n**Plan+ReAct**：先计划再动态执行，适用大型项目\n**Plan+Reflection**：计划→执行→反思迭代，适用研究任务"
-        },
-        {
-          "type": "code",
-          "title": "Plan-and-Solve实现",
-          "language": "python",
-          "code": "from openai import OpenAI\n\nclass PlanAndSolveAgent:\n    def __init__(self, api_key, model=\"gpt-4\"):\n        self.client = OpenAI(api_key=api_key)\n        self.model = model\n\n    def plan(self, task):\n        p = f\"分解任务：{task}\"\n        r = self.client.chat.completions.create(\n            model=self.model,\n            messages=[{\"role\":\"user\",\"content\":p}])\n        return r.choices[0].message.content\n\n    def solve(self, task):\n        plan = self.plan(task)\n        print(f\"计划：{plan}\")\n        return plan\n\nagent = PlanAndSolveAgent(api_key=\"sk-key\")\nagent.solve(\"分析市场趋势\")",
-          "explanation": "Plan-and-Solve分规划和执行两阶段。"
-        },
-        {
-          "type": "comparison",
-          "title": "三种范式对比",
-          "headers": [
-            "维度",
-            "ReAct",
-            "Plan-and-Solve",
-            "Reflection"
-          ],
-          "rows": [
-            [
-              "策略",
-              "边思考边行动",
-              "先计划后执行",
-              "执行后反思"
-            ],
-            [
-              "适用",
-              "探索性任务",
-              "结构化任务",
-              "精准任务"
-            ],
-            [
-              "容错",
-              "中",
-              "低",
-              "高"
-            ],
-            [
-              "效率",
-              "中等",
-              "高",
-              "低"
-            ],
-            [
-              "复杂度",
-              "低",
-              "中",
-              "中"
-            ]
-          ]
-        },
-        {
-          "type": "content",
-          "title": "在HelloAgents中使用范式",
-          "content": "框架内置范式：\n```python\nfrom helloagents import SimpleAgent\nagent = SimpleAgent(paradigm=\"react\")\nagent = SimpleAgent(paradigm=\"plan-and-solve\")\nagent = SimpleAgent(paradigm=\"reflection\")\n```\n动态选择(auto)按任务复杂度自动匹配。"
-        },
-        {
-          "type": "content",
-          "title": "ReAct实战经验总结",
-          "content": "**1. Thought质量决定上限**\n提示词中明确要求逐步推理效果更佳。\n\n**2. Action粒度控制**\n单步Action聚焦单一工具调用。\n\n**3. Observation处理**\n工具结果需格式化送入下一轮。\n\n**4. 循环终止**\n设置最大迭代次数防止无限循环（5-10轮）。\n\n**常见陷阱**\n• Action结果过短→误解结果\n• Observation格式不一致→解析失败\n\n[提示] 健壮的ReAct循环需要对每个环节做防御性编程。"
+          "content": "本章从零实现了三种经典智能体范式。ReAct 通过 Thought-Action-Observation 循环，让智能体边想边做、动态利用外部工具，适合需要实时信息的探索性任务。Plan-and-Solve 将任务拆分为'规划'和'执行'两个阶段，先列清单再执行，适合步骤明确的结构化任务。Reflection 引入'执行→反思→优化'的迭代循环，让智能体自我审稿、持续提升质量，适合对结果要求极高的场景。选择范式时可以按'是否需要外部数据→是否可提前拆解→是否允许高成本'的决策树判断；复杂任务常常组合使用。掌握这些范式，你就拥有了构建实用智能体的核心能力。"
         },
         {
           "type": "quiz",
@@ -1153,122 +1133,130 @@
         },
         {
           "type": "content",
-          "title": "为什么要自己构建框架？",
-          "content": "• 理解原理：深入理解智能体内部工作机制\n• 灵活定制：根据需求定制功能\n• 学习设计模式：掌握Agent开发的最佳实践\n• 避免过度依赖：不被特定框架束缚"
+          "title": "7.1.1 为什么要自建框架？",
+          "content": "你可以把自建框架理解为：不是买一辆整车，而是亲手拼装一台发动机。市面上 LangChain、AutoGen 等框架虽然方便，但过度抽象、API 频繁变更、黑盒实现和依赖冲突常常让学习者卡住。自建 HelloAgents 能让我们真正看懂 Agent 的推理过程、工具调用解析和消息流转。后续 CH13 旅行助手、CH14 DeepResearch 都需要按业务改框架行为，只有懂了原理才能按需定制。这个知识点在后续章节（如 CH8 记忆/RAG、CH10 协议、CH13-CH16 实战项目）中会被反复使用，建议结合代码动手实践。"
         },
         {
           "type": "content",
-          "title": "框架设计原则",
-          "content": "• 模块化：每个组件职责单一\n• 可扩展：便于添加新功能\n• 可配置：支持灵活配置\n• 可测试：便于单元测试和集成测试\n• 可监控：支持日志和性能监控"
-        },
-        {
-          "type": "animation",
-          "title": "框架组件架构",
-          "animation": "ch7-framework"
+          "title": "7.1.2 HelloAgents 设计理念",
+          "content": "HelloAgents 的设计理念是“像乐高说明书一样清楚”。我们拒绝一次性抛出十几个新概念，而是坚持“除了 Agent 基类，万物皆为工具”：LLM、记忆、RAG、搜索、MCP 都被统一成 Tool。这样 CH8 学记忆、CH10 学协议时，你只需要新增或替换工具，不用推倒重来。同时框架基于 OpenAI 标准 API、极简依赖和渐进式版本，保证学过 Python 的人都能读懂每一行代码。这个知识点在后续章节（如 CH8 记忆/RAG、CH10 协议、CH13-CH16 实战项目）中会被反复使用，建议结合代码动手实践。"
         },
         {
           "type": "content",
-          "title": "核心组件详解 - LLM客户端",
-          "content": "负责与大语言模型通信\n• 支持多种模型（GPT、Claude、LLaMA等）\n• 提供统一接口\n• 处理请求/响应\n• 支持流式输出"
-        },
-        {
-          "type": "content",
-          "title": "核心组件详解 - 工具管理器",
-          "content": "管理智能体可用的工具\n• 工具注册与发现\n• 参数验证\n• 调用执行\n• 结果格式化"
-        },
-        {
-          "type": "content",
-          "title": "核心组件详解 - 记忆系统",
-          "content": "存储和管理智能体的记忆\n• 短期记忆：当前上下文\n• 长期记忆：历史经验\n• 记忆检索：根据需要提取信息\n• 记忆更新：添加新信息"
-        },
-        {
-          "type": "content",
-          "title": "核心组件详解 - 规划器",
-          "content": "负责任务规划\n• 任务分解\n• 步骤排序\n• 资源分配\n• 进度跟踪"
-        },
-        {
-          "type": "content",
-          "title": "核心组件详解 - 执行器",
-          "content": "执行具体任务\n• 调用工具\n• 执行代码\n• 处理异常\n• 报告结果"
-        },
-        {
-          "type": "content",
-          "title": "框架架构模式",
-          "content": "• 管道模式：组件串联处理\n• 事件驱动：基于事件通信\n• 分层架构：按职责分层\n• 微服务：组件独立部署"
-        },
-        {
-          "type": "content",
-          "title": "开发流程",
-          "content": "1. 需求分析：确定智能体功能\n2. 架构设计：设计组件关系\n3. 组件开发：逐个实现组件\n4. 集成测试：测试组件协作\n5. 优化迭代：根据反馈改进"
+          "title": "7.2 LLM 客户端",
+          "content": "LLM 客户端是 Agent 的嘴巴和耳朵：把用户问题传给大模型，再把回答带回来。HelloAgentsLLM 通过 provider 参数和环境变量自动识别 OpenAI、ModelScope、智谱 AI、VLLM、Ollama 等后端，真正做到“一行代码切换模型”。你只需在 .env 里填好 LLM_BASE_URL 和 LLM_API_KEY，代码里写 `llm = HelloAgentsLLM()` 即可。CH13 查天气、CH14 搜资料都靠它稳定兜底。动手试试：复制 Quick Start 里的 5 行代码，换成你自己的 API Key 运行一次。"
         },
         {
           "type": "code",
-          "title": "框架核心代码",
+          "title": "LLM 客户端代码示例",
           "language": "python",
-          "code": "class AgentFramework:\n    def __init__(self, config):\n        self.config = config\n        self.llm = LLMClient(config.llm)\n        self.tools = ToolManager(config.tools)\n        self.memory = MemorySystem(config.memory)\n        self.planner = Planner(config.planner)\n        self.executor = Executor()\n        \n    def run(self, task):\n        \"\"\"执行任务\"\"\"\n        # 1. 理解任务\n        context = self.memory.retrieve(task)\n        \n        # 2. 制定计划\n        plan = self.planner.create_plan(task, context)\n        \n        # 3. 执行计划\n        results = []\n        for step in plan:\n            result = self.executor.execute(step, self.llm, self.tools)\n            self.memory.store(result)\n            results.append(result)\n            if self.planner.should_stop(result):\n                break\n        \n        # 4. 总结结果\n        return self.planner.summarize(results)\n\nclass LLMClient:\n    def __init__(self, config):\n        self.model = config.model\n        self.api_key = config.api_key\n        \n    def generate(self, prompt, max_tokens=1000):\n        # 调用LLM API\n        pass"
+          "code": "from hello_agents import HelloAgentsLLM\nfrom dotenv import load_dotenv\n\nload_dotenv()\n\nllm = HelloAgentsLLM()\n\nmessages = [{'role': 'user', 'content': '你好'}]\nfor chunk in llm.think(messages):\n    print(chunk, end='')",
+          "explanation": "同一行代码可在云端 API 与本地模型之间切换。"
+        },
+        {
+          "type": "content",
+          "title": "7.3 工具管理器",
+          "content": "工具管理器是 Agent 的手和工具箱。Tool 基类统一了 run 与 get_parameters 接口；ToolRegistry 负责注册、发现、执行和生成 OpenAI function-calling schema。你可以注册一个普通 Python 函数，也可以写一个继承 Tool 的类来维护状态。它让 CH8 的 RAG 检索、CH10 的 MCP 工具、CH13 的天气查询都能以同一套接口接入。动手试试：用 `registry.register_function('calculator', my_calc, '数学计算')` 注册一个函数，再让 Agent 调用它。"
+        },
+        {
+          "type": "code",
+          "title": "ToolRegistry 实现",
+          "language": "python",
+          "code": "from hello_agents import ToolRegistry\n\nregistry = ToolRegistry()\nregistry.register_function(\n    name='calculator',\n    func=lambda expr: eval(expr),\n    description='数学计算工具'\n)\n\nprint(registry.get_tools_description())\nprint(registry.execute_tool('calculator', '2 + 3 * 4'))",
+          "explanation": "ToolRegistry 统一管理工具，让 Agent 能够动态发现和调用。"
+        },
+        {
+          "type": "content",
+          "title": "7.4 记忆系统",
+          "content": "记忆系统让 Agent 不再“金鱼的记忆”。HelloAgents 先用 Message 类把 user/assistant/tool 消息标准化，并带上时间戳和元数据；Agent 基类自带 _history 管理短期对话历史，长期记忆则通过 MemoryTool 读写外部存储。规划器做任务分解时、执行器遇到多轮工具调用时，都能按需 retrieve 和 store。动手试试：创建一个 SimpleAgent，连续问它三个相关问题，然后 `print(agent.get_history())` 观察历史消息。"
+        },
+        {
+          "type": "content",
+          "title": "7.5 规划器",
+          "content": "规划器是 Agent 的“任务拆解大脑”。它接收复杂问题后，先生成一个可执行的步骤清单，再交给执行器逐步完成。HelloAgents 默认使用 Plan-and-Solve：Planner 输出 Python 列表 `['步骤1','步骤2',...]`，Executor 每次只聚焦当前步骤，避免模型一次性想太多而混乱。你也可以通过 custom_prompts 定制数学、编程专用规划器。动手试试：给 PlanAndSolveAgent 一道多步应用题，看它如何分步输出计划。"
+        },
+        {
+          "type": "content",
+          "title": "7.6 执行器",
+          "content": "执行器是 Agent 的“手脚”，负责把规划器的步骤真正落地。它循环调用 LLM、解析响应中的工具调用标记 `[TOOL_CALL:tool_name:args]`、通过 ToolRegistry 执行、再把观察结果插回对话，直到拿到最终答案或达到最大迭代次数。执行器还要处理超时、异常和重试，保证生产环境稳定。动手试试：让 ReActAgent 调用 search 工具回答“2024 年诺贝尔物理学奖得主是谁？”，观察 Thought-Action-Observation 循环。"
+        },
+        {
+          "type": "content",
+          "title": "从 0 到 1 实现 HelloAgents 全程图",
+          "content": "从 0 到 1 构建 HelloAgents 可以分成九个里程碑：①明确为什么要自建框架；②确定“万物皆为工具”的设计理念；③实现 HelloAgentsLLM 统一多后端；④搭建 Tool/ToolRegistry 工具系统；⑤用 Message + history 实现记忆；⑥编写 Planner 做任务分解；⑦编写 Executor 做执行循环；⑧基于 Agent 基类实现 Simple/ReAct/Plan/Reflection 四种范式；⑨写测试、打包发布。每一章都会在这个底座上新增一个模块，像搭积木一样循序渐进。"
+        },
+        {
+          "type": "content",
+          "title": "7.7 HelloAgents 实战",
+          "content": "在实战中，我们用 SimpleAgent 完成基础对话并挂载 CalculatorTool；用 ReActAgent 做“搜索+计算”的多轮推理；用 PlanAndSolveAgent 解决复杂数学应用题；用 ReflectionAgent 写文章并自我迭代优化。测试文件覆盖了基础对话、流式输出、动态工具管理、错误恢复等场景。跑通这些例子后，你就拥有了一个真正可扩展、可观测、可继续迭代的自建框架。"
         },
         {
           "type": "content",
           "title": "本章小结",
-          "content": "构建框架的核心组件：LLM客户端、工具管理器、记忆系统、规划器、执行器\n设计原则：模块化、可扩展、可配置、可测试、可监控\n开发流程：需求分析→架构设计→组件开发→集成测试→优化迭代\n理解框架原理有助于更好地使用和定制智能体"
+          "content": "本章我们完成了 HelloAgents 框架从设计到实战的闭环。我们厘清了自建框架的价值，确立了“万物皆为工具”的设计理念，实现了 LLM 客户端、工具管理器、记忆系统、规划器和执行器五大核心组件，并把 ReAct、Plan-and-Solve、Reflection 等范式框架化。这个底座为 CH8 记忆/RAG、CH9 上下文工程、CH10 智能体协议和后续实战项目打下了统一、可扩展的基础。这个知识点在后续章节（如 CH8 记忆/RAG、CH10 协议、CH13-CH16 实战项目）中会被反复使用，建议结合代码动手实践。"
         },
         {
           "type": "content",
-          "title": "插件系统设计",
-          "content": "插件系统让框架高可扩展。\n\n**设计原则**\n**1. 接口标准化**\n```python\nclass BasePlugin:\n    name: str\n    def initialize(self): pass\n    def execute(self,**kwargs): pass\n    def cleanup(self): pass\n```\n\n**2. 生命周期**：注册→初始化→执行→销毁\n\n**3. 依赖注入**：插件可声明HttpClient等依赖\n\n[成功] LangChain的成功归功于丰富工具集成。"
+          "title": "开发流程与测试策略",
+          "content": "开发 HelloAgents 时按“需求分析→接口设计→单组件实现→集成测试→版本发布”推进。单元测试覆盖 ToolRegistry、Message、Config；集成测试验证 Agent-LLM-Tool 闭环；端到端测试用真实 API 跑完整任务。建议每新增一个组件就补一个测试，这样后续加 Memory、RAG 时不会影响已有功能。持续测试是框架可靠的保障。这个知识点在后续章节（如 CH8 记忆/RAG、CH10 协议、CH13-CH16 实战项目）中会被反复使用，建议结合代码动手实践。"
         },
         {
           "type": "content",
-          "title": "框架对比表",
-          "content": "| 维度 | 从零构建 | 现有框架 |\n|------|---------|---------|\n| 学习曲线 | 陡峭 | 平缓 |\n| 灵活性 | 极高 | 受限 |\n| 开发速度 | 慢 | 快 |\n| 代码量 | 大 | 小 |\n| 社区支持 | 无 | 丰富 |\n| BUG风险 | 高 | 低 |\n\n**建议**：学习目的从零构建，产品开发用框架。\n\n[提示] 折中：理解原理+使用框架+按需定制。"
-        },
-        {
-          "type": "code",
-          "title": "ToolRegistry实现",
-          "language": "python",
-          "code": "from typing import Callable,Dict,Any\n\nclass ToolRegistry:\n    def __init__(self):\n        self.tools = {}\n\n    def register(self,name,func,desc,params=None):\n        self.tools[name] = {\n            \"name\":name,\"function\":func,\"description\":desc,\n            \"parameters\":params or {\"type\":\"object\",\"properties\":{}}}\n        print(f\"已注册: {name}\")\n\n    def execute(self,name,**kw):\n        if name not in self.tools:\n            raise ValueError(f\"工具{name}未注册\")\n        return self.tools[name][\"function\"](**kw)\n\n    def list_tools(self):\n        return [{\"type\":\"function\",\"function\":{\"name\":t[\"name\"],\n            \"description\":t[\"description\"],\n            \"parameters\":t[\"parameters\"]}}\n            for t in self.tools.values()]\n\nr = ToolRegistry()\nr.register(\"search\",lambda q:f\"结果:{q}\",\"搜索网络\")\nr.register(\"calc\",lambda e:eval(e),\"计算表达式\")\nprint(r.list_tools())\nprint(r.execute(\"calc\",e=\"2+3*4\"))",
-          "explanation": "ToolRegistry管理外部工具，自动生成OpenAI函数调用格式。"
+          "title": "框架对比与学习建议",
+          "content": "从零构建框架学习曲线陡峭，但能彻底搞懂原理；使用 LangChain、AutoGen 等现成框架开发快、社区大，却容易受 API 变更和过度抽象困扰。推荐学习路径是：先用 HelloAgents 亲手搭一遍，再回头看成熟框架就会觉得清晰很多。产品化阶段可以基于本章框架继续扩展，也可以引入经过验证的第三方库，但要保留自己的核心抽象。这个知识点在后续章节（如 CH8 记忆/RAG、CH10 协议、CH13-CH16 实战项目）中会被反复使用，建议结合代码动手实践。"
         },
         {
           "type": "concepts",
           "title": "框架核心组件",
           "items": [
             {
-              "icon": "🔗",
+              "icon": "🧠",
               "title": "LLM Client",
-              "description": "统一对接OpenAI/Claude等LLM API。"
+              "description": "统一对接云端与本地大模型，屏蔽后端差异。"
             },
             {
-              "icon": "🗂️",
+              "icon": "🛠️",
               "title": "Tool Manager",
-              "description": "管理外部工具注册和执行调度。"
+              "description": "管理工具注册、发现、执行和 schema 生成。"
             },
             {
-              "icon": "💭",
-              "title": "Memory Manager",
-              "description": "管理短期/长期记忆。"
+              "icon": "💾",
+              "title": "Memory System",
+              "description": "管理短期历史与长期记忆，支持检索与更新。"
             },
             {
               "icon": "📋",
               "title": "Planner",
-              "description": "任务规划与分解。"
+              "description": "将复杂任务拆解为可执行步骤清单。"
             },
             {
               "icon": "⚙️",
               "title": "Executor",
-              "description": "执行循环、工具调度、异常恢复。"
+              "description": "执行循环、工具调度、异常恢复与结果汇总。"
             }
           ]
         },
         {
-          "type": "content",
-          "title": "框架测试策略",
-          "content": "**单元测试**\n• ToolRegistry注册/注销\n• LLM Client连接Mock\n• Memory Manager读写\n\n**集成测试**\n• 感知-思考-行动闭环\n• 多工具组合执行\n• 错误恢复和重试\n\n**端到端测试**\n• 真实LLM API交互\n• 复杂多步骤任务\n• 超时和异常场景\n\n[成功] 充分测试可发现70%以上问题。"
+          "type": "code",
+          "title": "Agent 基类与 ReAct 实现",
+          "language": "python",
+          "code": "from abc import ABC, abstractmethod\nfrom hello_agents import Message\n\nclass Agent(ABC):\n    def __init__(self, name, llm, system_prompt=None):\n        self.name = name\n        self.llm = llm\n        self.system_prompt = system_prompt\n        self._history = []\n\n    @abstractmethod\n    def run(self, input_text: str) -> str:\n        pass\n\n    def add_message(self, message: Message):\n        self._history.append(message)",
+          "explanation": "抽象基类保证所有 Agent 都有统一的 run 接口和历史管理机制。"
         },
         {
           "type": "content",
-          "title": "框架文档化与API设计",
-          "content": "**API设计原则**\n• **一致性**：相似功能相似命名\n• **渐进复杂度**：简繁兼顾\n• **类型提示**：完整类型标注\n\n**文档结构**\n• **快速入门**：5分钟搭建\n• **核心概念**：组件关系\n• **教程**：完整示例\n• **API参考**：自动生成文档\n\n[成功] 良好文档减少80%用户问题。"
+          "title": "7.3.1 自定义工具开发",
+          "content": "自定义工具只需要实现 Tool 基类的 run 和 get_parameters 方法。以 CalculatorTool 为例：它用 ast 安全解析数学表达式，支持 + - * / 和 sqrt，避免直接用 eval 带来的安全风险。复杂工具如 SearchTool 则维护多个后端（Tavily/SerpApi），自动降级。工具开发要遵循单一职责、参数自描述、异常处理三原则，这样 Agent 才能稳定调用。"
+        },
+        {
+          "type": "content",
+          "title": "7.5.1 Plan-and-Solve 提示词模板",
+          "content": "Plan-and-Solve 的成功关键是让 Planner 输出可被程序解析的结构。HelloAgents 默认提示词要求模型返回 Python 列表 `['步骤1', '步骤2', ...]`，Executor 提示词则只要求回答当前步骤。相比自由文本，结构化的计划更容易验证、重试和调试。你还可以为数学、代码生成等场景定制 custom_prompts，让同一套 Agent 适配不同任务。这个知识点在后续章节（如 CH8 记忆/RAG、CH10 协议、CH13-CH16 实战项目）中会被反复使用，建议结合代码动手实践。"
+        },
+        {
+          "type": "content",
+          "title": "插件系统与扩展性",
+          "content": "HelloAgents 的插件系统通过标准化接口实现扩展：插件声明 name、initialize、execute、cleanup 四个生命周期，框架在启动时完成注册和依赖注入。你可以在不修改核心代码的前提下新增 Agent 类型、工具类型或记忆后端。这种设计保证了 CH10 的 MCP/A2A 协议、CH13 的第三方 API 都能以插件形式接入，让框架随项目一起成长。这个知识点在后续章节（如 CH8 记忆/RAG、CH10 协议、CH13-CH16 实战项目）中会被反复使用，建议结合代码动手实践。"
         },
         {
           "type": "quiz",
@@ -1313,6 +1301,16 @@
           "type": "content",
           "title": "RAG 的优势",
           "content": "• 知识时效性：无需重新训练即可更新知识\n• 减少幻觉：基于真实文档生成回答\n• 可溯源：回答可追溯到原始文档\n• 成本效益：比微调更经济"
+        },
+        {
+          "type": "content",
+          "title": "RAG 三步：切、嵌、检",
+          "content": "RAG 可以浓缩为“切 → 嵌 → 检”三步。切（Chunk）是把长文档按语义边界切成小段，相邻块通常重叠 10%-20%，避免信息断裂；嵌（Embed）使用嵌入模型把文字变成高维向量，相当于给每张知识卡片贴上语义坐标，让“电脑”和“笔记本”这种语义相近的表达在向量空间里彼此靠近；检（Retrieve）则是把用户问题也编码成向量，从向量库召回最相关的 top-k 片段。三步完成后，系统把检索到的相关片段与问题一起交给 LLM 生成答案，实现“外部知识 + 大模型”的协同。只要掌握这三步，你就能快速判断一个 RAG 系统在数据准备、向量化和召回策略上是否还有优化空间。切分策略会直接影响检索质量，是调优时最先关注的环节。"
+        },
+        {
+          "type": "content",
+          "title": "长期记忆 + RAG：让回答更个人化",
+          "content": "RAG 负责从外部知识库找证据，长期记忆则负责把“你”的历史经验拉回上下文。举例来说，你上个月把《Transformer 注意力机制详解》笔记存入 HelloAgents 学习助手的长期记忆，今天再问“Q、K、V 分别是什么”，系统会先在长期记忆中检索到相关片段，再把它和当前问题一起交给 LLM。于是模型会回答：“根据你之前记录的笔记，Q 是查询向量，K 是键向量，V 是值向量……”这种“记忆 + RAG”的组合，让答案既准确又个人化。它的核心启示是：不要把记忆和检索看作两套独立系统，而应让它们共同服务于上下文质量。未来的智能助手会越来越多地使用这种协同架构：RAG 保证事实新鲜度，记忆保证用户连续性，两者结合才是可持续的个性化体验。"
         },
         {
           "type": "content",
@@ -1486,6 +1484,11 @@
           "content": "尽管模型速度越来越快、可处理数据规模越来越大，但我们观察到：\n\n上下文腐蚀（Context Rot）\n• 随着上下文窗口中的 tokens 增加，模型准确回忆信息的能力反而下降\n• 不同模型的退化曲线或许更平滑，但这一特征几乎在所有模型上出现\n\n注意力预算有限\n• Transformer 让每个 token 与所有 token 建立 (n²) 级别的注意力关系\n• 上下文增长 → 注意力被\"拉薄\" → 性能下降\n• 模型对\"全上下文依赖\"的经验更少、专门参数也更少\n\n位置编码插值等技术可以让模型处理更长的序列，但会牺牲部分对 token 位置的精确理解。\n\n结论：上下文必须被视作一种有限资源，有意识的上下文工程是构建强健智能体的必需品。"
         },
         {
+          "type": "content",
+          "title": "Context Rot 直观演示：针堆找针",
+          "content": "为了直观理解“上下文腐蚀”，可以做针堆找针实验：在 128K token 的长文档里藏一句“张三最喜欢的颜色是蓝色”，然后问模型“张三最喜欢什么颜色”。当文档只有 4K token 时，模型几乎 100% 答对；增长到 32K 时准确率降至约 85%；达到 128K 时可能降到 60% 甚至更低。更有趣的是，错误往往出现在文档中间位置的信息，而开头和结尾更容易被记住。这说明上下文工程的目标不是无限塞内容，而是把最关键的信息放在模型“记得住”的位置。因此，在长上下文场景下，要善于使用摘要、重排和结构化输出，把高信号片段放在上下文的首尾。"
+        },
+        {
           "type": "animation",
           "title": "上下文窗口可视化",
           "animation": "ch9-context-window"
@@ -1600,13 +1603,18 @@
         },
         {
           "type": "content",
-          "title": "为什么需要通信协议？",
-          "content": "• 多智能体协作需要标准化的消息格式\n• 不同系统之间需要互操作性\n• 确保消息的可靠传递\n• 支持复杂的交互模式"
+          "title": "10.1 为什么 Agent 需要通信",
+          "content": "单体智能体虽然能独立完成很多任务，但遇到复杂场景就会捉襟见肘。首先是工具集成困境：每接入一个新服务（GitHub、数据库、天气 API）都要手写适配器。其次是能力扩展瓶颈：智能体只能使用预先定义好的工具，无法动态发现新能力。最后是多智能体协作缺失：研究员、撰写员、编辑等不同角色智能体之间只能靠人工编排传话。通信协议正是为了解决这些问题而生，它提供标准化接口，让智能体能像插 USB-C 一样访问外部服务，也能像发微信一样彼此协作。"
         },
         {
           "type": "content",
-          "title": "MCP 协议",
-          "content": "MCP = Model Context Protocol\n\n由 Anthropic 提出的协议，用于在语言模型和工具之间建立标准化通信。\n\n核心组件：\n• Provider：提供工具服务\n• Client：调用工具的智能体\n• Host：协调通信的中间层"
+          "title": "没有协议时的三大困境",
+          "content": "在没有通信协议的世界里，开发者会陷入重复劳动：每个外部服务都要重新写请求、认证、错误处理；不同团队写的工具互不兼容，换一个模型就要改一遍接口。更严重的是，智能体之间没有共同语言，任务无法自动委托，状态无法同步，多个智能体只能由人来手动调度。这种模式下，系统越复杂，维护成本越高，出错概率越大。通信协议把这些问题抽象成统一的 message、method 和 endpoint，让接入新服务、组建多智能体团队变成配置而非开发工作。"
+        },
+        {
+          "type": "content",
+          "title": "10.2 MCP 简介",
+          "content": "MCP（Model Context Protocol）由 Anthropic 提出，是智能体与外部工具、资源之间的标准化通信协议。它把文件系统、数据库、GitHub、Slack 等各种服务封装成统一的 MCP Server，智能体通过 MCP Client 访问这些服务，无需为每个服务手写适配器。MCP 的核心理念是上下文共享：服务器不仅返回调用结果，还可以返回代码结构、依赖关系、提交历史等丰富上下文，帮助模型做出更智能的决策。HelloAgents 中的 MCPTool 会自动展开 MCP Server 提供的所有工具，让 Agent 像调用普通工具一样使用它们。"
         },
         {
           "type": "animation",
@@ -1615,71 +1623,97 @@
         },
         {
           "type": "content",
-          "title": "MCP 消息格式",
-          "content": "MCP 定义了三种主要消息类型：\n• Initialize：建立连接\n• Call：调用工具\n• Result：返回结果\n\n每条消息包含：\n• Header：元数据（来源、目标、时间戳）\n• Body：实际内容\n• Signature：可选的认证信息"
+          "title": "MCP 架构：Host / Client / Server",
+          "content": "MCP 采用 Host、Client、Server 三层架构。Host 是用户直接交互的界面（如 Claude Desktop），负责接收问题并与大模型交互。Client 内嵌在 Host 中，当模型决定需要访问外部工具时，Client 负责与对应的 MCP Server 建立连接、发送请求并接收响应。Server 则是具体功能的实现者，比如文件系统 Server 执行文件扫描、GitHub Server 调用 GitHub API。这种关注点分离让开发者只需专注于 Server 的功能实现，而无需关心 Host 和 Client 的细节，从而大幅提升互操作性和可维护性。"
         },
         {
           "type": "content",
-          "title": "MCP 的优势",
-          "content": "• 标准化：统一的接口和消息格式\n• 安全性：支持认证和授权\n• 可扩展：易于添加新工具\n• 互操作性：不同系统可以协作\n• 透明性：消息内容可见可追溯"
-        },
-        {
-          "type": "content",
-          "title": "A2A 协议",
-          "content": "A2A = Agent-to-Agent\n\n专门用于智能体之间直接通信的协议。\n\n特点：\n• 对等通信：智能体之间直接交互\n• 异步支持：支持异步消息传递\n• 多模态：支持文本、语音、图像等\n• 语义理解：支持自然语言交互"
-        },
-        {
-          "type": "content",
-          "title": "ANP 协议",
-          "content": "ANP = Agent Network Protocol\n\n更高级的智能体网络协议，支持：\n• 智能体发现：自动发现网络中的智能体\n• 服务注册：智能体可以注册提供的服务\n• 负载均衡：任务分配到多个智能体\n• 故障恢复：自动处理智能体故障"
-        },
-        {
-          "type": "content",
-          "title": "三种协议对比",
-          "content": "| 协议 | 用途 | 特点 |\n|------|------|------|\n| MCP | 模型与工具通信 | 标准化、安全、可扩展 |\n| A2A | 智能体间通信 | 对等、异步、多模态 |\n| ANP | 智能体网络 | 发现、注册、负载均衡 |"
-        },
-        {
-          "type": "content",
-          "title": "协议选择指南",
-          "content": "• 单智能体 + 工具 → MCP\n• 两个智能体协作 → A2A\n• 多个智能体组成网络 → ANP\n• 复杂场景 → 组合使用"
-        },
-        {
-          "type": "content",
-          "title": "通信模式",
-          "content": "• 请求-响应：同步调用，等待结果\n• 发布-订阅：异步消息，一对多\n• 点对点：直接通信\n• 广播：向所有智能体发送\n• 路由：通过中间节点转发"
+          "title": "10.3 MCP 消息格式",
+          "content": "MCP 底层采用 JSON-RPC 2.0 作为消息格式，保证了跨语言、跨平台的互操作性。一条 MCP 消息包含四个关键字段：jsonrpc 版本号、id 请求标识、method 方法名以及 params 参数对象。请求方法包括 tools/list（列出工具）、tools/call（调用工具）、resources/read（读取资源）、prompts/get（获取提示模板）等。服务器返回同样格式的响应，包含 result 或 error。由于消息是标准的 JSON，任何支持 JSON-RPC 的客户端和服务器都能直接对接，这也是 MCP 生态能快速爆发的重要原因。"
         },
         {
           "type": "code",
-          "title": "协议消息实现",
-          "language": "python",
-          "code": "import json\nimport time\nfrom dataclasses import dataclass\nfrom typing import Any, Optional\n\n@dataclass\nclass MCPMessage:\n    \"\"\"MCP 消息结构\"\"\"\n    from_agent: str\n    to_agent: str\n    action: str\n    payload: dict\n    message_id: str = None\n    timestamp: float = None\n    \n    def __post_init__(self):\n        if self.message_id is None:\n            self.message_id = f\"msg_{int(time.time() * 1000)}\"\n        if self.timestamp is None:\n            self.timestamp = time.time()\n    \n    def to_json(self):\n        \"\"\"序列化为 JSON\"\"\"\n        return json.dumps({\n            'header': {\n                'from': self.from_agent,\n                'to': self.to_agent,\n                'message_id': self.message_id,\n                'timestamp': self.timestamp\n            },\n            'body': {\n                'action': self.action,\n                'payload': self.payload\n            }\n        }, indent=2)\n    \n    @classmethod\n    def from_json(cls, json_str):\n        \"\"\"从 JSON 解析\"\"\"\n        data = json.loads(json_str)\n        return cls(\n            from_agent=data['header']['from'],\n            to_agent=data['header']['to'],\n            action=data['body']['action'],\n            payload=data['body']['payload'],\n            message_id=data['header']['message_id'],\n            timestamp=data['header']['timestamp']\n        )\n\nclass MCPProtocol:\n    \"\"\"MCP 协议实现\"\"\"\n    def initialize(self, provider_info):\n        return MCPMessage(\n            from_agent='client',\n            to_agent='provider',\n            action='initialize',\n            payload=provider_info\n        )\n    \n    def call(self, tool_name, arguments):\n        return MCPMessage(\n            from_agent='client',\n            to_agent='provider',\n            action='call',\n            payload={'tool': tool_name, 'args': arguments}\n        )\n    \n    def result(self, message_id, result, error=None):\n        return MCPMessage(\n            from_agent='provider',\n            to_agent='client',\n            action='result',\n            payload={\n                'message_id': message_id,\n                'result': result,\n                'error': error\n            }\n        )"
+          "title": "真实 JSON-RPC 消息例子",
+          "language": "json",
+          "code": "// 智能体请求 MCP 服务器调用 add 工具\n{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"add\",\n    \"arguments\": {\"a\": 3, \"b\": 5}\n  }\n}\n\n// MCP 服务器返回结果\n{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"result\": {\n    \"content\": [{\"type\": \"text\", \"text\": \"8\"}]\n  }\n}",
+          "explanation": "请求和响应都遵循 JSON-RPC 2.0，method 为 tools/call，参数通过 params.arguments 传递，结果放在 result.content 中。"
         },
         {
           "type": "content",
-          "title": "本章小结",
-          "content": "MCP：模型与工具通信的标准化协议\nA2A：智能体之间直接通信的协议\nANP：智能体网络的高级协议\n选择合适的协议取决于具体场景\n消息格式包含 Header 和 Body，支持 JSON 序列化"
+          "title": "MCP 工具发现与调用流程",
+          "content": "MCP 的工作流程分为五步：首先是工具发现，Client 连接 Server 后调用 tools/list 获取可用工具的名称、描述和参数 Schema；接着 Client 把这些工具描述转换为 LLM 能理解的格式并加入系统提示词；然后模型根据用户问题和工具描述决定调用哪个工具以及参数；Client 再通过 tools/call 执行工具；最后工具结果返回给 LLM，模型结合结果生成最终回答。这个流程完全自动化，工具描述的质量直接影响模型是否会正确选择工具，因此编写清晰、准确的工具说明至关重要。"
         },
         {
           "type": "content",
-          "title": "协议选型指南",
-          "content": "**MCP**：LLM↔工具/数据标准化通信 ★★★★★\n**A2A**：Agent间直接通信和协作 ★★★★☆\n**ANP**：事件通知和状态广播 ★★★☆☆\n\n**组合策略**：系统内用MCP，Agent间用A2A+ANP。\n\n[提示] 协议选择基于实际需求。"
+          "title": "MCP 五种传输方式",
+          "content": "MCP 协议本身传输层无关，HelloAgents 基于 FastMCP 2.0 支持五种传输方式。Memory 传输用于单元测试和快速原型，无需外部进程。Stdio 传输通过标准输入输出与本地进程通信，是本地开发最常用的方式。HTTP 传输适合远程服务和微服务架构。SSE（Server-Sent Events）传输支持单向实时流式数据。StreamableHTTP 则在 HTTP 之上支持双向流式通信。选择传输方式时，应考虑网络环境、延迟要求、部署形态以及是否需要双向流式交互。"
         },
         {
           "type": "content",
-          "title": "A2A协议深入",
-          "content": "A2A由Google提出，用于Agent间直接通信。\n\n**核心概念**\n• **Agent Card**：能力描述卡片(类似OpenAPI)\n• **Task生命周期**：创建→执行→完成→取消\n• **消息路由**：点对点、广播、多播\n\n```json\n{\"protocol\":\"a2a\",\"version\":\"1.0\",\n \"sender\":{\"agent_id\":\"planner-001\",\"capabilities\":[\"task_decomposition\"]},\n \"target\":\"booking-agent-002\",\n \"task\":{\"id\":\"t1\",\"type\":\"execute\",\"payload\":{\"action\":\"book_hotel\",\"params\":{\"city\":\"北京\"}}}}\n```\n\n[提示] A2A反映行业对Agent互通的需求。"
+          "title": "10.4 A2A 简介",
+          "content": "A2A（Agent-to-Agent Protocol）由 Google 提出，专门用于智能体之间的点对点通信。如果说 MCP 解决的是智能体与工具的关系，那么 A2A 解决的是智能体与智能体的关系。A2A 让每个 Agent 既能作为服务提供者，也能作为服务消费者，像人类团队一样直接对话、委托任务、协商能力。它避免了传统中央协调器带来的单点故障和性能瓶颈，使多智能体系统更加灵活和可扩展。典型场景包括研究员把资料传给撰写员、接待员把客户问题转给技术专家等。"
         },
         {
           "type": "content",
-          "title": "MCP传输层与认证",
-          "content": "| 传输方式 | 场景 | 特点 |\n|---------|------|------|\n| Stdio | 本地进程 | 最简单零配置 |\n| SSE | 远程HTTP | 标准跨网络 |\n| WebSocket | 双向实时 | 低延迟高频 |\n\n**认证**：API Key / OAuth 2.0 / JWT Token\n\n**错误处理**\n```json\n{\"jsonrpc\":\"2.0\",\"id\":1,\"error\":{\"code\":-32000,\"message\":\"执行超时\"}}\n```\n\n[提示] 传输层选择考虑网络环境和延迟。"
+          "title": "A2A 核心抽象：Task 与 Artifact",
+          "content": "A2A 围绕两个核心抽象展开：Task 和 Artifact。Task 表示一次需要完成的协作请求，拥有完整的生命周期，包括创建、协商、执行中、完成、失败等状态，支持进度跟踪和异常处理。Artifact 则是任务执行过程中产生的成果物，例如生成的报告、编辑后的文档、搜索结果等。与 MCP 的一次性工具调用不同，A2A 强调有状态、可追踪的多轮协作。一个 Task 可能被多个 Agent 接力处理，每个 Agent 把自己的输出作为 Artifact 返回，供下一个 Agent 继续加工。"
+        },
+        {
+          "type": "content",
+          "title": "10.5 A2A Agent Card",
+          "content": "Agent Card 是 A2A 协议中的能力描述卡片，相当于智能体的简历或 OpenAPI 文档。它声明了一个 Agent 的身份、版本、支持的能力、输入输出格式、认证方式以及端点地址。其他 Agent 在协作前会先读取对方的 Agent Card，判断它是否能处理自己的任务，从而完成服务发现。Agent Card 让智能体之间无需预先硬编码连接关系，实现了真正的即插即用。对于开发者来说，写好 Agent Card 就像写好 API 文档，是 Agent 能被他人发现和合用的前提。"
         },
         {
           "type": "code",
-          "title": "MCP Client实现",
-          "language": "python",
-          "code": "import requests\nfrom typing import Dict, Optional\n\nclass MCPClient:\n    def __init__(self, url: str, key: Optional[str] = None):\n        self.url = url.rstrip(\"/\")\n        self.headers = {\"Content-Type\": \"application/json\"}\n        if key: self.headers[\"Authorization\"] = f\"Bearer {key}\"\n        self.req_id = 0\n\n    def call(self, method: str, params: Dict = None) -> Dict:\n        self.req_id += 1\n        p = {\"jsonrpc\":\"2.0\",\"id\":self.req_id,\"method\":method,\"params\":params or {}}\n        return requests.post(f\"{self.url}/mcp\", headers=self.headers, json=p).json()\n\n    def list_tools(self):\n        r = self.call(\"tools/list\")\n        return r.get(\"result\",{}).get(\"tools\",[])\n\n    def call_tool(self, name, args=None):\n        r = self.call(\"tools/call\", {\"name\":name,\"arguments\":args or {}})\n        return r.get(\"result\",{}).get(\"content\",[])\n\nc = MCPClient(\"http://localhost:8000\", \"sk-key\")\nprint([t[\"name\"] for t in c.list_tools()])\nprint(c.call_tool(\"web_search\", {\"query\":\"MCP\"}))",
-          "explanation": "MCP Client通过JSON-RPC 2.0实现工具发现和调用。"
+          "title": "Agent Card JSON 示例",
+          "language": "json",
+          "code": "{\n  \"protocol\": \"a2a\",\n  \"version\": \"1.0\",\n  \"agent_id\": \"booking-agent-002\",\n  \"name\": \"订票助手\",\n  \"description\": \"负责酒店和机票预订的 Agent\",\n  \"endpoint\": \"https://agents.example.com/booking\",\n  \"capabilities\": [\"book_hotel\", \"book_flight\", \"query_order\"],\n  \"auth\": {\"type\": \"bearer\", \"token_url\": \"https://auth.example.com/token\"},\n  \"input_schema\": {\n    \"book_hotel\": {\"city\": \"string\", \"check_in\": \"date\"}\n  }\n}",
+          "explanation": "Agent Card 用标准 JSON 描述 Agent 能做什么、端点在哪、如何认证，其他 Agent 读取后即可发起协作。"
+        },
+        {
+          "type": "content",
+          "title": "A2A 请求生命周期",
+          "content": "A2A 的完整请求生命周期包括四个主要步骤：Agent 发现、身份认证、发送消息 API 和发送消息流 API。首先，客户端通过读取目标 Agent Card 了解其能力和端点；接着双方完成身份认证，确保通信安全；然后客户端通过发送消息 API 提交 Task；在任务执行过程中，服务端可以通过流式 API 持续返回状态更新和 Artifact。这个生命周期既支持同步的一问一答，也支持长时间运行的异步任务，非常适合需要多轮交互和进度反馈的复杂协作场景。"
+        },
+        {
+          "type": "content",
+          "title": "A2A 实战：智能客服系统",
+          "content": "一个典型的 A2A 实战案例是智能客服系统：接待员 Agent 负责分析客户问题类型，技术专家 Agent 回答技术问题，销售顾问 Agent 回答价格购买问题。接待员本身不直接回答，而是通过 A2A 把问题委托给合适的专家，再把专家的回复整理后返回给客户。每个专家都有自己的 Agent Card 和端点，可以独立部署和升级。A2A 让这套系统无需中央调度器，专家们可以动态加入或离开，接待员根据 Agent Card 实时发现可用专家，从而实现高可用和可扩展的客服团队。"
+        },
+        {
+          "type": "content",
+          "title": "10.6 ANP 简介",
+          "content": "ANP（Agent Network Protocol）是一个面向大规模智能体网络的基础设施协议，目前由开源社区推动。如果说 MCP 解决的是如何访问工具，A2A 解决的是如何与其他智能体对话，那么 ANP 解决的是如何在成百上千个智能体中自动发现和连接合适的服务。它的核心理念是去中心化服务发现：通过服务注册、语义匹配和智能路由，让智能体动态找到需要的能力，而无需预先配置所有连接关系。ANP 特别适合构建开放的、可扩展的智能体生态系统。"
+        },
+        {
+          "type": "content",
+          "title": "ANP 服务发现与路由",
+          "content": "ANP 提供三个关键机制：服务注册、服务发现和智能路由。服务注册让每个 Agent 上线时把自己的 service_id、service_type、capabilities、endpoint 和元数据（负载、价格、版本）登记到发现中心。服务发现允许其他 Agent 根据任务需求查询匹配的服务，例如查找类型为 nlp、具备 sentiment_analysis 能力的 Agent。智能路由则在多个候选者中选择最合适的一个，依据可以是当前负载、响应延迟、成本或硬件资源。这种机制让任务调度从硬编码变成数据驱动。"
+        },
+        {
+          "type": "content",
+          "title": "ANP 网络拓扑",
+          "content": "ANP 支持多种网络拓扑以适配不同规模。星型拓扑结构简单，所有 Agent 都连接到一个中心发现节点，适合小规模快速搭建。网状拓扑中 Agent 之间可以直接通信，没有单点故障，适合中等规模的高可用场景。分层拓扑把网络划分为多个域，每个域有自己的局部发现中心，域之间通过超级节点互联，适合大规模企业或跨组织部署。随着智能体数量从 10 个增长到 1000 个，拓扑通常会从星型演进到网状，再到分层，以平衡发现效率和维护复杂度。"
+        },
+        {
+          "type": "content",
+          "title": "我用哪个协议？决策树",
+          "content": "选择协议的关键是看清通信的双方是谁。如果你的智能体需要访问外部工具或数据（文件、数据库、API、搜索引擎），选择 MCP，它是 LLM 与工具之间的 USB-C，插上线就能用。如果你需要让两个或多个智能体直接协作完成任务（研究员把结果交给撰写员、接待员把问题转给专家），选择 A2A，它是 Agent 之间的微信/钉钉。如果你的系统里有大量智能体动态上下线，需要自动发现、路由和负载均衡，选择 ANP，它是 Agent 网络的外卖平台。实际项目中三者常常组合：MCP 负责工具层，A2A 负责协作层，ANP 负责网络层。"
+        },
+        {
+          "type": "content",
+          "title": "三个协议的真实调用时序",
+          "content": "MCP 的调用时序是：Agent 通过 MCP Client 向 Server 发送 tools/list 获取工具列表，再发送 tools/call 调用具体工具，Server 执行后返回结果，整个过程是请求-响应式。A2A 的调用时序是：协调 Agent 读取目标 Agent Card 确认能力，然后发送 Task 消息，执行 Agent 处理并返回 Artifact，强调任务状态和异步反馈。ANP 的调用时序是：任务 Agent 向发现中心查询匹配服务，选择最佳节点后直连目标 Agent 执行任务并返回，核心是服务发现与路由。三条时序分别对应工具调用、协作对话和网络调度三种不同层次的通信需求。"
+        },
+        {
+          "type": "content",
+          "title": "协议组合：为什么不是单选题",
+          "content": "真实系统往往同时使用多种协议。例如一个智能文档助手：先用 MCP 连接 GitHub 和文件系统工具获取资料；再用 A2A 让研究员 Agent 把结果交给撰写员 Agent；当 Agent 数量增加时，通过 ANP 自动发现可用的研究员和撰写员。MCP 提供能力，A2A 组织协作，ANP 管理连接。把它们割裂开来会让架构失衡：只有 MCP 无法多 Agent 协作；只有 A2A 缺乏工具扩展；只有 ANP 没有具体执行能力。理解三者的定位，才能在设计中灵活组合，构建既有深度又有弹性的智能体系统。"
+        },
+        {
+          "type": "content",
+          "title": "通信协议安全要点",
+          "content": "通信协议在带来便利的同时也引入安全风险。MCP Server 可能暴露删除文件、执行命令等危险操作，因此需要最小权限原则和工具白名单，避免 Agent 调用超出授权范围的能力。A2A 和 ANP 涉及多个智能体之间的消息传递，可能包含敏感数据，需要端到端加密、身份认证和访问控制，防止消息被窃听或篡改。在大规模网络中，还应建立信任评估和审计机制，根据 Agent 的历史行为和社区评价动态调整通信策略，抵御恶意节点和拒绝服务攻击。"
         },
         {
           "type": "comparison",
@@ -1694,51 +1728,56 @@
             [
               "全称",
               "Model Context Protocol",
-              "Agent-to-Agent",
-              "Agent Notification Protocol"
+              "Agent-to-Agent Protocol",
+              "Agent Network Protocol"
             ],
             [
               "发起方",
               "Anthropic",
               "Google",
-              "社区"
+              "开源社区"
             ],
             [
               "用途",
-              "LLM↔工具/数据",
-              "Agent↔Agent",
-              "事件通知/广播"
+              "LLM ↔ 工具/数据",
+              "Agent ↔ Agent 协作",
+              "大规模智能体网络发现/路由"
             ],
             [
               "模式",
               "客户端-服务器",
-              "对等",
-              "发布-订阅"
+              "点对点",
+              "去中心化注册中心"
             ],
             [
               "格式",
               "JSON-RPC 2.0",
-              "JSON自定义",
-              "JSON自定义"
+              "JSON 自定义",
+              "JSON 自定义"
             ],
             [
               "传输",
-              "Stdio/SSE/WS",
-              "HTTP/WS",
-              "HTTP/WS"
+              "Stdio / SSE / HTTP",
+              "HTTP / WebSocket",
+              "HTTP / WebSocket"
             ],
             [
               "状态",
               "无状态",
-              "有状态",
-              "有状态"
+              "有状态（Task 生命周期）",
+              "有状态（服务元数据）"
             ]
           ]
         },
         {
           "type": "content",
-          "title": "通信协议未来趋势",
-          "content": "**1. MCP生态爆发**\n• 正在成为LLM工具集成行业标准\n• 大量MCP Server涌现\n• 主流IDE已集成MCP\n\n**2. A2A标准化**\n• Google推动A2A部署\n• Agent Card注册中心\n\n**3. 协议融合**\n• MCP处理工具，A2A处理通信\n• 单一框架支持多协议\n\n**4. 安全治理**\n• Agent身份验证标准化\n• 通信审计和溯源\n\n[提示] 关注协议演进趋势有助于前瞻性决策。"
+          "title": "本章小结",
+          "content": "本章介绍了智能体通信的三大核心协议。MCP 是模型与工具之间的标准化桥梁，通过 JSON-RPC 消息让智能体统一访问外部服务。A2A 是智能体之间的对等通信协议，通过 Task、Artifact 和 Agent Card 实现多 Agent 协作。ANP 是智能体网络的基础设施，提供服务发现、路由和网络管理，适合大规模开放生态。选择协议要看通信对象：工具用 MCP，Agent 协作用 A2A，大规模网络用 ANP。实际项目中三者常组合使用，共同构成智能体通信的完整基础设施。"
+        },
+        {
+          "type": "content",
+          "title": "动手建议与后续学习",
+          "content": "学完本章后，建议你立即动手实践：先使用 HelloAgents 的 MCPTool 连接一个社区 MCP Server（如文件系统或 GitHub），体验工具自动展开；再启动两个 A2A Agent，一个扮演研究员、一个扮演撰写员，完成一次简单的任务委托；最后用 ANPTool 注册几个虚拟服务并练习按负载选择最佳节点。后续可以阅读 MCP 官方文档、A2A 协议规范和 ANP 白皮书，关注 Smithery 等 MCP 发布平台，并尝试把自己写的 MCP Server 分享给社区。通信协议正在快速演进，越早实践越能抓住生态红利。"
         },
         {
           "type": "quiz",
@@ -2271,6 +2310,21 @@
         },
         {
           "type": "content",
+          "title": "跟着做（上）：项目搭建与数据模型",
+          "content": "第一步到第四步帮你把旅行助手的骨架搭起来。先新建 backend/ 和 frontend/ 两个目录，后端用 FastAPI、前端用 Vite + Vue 3 + TypeScript；然后在 .env 中配置高德地图 AMAP_API_KEY 和大模型 LLM_API_KEY；接着安装依赖，后端装 hello-agents、fastapi、uvicorn、pydantic，前端装 axios、vue-router、ant-design-vue；最后用 Pydantic 定义 TripPlanRequest 和 TripPlan 两个数据模型，把城市、日期、预算、偏好等请求字段和每日行程、景点、酒店、天气、预算等结果字段固定下来。这四步虽然不涉及 Agent 逻辑，却是整个项目可运行、可扩展的基础。"
+        },
+        {
+          "type": "content",
+          "title": "跟着做（中）：MCP 工具与 Agent 分工",
+          "content": "第五步到第七步完成核心能力。先用 MCPTool 启动 @sugarforever/amap-mcp-server，设置 auto_expand=True，一次性获得 POI 搜索、天气、路线规划等 16 个工具；然后分别实现 AttractionSearchAgent、WeatherQueryAgent 和 HotelAgent，每个 Agent 的 Prompt 只描述一件事，保证职责单一；最后写 PlannerAgent，它不调用工具，只接收用户需求和前三步结果，输出严格 JSON 格式的完整行程。这样，复杂任务被拆成“查、算、合”三个清晰环节。这一步体现了多智能体设计的核心思想：让专业的人做专业的事。"
+        },
+        {
+          "type": "content",
+          "title": "跟着做（下）：编排、后端与前端联调",
+          "content": "第八步到第十步把所有模块串起来。用 TripPlannerAgent 把景点、天气、酒店三个 Agent 并行执行，结果交给 Planner 整合；然后在 FastAPI 中暴露 POST /api/trip/plan，接收 TripPlanRequest，返回 TripPlan；最后开发前端页面：Home 页填写表单并显示加载进度，Result 页展示行程、地图、预算，支持移动景点、删除景点、导出图片/PDF。完成这十步后，你就拥有一个可交互的多 Agent 旅行助手。建议边读源码边按步骤动手，遇到困难时先检查 API 密钥和 MCP 工具是否正常启动。"
+        },
+        {
+          "type": "content",
           "title": "功能实现要点",
           "content": "**预算计算**：\nPlannerAgent 根据行程自动估算费用，分为景点门票、酒店住宿、餐饮、交通四大类。\n\n**加载进度条**：\n模拟进度更新，状态对应步骤：搜索景点→查询天气→推荐酒店→生成行程。\n\n**行程编辑**：\n支持移动景点顺序、删除景点，使用深拷贝保存原始计划用于取消恢复。\n\n**导出功能**：\n使用 html2canvas 导出图片，jsPDF 导出 PDF。"
         },
@@ -2539,6 +2593,11 @@
         },
         {
           "type": "content",
+          "title": "5 分钟看小镇跑起来",
+          "content": "为了对“跑起来”有更具象的感受，下面是按时间线还原的 5 分钟体验。第 1 分钟启动后端，看到 🎮 赛博小镇后端服务启动中的横幅；第 2 分钟启动 Godot，导入项目后按 F5，屏幕中央出现像素办公室，三名 NPC 正在巡逻；第 3 分钟用 WASD 走到张三附近，按 E 弹出对话框并输入问候；第 4 分钟收到基于 Python 工程师人设的回复，后端日志同时记录了情感分析和好感度变化；第 5 分钟继续探索李四和王五，发现他们也会定时刷新背景对话。短短 5 分钟，你就完成了从启动服务到与智能 NPC 自然对话的完整闭环。这种所见即所得的反馈，是理解赛博小镇最好的起点，也是继续学习实现细节的动机。"
+        },
+        {
+          "type": "content",
           "title": "为什么构建 AI 小镇？",
           "content": "传统游戏 NPC 只能预设对话树，缺乏真正的\"智能\"和\"生命力\"。\n\nAI 驱动的 NPC 可以实现：\n• **自然语言理解**：NPC 理解玩家的任意对话\n• **长期记忆**：记住过去的互动，保持连续性\n• **个性化性格**：独特的职业、性格和说话风格\n• **动态关系**：态度随互动变化（陌生人→朋友→挚友）\n\n应用场景：教育游戏（历史人物互动）、虚拟办公室、情感陪伴"
         },
@@ -2622,6 +2681,11 @@
           "type": "content",
           "title": "混合模式：批量 + 即时",
           "content": "巧妙结合两种模式，兼顾效率与质量：\n\n**后台批量生成（每 5 分钟）**\n• 为所有 NPC 生成\"背景对话\"\n• 显示 NPC 在工作状态（调试、看文档等）\n• 让 NPC 看起来\"活着\"\n\n**按需即时响应（玩家交互时）**\n• 调用该 NPC 的专属 Agent\n• 根据具体消息、历史记忆、好感度生成个性化回复\n• 保证回复的准确性和相关性\n\n两个模式无缝切换，玩家感受不到差异。"
+        },
+        {
+          "type": "content",
+          "title": "批量生成 vs 即时响应",
+          "content": "批量生成和即时响应解决不同问题。批量生成在后台定时运行，一次 LLM 调用生成所有 NPC 的背景对话，成本低、通用性强，适合氛围营造和自言自语；即时响应在玩家发起交互时实时调用该 NPC 的专属 Agent，基于玩家输入、记忆和好感度生成高度定制的回复，适合主动对话和关键剧情。赛博小镇的混合模式把“不需要玩家输入、重复发生、追求低成本”的对话交给批量生成，把“依赖具体输入、影响体验、需要记忆”的对话留给即时响应，从而在保证沉浸感的同时显著降低 API 开销。实际项目中，可根据并发量和预算动态调整批量生成频率。"
         },
         {
           "type": "content",
