@@ -11,8 +11,9 @@
     "start": "python3 -m http.server 8080"
   },
   "devDependencies": {
-    "vitest": "^1.6.0",
+    "@playwright/test": "^1.49.0",
+    "axe-core": "^4.12.1",
     "jsdom": "^24.0.0",
-    "@playwright/test": "^1.49.0"
+    "vitest": "^1.6.0"
   }
 }
