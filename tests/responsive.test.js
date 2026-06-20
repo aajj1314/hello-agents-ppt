@@ -1,10 +1,11 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { readFileSync } from 'fs';
+import { resolve } from 'path';
 
 describe('responsive CSS breakpoints', () => {
     let css;
     beforeAll(() => {
-        css = readFileSync('/home/anan/桌面/hello-agents-ppt/css/main.css', 'utf8');
+        css = readFileSync(resolve(process.cwd(), 'css/main.css'), 'utf8');
     });
 
     it('main.css contains @media for ≤480', () => {

@@ -4,6 +4,16 @@ import { Storage } from './core/storage.js';
 import { bindThemeToggle, syncThemeIcons } from './theme.js';
 import { ICONS, resolveIcon } from './core/icons.js';
 
+const GUIDE_ICONS = {
+    brain: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg>',
+    chat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+    search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>',
+    calendar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+    tools: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>',
+    game: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4"/><path d="M8 10v4"/><circle cx="17" cy="12" r="1.5"/></svg>',
+    code: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>'
+};
+
 const prefersReducedMotion = () =>
     window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -22,6 +32,7 @@ class App {
         this.chapters = data.chapters;
         this.renderStats();
         this.renderChips();
+        await this.renderHomeGuide();
         this.render();
         this.bindButtons();
         this.bindScrollHandlers();
@@ -157,6 +168,117 @@ class App {
         }
     }
 
+    async renderHomeGuide() {
+        const container = document.getElementById('guideGrid');
+        if (!container) return;
+
+        let guide;
+        try {
+            guide = await loadJSON('data/home-guide.json');
+        } catch (e) {
+            // 数据缺失或损坏时静默跳过，不影响首页
+            container.closest('.hero-guide')?.classList.add('is-hidden');
+            return;
+        }
+
+        const fragment = document.createDocumentFragment();
+        fragment.appendChild(this._buildIntroCard(guide.agent_intro));
+        fragment.appendChild(this._buildPathCard(guide.learning_path));
+        fragment.appendChild(this._buildCapabilitiesCard(guide.capabilities));
+        container.appendChild(fragment);
+    }
+
+    _buildIntroCard(intro) {
+        const card = createElement('article', {
+            className: 'guide-card',
+            'aria-labelledby': 'guide-intro-title'
+        });
+        card.innerHTML = `
+            <div class="guide-card__icon" aria-hidden="true">${GUIDE_ICONS[intro.icon] || ''}</div>
+            <h3 class="guide-card__title" id="guide-intro-title">${escapeHTML(intro.title)}</h3>
+            <p class="guide-card__lead">${escapeHTML(intro.definition)}</p>
+            <p class="guide-card__analogy">${escapeHTML(intro.analogy)}</p>
+            <p class="guide-card__note">${escapeHTML(intro.difference)}</p>
+            <a class="guide-card__link" href="slides.html?chapter=${encodeURIComponent(intro.link.chapter)}&slide=${intro.link.slide}">${escapeHTML(intro.link.text)} →</a>
+        `;
+        return card;
+    }
+
+    _buildPathCard(path) {
+        const card = createElement('article', {
+            className: 'guide-card',
+            'aria-labelledby': 'guide-path-title'
+        });
+
+        const stepsHtml = path.steps.map((step, index) => {
+            const status = this._getStepStatus(step);
+            const firstIncomplete = this._getFirstIncompleteChapter(step.chapters);
+            const href = `slides.html?chapter=${encodeURIComponent(firstIncomplete || step.chapters[0])}&slide=1`;
+            const statusLabel = status === 'completed' ? '已完成' : status === 'active' ? '进行中' : '未开始';
+            return `
+                <li class="guide-step guide-step--${status}">
+                    <a class="guide-step__link" href="${href}" aria-label="${escapeHTML(step.title)}，${statusLabel}">
+                        <span class="guide-step__marker" aria-hidden="true">
+                            ${status === 'completed' ? '✓' : index + 1}
+                        </span>
+                        <span class="guide-step__body">
+                            <span class="guide-step__title">${escapeHTML(step.title)}</span>
+                            <span class="guide-step__desc">${escapeHTML(step.description)}</span>
+                        </span>
+                    </a>
+                </li>
+            `;
+        }).join('');
+
+        card.innerHTML = `
+            <h3 class="guide-card__title" id="guide-path-title">${escapeHTML(path.title)}</h3>
+            <ol class="guide-path">${stepsHtml}</ol>
+        `;
+        return card;
+    }
+
+    _getStepStatus(step) {
+        const completed = step.chapters.every(ch => {
+            const p = Storage.getChapterProgress(ch);
+            return p && p.completed;
+        });
+        const started = step.chapters.some(ch => {
+            const p = Storage.getChapterProgress(ch);
+            return p && (p.slideIndex || 0) > 0;
+        });
+        if (completed) return 'completed';
+        if (started) return 'active';
+        return 'pending';
+    }
+
+    _getFirstIncompleteChapter(chapters) {
+        for (const ch of chapters) {
+            const p = Storage.getChapterProgress(ch);
+            if (!p || !p.completed) return ch;
+        }
+        return null;
+    }
+
+    _buildCapabilitiesCard(capabilities) {
+        const card = createElement('article', {
+            className: 'guide-card',
+            'aria-labelledby': 'guide-capabilities-title'
+        });
+        const itemsHtml = capabilities.items.map(item => `
+            <div class="guide-capability">
+                <span class="guide-capability__icon" aria-hidden="true">${GUIDE_ICONS[item.icon] || ''}</span>
+                <span class="guide-capability__name">${escapeHTML(item.name)}</span>
+                <span class="guide-capability__desc">${escapeHTML(item.desc)}</span>
+            </div>
+        `).join('');
+
+        card.innerHTML = `
+            <h3 class="guide-card__title" id="guide-capabilities-title">${escapeHTML(capabilities.title)}</h3>
+            <div class="guide-capabilities">${itemsHtml}</div>
+        `;
+        return card;
+    }
+
     bindScrollHandlers() {
         // Scroll progress bar
         const onScroll = () => {
@@ -250,6 +372,8 @@ class App {
         });
     }
 }
+
+export { App };
 
 if (document.getElementById('chapterGrid')) {
     document.addEventListener('DOMContentLoaded', () => new App());
