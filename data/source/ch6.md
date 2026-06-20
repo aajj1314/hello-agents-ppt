@@ -490,3 +490,26 @@ llm = ChatOpenAI(
 [3] CrewAI Inc. CrewAI [EB/OL]. (2024). https://github.com/joaomdmoura/crewAI.
 
 [4] Liu J. LCEL 编程范式 [EB/OL]. (2024). https://python.langchain.com/docs/concepts/lcel/.
+
+
+## 6.8 本章易错点
+
+在开始学习下一章之前，请特别留意以下三个容易理解错的点。
+
+1. **LangChain 不是"唯一选择"**
+
+   - ❌ 误区："LangChain 是智能体开发的唯一选择"。
+   - ✅ 正解：LangChain 强在"零件库 + 链式组合（LCEL）"，适合单智能体 + 工具密集型场景；AutoGen 强在"多智能体对话（GroupChat）"，适合多方协作；CrewAI 强在"角色化任务委派"，适合流程化产线。三家没有绝对优劣。
+   - 📌 记住：选错框架=3 个月后哭着返工。决策点：单兵 + 工具密集 → LangChain；多方协作 + 决策不确定 → AutoGen；流程清晰 + 角色分明 → CrewAI。
+
+2. **AutoGen 必须配好终止条件**
+
+   - ❌ 误区："AutoGen = 启个 GroupChat 就完事"。
+   - ✅ 正解：AutoGen 必须配好终止条件（is_termination_msg、max_round、关键词触发），否则几个 AI 互相发消息永远不停，API 账单一夜归零；人机协作（UserProxyAgent）也是必选项，关键节点让真人介入。
+   - 📌 记住：没有终止条件的多智能体 = 无限循环 = 破产。跑 AutoGen 之前，先想清楚"什么时候停"。
+
+3. **框架不替你做决策**
+
+   - ❌ 误区："框架替你做决策，所以不用学原理了"。
+   - ✅ 正解：框架只是"省样板代码 + 统一工程规范"，决策、提示词设计、工具描述、错误处理都要自己写；不会调 LangChain 的 Tool、不懂 AutoGen 的 message 协议，照样写不出能用的 Agent。
+   - 📌 记住：框架是"精装修的房子"，但软装、布局、生活习惯都是你的。CH4 手写 ReAct/Plan/Reflection 不是浪费，是投资。

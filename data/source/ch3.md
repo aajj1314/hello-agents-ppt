@@ -540,3 +540,26 @@ print(response)
 [8] Wei, J., et al. (2022). Chain-of-thought prompting elicits reasoning in large language models. NeurIPS.
 [9] Kaplan, J., et al. (2020). Scaling laws for neural language models. arXiv:2001.08361.
 [10] Ji, Z., et al. (2023). Survey of hallucination in large language models. ACM Computing Surveys.
+
+
+## 3.24 本章易错点
+
+在开始学习下一章之前，请特别留意以下三个容易理解错的点。
+
+1. **模型能力不是"参数越大越强"**
+
+   - ❌ 误区："参数越大模型越强，70B 一定比 7B 强"。
+   - ✅ 正解：能力 = 参数规模 × 数据质量 × 训练方法 × 对齐程度。一个对齐良好的 7B 模型在对话任务上常常胜过没对齐好的 70B；闭源旗舰虽然参数大，更关键的是"独家数据和 RLHF 配方"。
+   - 📌 记住：选模型不是"唯参数论"，要综合"任务-能力-成本-延迟"四维评分。手机/边缘场景选 0.5B-7B，专业任务选闭源旗舰或 70B+ 开源。
+
+2. **架构 ≠ 实现细节**
+
+   - ❌ 误区："LLM = Transformer"，所以所有大模型都是同一架构。
+   - ✅ 正解：Transformer 是当下主流架构，但 Mamba（状态空间模型）、MoE（混合专家）等新架构已经在追赶甚至部分超越；GPT/Claude/Qwen 实际都是 Decoder-Only 的"自回归生成"流派，不是 BERT 那种双向编码。
+   - 📌 记住：理解"Decoder-Only + 掩码自注意力 + 预测下一字"这三点，就抓住了 90% 现代 LLM 的本质。
+
+3. **知识截止是"可被工程化补偿"的**
+
+   - ❌ 误区："LLM 知识有截止=不能回答新问题，所以 LLM 在企业里没法用"。
+   - ✅ 正解：RAG（检索增强）和工具调用可以在不重训模型的情况下补实时知识——把"不知道"变成"现查现答"，把"不会算"变成"调计算器"。
+   - 📌 记住：知识截止不是"致命缺陷"。CH8 记忆与检索、CH9 上下文工程两章会教你完整的兜底方案。
