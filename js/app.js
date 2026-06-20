@@ -20,20 +20,28 @@ const prefersReducedMotion = () =>
 class App {
     constructor() {
         this.chapters = [];
+        this.chapterTitleById = new Map();
         this.grid = $('#chapterGrid');
         this.chipsHost = $('#chapterChips');
         this.stickyNav = $('#stickyNav');
         this.scrollBar = $('#scrollProgressBar');
+        this.glossaryHost = $('#glChips');
+        this.glossaryDetail = $('#glDetail');
+        this.glossarySearch = $('#glSearch');
+        this.glossaryCount = $('#glCount');
         this.init();
     }
 
     async init() {
         const data = await loadJSON('data/chapters.json');
         this.chapters = data.chapters;
+        this.chapterTitleById = new Map(this.chapters.map(c => [c.id, c.title]));
         this.renderStats();
         this.renderChips();
         await this.renderHomeGuide();
+        await this.renderConceptMap();
         this.render();
+        this.renderGlossary();
         this.bindButtons();
         this.bindScrollHandlers();
         bindThemeToggle();
@@ -279,6 +287,186 @@ class App {
         return card;
     }
 
+    async renderConceptMap() {
+        const section = document.getElementById('conceptMap');
+        if (!section) return;
+        const canvas = document.getElementById('cmCanvas');
+        const legend = document.getElementById('cmLegend');
+        const countEl = document.getElementById('cmCount');
+        if (!canvas) return;
+
+        let data;
+        try {
+            data = await loadJSON('data/concept-map.json');
+        } catch (e) {
+            section.classList.add('is-hidden');
+            return;
+        }
+
+        const concepts = Array.isArray(data.concepts) ? data.concepts : [];
+        const chapterLinks = Array.isArray(data.chapter_links) ? data.chapter_links : [];
+
+        const CHAPTER_GROUPS = [
+            { id: 'g1', label: 'CH1–CH3 基础', color: '#7C3AED', chapters: ['ch1', 'ch2', 'ch3'] },
+            { id: 'g2', label: 'CH4–CH7 范式', color: '#06B6D4', chapters: ['ch4', 'ch5', 'ch6', 'ch7'] },
+            { id: 'g3', label: 'CH8–CH10 协议', color: '#10B981', chapters: ['ch8', 'ch9', 'ch10'] },
+            { id: 'g4', label: 'CH11–CH14 训练', color: '#F59E0B', chapters: ['ch11', 'ch12', 'ch13', 'ch14'] },
+            { id: 'g5', label: 'CH15–CH16 实战', color: '#EC4899', chapters: ['ch15', 'ch16'] }
+        ];
+
+        if (countEl) countEl.textContent = String(concepts.length);
+
+        const W = 1200;
+        const H = 460;
+        const cx = W / 2;
+        const cy = H / 2;
+
+        const nonEmptyGroups = CHAPTER_GROUPS
+            .map(g => ({ ...g, concepts: concepts.filter(c => g.chapters.includes(c.first_appears)) }))
+            .filter(g => g.concepts.length > 0);
+
+        const positions = {};
+        nonEmptyGroups.forEach((g, ringIdx) => {
+            const baseR = 70 + ringIdx * 75;
+            const n = g.concepts.length;
+            g.concepts.forEach((c, i) => {
+                const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+                const jitter = (i % 2 === 0) ? 0 : 12;
+                const r = baseR + jitter;
+                positions[c.id] = {
+                    x: cx + Math.cos(angle) * r,
+                    y: cy + Math.sin(angle) * r,
+                    concept: c,
+                    group: g
+                };
+            });
+        });
+
+        const tooltip = document.createElement('div');
+        tooltip.className = 'cm-tooltip';
+        tooltip.setAttribute('role', 'tooltip');
+        canvas.appendChild(tooltip);
+
+        const NS = 'http://www.w3.org/2000/svg';
+        const svg = document.createElementNS(NS, 'svg');
+        svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+        svg.setAttribute('role', 'img');
+        svg.setAttribute('aria-label', 'Hello-Agents 核心概念关系图');
+
+        const anchorOf = (chapter) => {
+            const list = concepts.filter(c => c.first_appears === chapter);
+            if (!list.length) return null;
+            return list.reduce((a, b) =>
+                ((a.related || []).length >= (b.related || []).length) ? a : b
+            );
+        };
+
+        const edgeLayer = document.createElementNS(NS, 'g');
+        edgeLayer.setAttribute('class', 'cm-edges');
+        chapterLinks.forEach(link => {
+            const a = anchorOf(link.from);
+            const b = anchorOf(link.to);
+            if (!a || !b || a.id === b.id) return;
+            const p1 = positions[a.id];
+            const p2 = positions[b.id];
+            if (!p1 || !p2) return;
+            const line = document.createElementNS(NS, 'line');
+            line.setAttribute('x1', String(p1.x));
+            line.setAttribute('y1', String(p1.y));
+            line.setAttribute('x2', String(p2.x));
+            line.setAttribute('y2', String(p2.y));
+            line.setAttribute('class', 'cm-edge');
+            line.setAttribute('data-from', link.from);
+            line.setAttribute('data-to', link.to);
+            const title = document.createElementNS(NS, 'title');
+            title.textContent = link.reason || `${link.from} → ${link.to}`;
+            line.appendChild(title);
+            edgeLayer.appendChild(line);
+        });
+        svg.appendChild(edgeLayer);
+
+        const maxRelated = Math.max(1, ...concepts.map(c => (c.related || []).length));
+        const minR = 6;
+        const maxR = 14;
+
+        const nodeLayer = document.createElementNS(NS, 'g');
+        nodeLayer.setAttribute('class', 'cm-nodes');
+        Object.values(positions).forEach(p => {
+            const { concept, x, y, group } = p;
+            const relatedCount = (concept.related || []).length;
+            const radius = minR + (relatedCount / maxRelated) * (maxR - minR);
+
+            const node = document.createElementNS(NS, 'g');
+            node.setAttribute('class', 'cm-node');
+            node.setAttribute('data-id', concept.id);
+            node.setAttribute('data-chapter', concept.first_appears || '');
+            node.setAttribute('transform', `translate(${x},${y})`);
+            node.setAttribute('tabindex', '0');
+            node.setAttribute('role', 'button');
+            node.setAttribute('aria-label', `${concept.name || concept.id}：${concept.definition_short || ''}`);
+
+            const circle = document.createElementNS(NS, 'circle');
+            circle.setAttribute('r', String(radius));
+            circle.setAttribute('fill', group.color);
+            circle.setAttribute('class', 'cm-node__circle');
+            node.appendChild(circle);
+
+            const label = document.createElementNS(NS, 'text');
+            label.setAttribute('class', 'cm-node__label');
+            label.setAttribute('text-anchor', 'middle');
+            label.setAttribute('dy', String(radius + 11));
+            label.textContent = concept.name || concept.id;
+            node.appendChild(label);
+
+            const showTip = (clientX, clientY) => {
+                const def = concept.definition_short || concept.definition_long || '';
+                const ch = concept.first_appears || '';
+                tooltip.innerHTML = `<strong>${escapeHTML(concept.name || concept.id)}</strong>${escapeHTML(def)}${ch ? `<br><small>${escapeHTML(ch)}</small>` : ''}`;
+                tooltip.classList.add('is-visible');
+                const rect = canvas.getBoundingClientRect();
+                tooltip.style.left = (clientX - rect.left) + 'px';
+                tooltip.style.top = (clientY - rect.top) + 'px';
+            };
+            const hideTip = () => tooltip.classList.remove('is-visible');
+            const go = () => {
+                const target = document.getElementById(`chapter-${concept.first_appears}`);
+                if (target) target.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' });
+            };
+
+            node.addEventListener('mouseenter', (e) => showTip(e.clientX, e.clientY));
+            node.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                tooltip.style.left = (e.clientX - rect.left) + 'px';
+                tooltip.style.top = (e.clientY - rect.top) + 'px';
+            });
+            node.addEventListener('mouseleave', hideTip);
+            node.addEventListener('focus', () => {
+                const def = concept.definition_short || '';
+                tooltip.innerHTML = `<strong>${escapeHTML(concept.name || concept.id)}</strong>${escapeHTML(def)}`;
+                tooltip.classList.add('is-visible');
+            });
+            node.addEventListener('blur', hideTip);
+            node.addEventListener('click', go);
+            node.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    go();
+                }
+            });
+
+            nodeLayer.appendChild(node);
+        });
+        svg.appendChild(nodeLayer);
+        canvas.appendChild(svg);
+
+        if (legend) {
+            legend.innerHTML = CHAPTER_GROUPS.map(g =>
+                `<li class="cm-legend__item"><span class="cm-legend__dot" style="background:${g.color};color:${g.color}"></span>${escapeHTML(g.label)}</li>`
+            ).join('');
+        }
+    }
+
     bindScrollHandlers() {
         // Scroll progress bar
         const onScroll = () => {
@@ -370,6 +558,131 @@ class App {
                 alert('进度已重置');
             }
         });
+    }
+
+    async renderGlossary() {
+        if (!this.glossaryHost) return;
+        let payload;
+        try {
+            payload = await loadJSON('data/glossary.json');
+        } catch (e) {
+            const section = document.getElementById('glossary');
+            if (section) section.classList.add('is-hidden');
+            return;
+        }
+
+        const terms = Array.isArray(payload.terms) ? payload.terms : [];
+        if (this.glossaryCount) this.glossaryCount.textContent = String(terms.length);
+
+        this._renderGlossaryChips(terms);
+        this._bindGlossarySearch();
+    }
+
+    _renderGlossaryChips(terms) {
+        if (!this.glossaryHost) return;
+        this.glossaryHost.innerHTML = '';
+
+        const byChapter = new Map();
+        terms.forEach((t) => {
+            const ch = t.chapter || 'other';
+            if (!byChapter.has(ch)) byChapter.set(ch, []);
+            byChapter.get(ch).push(t);
+        });
+
+        const chapterOrder = this.chapters.map(c => c.id);
+        const sortedChapters = Array.from(byChapter.keys()).sort((a, b) => {
+            const ai = chapterOrder.indexOf(a);
+            const bi = chapterOrder.indexOf(b);
+            if (ai === -1 && bi === -1) return a.localeCompare(b);
+            if (ai === -1) return 1;
+            if (bi === -1) return -1;
+            return ai - bi;
+        });
+
+        const fragment = document.createDocumentFragment();
+        sortedChapters.forEach((chId) => {
+            const heading = createElement('div', {
+                className: 'gl-chapter',
+                role: 'presentation'
+            });
+            const title = this.chapterTitleById.get(chId) || chId;
+            heading.textContent = title;
+            fragment.appendChild(heading);
+
+            byChapter.get(chId).forEach((term) => {
+                const chip = createElement('button', {
+                    type: 'button',
+                    className: 'gl-chip',
+                    role: 'listitem',
+                    'data-term': term.term,
+                    'data-chapter': term.chapter || '',
+                    'data-search': this._buildGlossarySearchBlob(term),
+                    'aria-label': `查看术语：${term.term}`
+                });
+                chip.textContent = term.term;
+                chip.addEventListener('click', () => this._showGlossaryDetail(term, chip));
+                fragment.appendChild(chip);
+            });
+        });
+
+        this.glossaryHost.appendChild(fragment);
+    }
+
+    _buildGlossarySearchBlob(term) {
+        const aliases = Array.isArray(term.aliases) ? term.aliases : [];
+        return [term.term, term.plain_definition || '', term.analogy || '', ...aliases]
+            .join(' ')
+            .toLowerCase();
+    }
+
+    _showGlossaryDetail(term, chip) {
+        if (!this.glossaryDetail) return;
+        $$('.gl-chip.is-active', this.glossaryHost || document).forEach((el) => el.classList.remove('is-active'));
+        if (chip) chip.classList.add('is-active');
+
+        const aliases = Array.isArray(term.aliases) ? term.aliases : [];
+        const chapterTitle = this.chapterTitleById.get(term.chapter) || term.chapter || '';
+        this.glossaryDetail.classList.add('is-active');
+        this.glossaryDetail.innerHTML = `
+            <h3 class="gl-detail__term">
+                <span>${escapeHTML(term.term)}</span>
+                ${chapterTitle ? `<span class="gl-detail__chapter">${escapeHTML(chapterTitle)}</span>` : ''}
+            </h3>
+            ${aliases.length ? `<p class="gl-detail__aliases">别名：${aliases.map(a => escapeHTML(a)).join('、')}</p>` : ''}
+            <p class="gl-detail__definition">${escapeHTML(term.plain_definition || '')}</p>
+            <p class="gl-detail__analogy">${escapeHTML(term.analogy || '')}</p>
+        `;
+    }
+
+    onGlossarySearch(event) {
+        const value = (event && event.target && event.target.value || '').trim().toLowerCase();
+        const chips = $$('.gl-chip', this.glossaryHost || document);
+        chips.forEach((chip) => {
+            const blob = chip.dataset.search || '';
+            const match = !value || blob.includes(value);
+            chip.style.display = match ? '' : 'none';
+        });
+        $$('.gl-chapter', this.glossaryHost || document).forEach((heading) => {
+            let next = heading.nextElementSibling;
+            let hasVisible = false;
+            while (next && !next.classList.contains('gl-chapter')) {
+                if (next.classList.contains('gl-chip') && next.style.display !== 'none') {
+                    hasVisible = true;
+                    break;
+                }
+                next = next.nextElementSibling;
+            }
+            heading.style.display = hasVisible ? '' : 'none';
+        });
+        if (value && this.glossaryDetail) {
+            this.glossaryDetail.classList.remove('is-active');
+            $$('.gl-chip.is-active', this.glossaryHost || document).forEach((el) => el.classList.remove('is-active'));
+        }
+    }
+
+    _bindGlossarySearch() {
+        if (!this.glossarySearch) return;
+        this.glossarySearch.addEventListener('input', (e) => this.onGlossarySearch(e));
     }
 }
 

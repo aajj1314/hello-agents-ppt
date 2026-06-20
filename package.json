@@ -6,10 +6,17 @@
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
-    "start": "python3 -m http.server 8080"
+    "test:e2e": "playwright test",
+    "e2e:install": "playwright install",
+    "start": "python3 -m http.server 8080",
+    "audit:home": "python3 -m http.server 8091 & sleep 2 && npx lighthouse http://127.0.0.1:8091/ --output json --output-path docs/audits/lighthouse-home.json --chrome-flags=\"--headless --no-sandbox\" --only-categories=performance,accessibility,best-practices,seo && npx @axe-core/cli http://127.0.0.1:8091/ --save docs/audits/axe-home.json; pkill -f 'http.server 8091' || true",
+    "audit:ch1": "python3 -m http.server 8091 & sleep 2 && npx lighthouse \"http://127.0.0.1:8091/slides.html?chapter=ch1&slide=1\" --output json --output-path docs/audits/lighthouse-ch1.json --chrome-flags=\"--headless --no-sandbox\" --only-categories=performance,accessibility,best-practices,seo && npx @axe-core/cli \"http://127.0.0.1:8091/slides.html?chapter=ch1&slide=1\" --save docs/audits/axe-ch1.json; pkill -f 'http.server 8091' || true",
+    "audit:all": "bash scripts/run-audit.sh"
   },
   "devDependencies": {
-    "vitest": "^1.6.0",
-    "jsdom": "^24.0.0"
+    "@playwright/test": "^1.49.0",
+    "axe-core": "^4.12.1",
+    "jsdom": "^24.0.0",
+    "vitest": "^1.6.0"
   }
 }

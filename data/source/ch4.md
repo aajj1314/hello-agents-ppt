@@ -1538,3 +1538,25 @@ models[C]//International Conference on Learning Representations (ICLR). 2023.
 reasoning by large language models[J]. arXiv preprint arXiv:2305.04091, 2023.
 [3] Shinn N, Cassano F, Gopinath A, et al. Reflexion: Language agents with verbal reinforcement
 learning[J]. Advances in Neural Information Processing Systems, 2023, 36: 8634-8652.
+
+## 4.8 本章易错点
+
+在开始学习下一章之前，请特别留意以下三个容易理解错的点。
+
+1. **ReAct 不是万能范式**
+
+   - ❌ 误区："ReAct 是万能范式，所有 Agent 都该用 ReAct"。
+   - ✅ 正解：ReAct 适合"边想边做、依赖外部实时信息"的探索性任务（搜索、客服、API 编排）；对于"步骤明确、可提前拆解"的结构化任务（数学应用题、长报告、代码生成），Plan-and-Solve 更稳；对于"质量优先"的场景，Reflection 更优。
+   - 📌 记住：选范式的决策树——需不需要外部数据？→ 任务能否提前拆解？→ 质量要求有多高？三个问题答案不同，最优范式也不同。
+
+2. **静态计划 ≠ 完美计划**
+
+   - ❌ 误区："Plan-and-Solve 一次性生成计划 = 完美计划"。
+   - ✅ 正解：静态计划在执行中遇到环境变化（机票涨价、接口超时）就会失效；真实业务里需要"动态重规划"——每执行几步重新评估计划是否仍合理，必要时更新步骤列表。
+   - 📌 记住：复杂任务往往是"Plan + ReAct"混合：先用 Plan-and-Solve 制定顶层计划，再对每一步用 ReAct 动态执行，最后 Reflection 审查结果。
+
+3. **Reflection 是"以成本换质量"**
+
+   - ❌ 误区："Reflection 机制 = 自动化高质量输出"。
+   - ✅ 正解：Reflection 的代价是"成本翻倍 + 延迟增大 + 提示词更复杂"——每轮迭代至少多调 2 次 LLM。它适合"质量要求高、实时性不强"的场景（关键代码、技术报告、科研分析），不适合"快速问答"。
+   - 📌 记住：不要对所有任务都套用。一个简单 ReAct 能解决的 FAQ，就别上 Reflection。

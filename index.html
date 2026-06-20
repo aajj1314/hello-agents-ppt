@@ -86,6 +86,37 @@
             <div class="guide-grid" id="guideGrid"></div>
         </section>
 
+        <section class="concept-map reveal" id="conceptMap" aria-label="概念地图">
+            <div class="cm-header">
+                <h2 class="cm-title">概念地图：<span id="cmCount">0</span> 个核心概念一图看懂</h2>
+                <p class="cm-subtitle">节点越大表示关联概念越多，颜色区分章节 · hover 查看定义 · 点击跳到对应章节</p>
+            </div>
+            <div class="cm-canvas" id="cmCanvas"></div>
+            <ul class="cm-legend" id="cmLegend" aria-label="章节颜色图例"></ul>
+        </section>
+
+        <section class="glossary-panel reveal" id="glossary" aria-label="术语速查">
+            <div class="gl-header">
+                <h2 class="gl-title">术语速查：<span id="glCount">0</span> 个 Agent 黑话一次扫盲</h2>
+                <p class="gl-subtitle">点术语看大白话定义</p>
+            </div>
+            <div class="gl-search">
+                <svg class="gl-search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input type="search" id="glSearch" class="gl-search__input"
+                    placeholder="搜索术语或别名（CoT、Agent、记忆…）"
+                    aria-label="搜索术语或别名" autocomplete="off" />
+            </div>
+            <div class="gl-body">
+                <div class="gl-chips" id="glChips" role="list" aria-label="术语列表"></div>
+                <aside class="gl-detail" id="glDetail" aria-live="polite" aria-label="术语详情">
+                    <p class="gl-detail__empty">← 选个术语看看它到底在说什么</p>
+                </aside>
+            </div>
+        </section>
+
         <h2 class="section-heading reveal">
             <span class="section-heading__accent" aria-hidden="true"></span>
             <span>章节导航</span>
