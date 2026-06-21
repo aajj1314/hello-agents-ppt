@@ -16,8 +16,7 @@ const PIPELINE = [
         title: 'Gather',
         subtitle: '收集',
         desc: '从多源汇集候选信息',
-        color: '#3B82F6',
-        colorDark: '#60A5FA',
+        colorKey: 'accentTeal',
         tools: 'MemoryTool · RAGTool · NoteTool · Terminal',
         inject: { system: 200, history: 200, tools: 300, rag: 400 }
     },
@@ -27,8 +26,7 @@ const PIPELINE = [
         title: 'Select',
         subtitle: '筛选',
         desc: '相关性与新近性加权',
-        color: '#8B5CF6',
-        colorDark: '#A78BFA',
+        colorKey: 'primary',
         tools: 'relevance × recency · min_relevance 过滤',
         inject: { history: 200, rag: 300 }
     },
@@ -38,8 +36,7 @@ const PIPELINE = [
         title: 'Structure',
         subtitle: '结构化',
         desc: '按 [Role/Task/Evidence/Context/Output] 分区',
-        color: '#10B981',
-        colorDark: '#34D399',
+        colorKey: 'success',
         tools: '[Role] · [Task] · [Evidence] · [Context] · [Output]',
         inject: { system: 200, history: 200 }
     },
@@ -49,8 +46,7 @@ const PIPELINE = [
         title: 'Compress',
         subtitle: '压缩',
         desc: '超限分区截断 + 摘要',
-        color: '#F59E0B',
-        colorDark: '#FBBF24',
+        colorKey: 'accentAmber',
         tools: '_compress · _truncate_text · 保持结构完整',
         inject: { compress: -1500 }
     }
@@ -238,17 +234,24 @@ class Ch9Context extends CanvasAnimation {
     }
 
     draw() {
+        if (!this.ctx) return;
         const ctx = this.ctx;
         const w = this.width;
         const h = this.height;
-        if (!ctx) return;
+        const t = this.theme();
         const isDark = this.isDarkTheme();
-        const bg = isDark ? '#0F172A' : '#F8FAFC';
-        const panelBg = isDark ? '#1E293B' : '#FFFFFF';
-        const border = isDark ? '#334155' : '#E2E8F0';
-        const textColor = isDark ? '#F1F5F9' : '#0F172A';
-        const subColor = isDark ? '#94A3B8' : '#475569';
-        const grid = isDark ? 'rgba(148,163,184,0.12)' : 'rgba(100,116,139,0.15)';
+        const bg = isDark ? t.surfaceDarkSoft : t.canvas;
+        const panelBg = isDark ? t.surfaceDark : t.canvas;
+        const border = t.hairline;
+        const textColor = t.ink;
+        const subColor = t.muted;
+        const grid = this._withAlpha(t.muted, isDark ? 0.15 : 0.18);
+        // Resolve the pipeline stage color tokens to actual hex
+        for (let i = 0; i < PIPELINE.length; i++) {
+            const base = t[PIPELINE[i].colorKey];
+            PIPELINE[i].color = base;
+            PIPELINE[i].colorDark = this._shade(base, isDark ? 0.15 : 0.25);
+        }
 
         ctx.clearRect(0, 0, w, h);
         ctx.fillStyle = bg;
@@ -273,13 +276,13 @@ class Ch9Context extends CanvasAnimation {
         const rightW = w - rightX - padding;
         const bottomY = h - 36;
 
-        this._drawWindowPanel(ctx, padding, topOffset, leftW, bottomY - topOffset, panelBg, border, textColor, subColor, grid, isDark);
+        this._drawWindowPanel(ctx, padding, topOffset, leftW, bottomY - topOffset, panelBg, border, textColor, subColor, grid, isDark, t);
         this._drawPipeline(ctx, rightX, topOffset, rightW, bottomY - topOffset, panelBg, border, textColor, subColor, isDark);
 
         // ===== Footer status =====
         const stage = PIPELINE[this.step];
         const overCap = this.usedTokens > MAX_TOKENS;
-        const statusColor = overCap ? '#EF4444' : (this.usedTokens > MAX_TOKENS * 0.8 ? '#F59E0B' : stage.color);
+        const statusColor = overCap ? t.error : (this.usedTokens > MAX_TOKENS * 0.8 ? t.warning : stage.color);
         ctx.fillStyle = statusColor;
         ctx.font = 'bold 11px sans-serif';
         ctx.textAlign = 'left';
@@ -292,20 +295,20 @@ class Ch9Context extends CanvasAnimation {
         ctx.font = '10px sans-serif';
         ctx.textAlign = 'right';
         if (overCap) {
-            ctx.fillStyle = '#EF4444';
+            ctx.fillStyle = t.error;
             ctx.fillText('⚠ 上下文超限 — Compress 阶段将兜底压缩', w - padding, h - 14);
         } else {
-            ctx.fillText('💡 鼠标悬停步骤可查看对应工具/方法', w - padding, h - 14);
+            ctx.fillText('提示: 鼠标悬停步骤可查看对应工具/方法', w - padding, h - 14);
         }
 
         // ===== Tooltip =====
         if (this.tooltip) {
-            this._drawTooltip(ctx, this.tooltip, w, h, panelBg, border, textColor, subColor, isDark);
+            this._drawTooltip(ctx, this.tooltip, w, h, panelBg, border, textColor, subColor, isDark, t);
         }
     }
 
     // ----- Left: Context Window as water tank -----
-    _drawWindowPanel(ctx, x, y, w, h, panelBg, border, textColor, subColor, grid, isDark) {
+    _drawWindowPanel(ctx, x, y, w, h, panelBg, border, textColor, subColor, grid, isDark, t) {
         // Panel background
         ctx.fillStyle = panelBg;
         this.roundRect(ctx, x, y, w, h, 12);
@@ -333,10 +336,10 @@ class Ch9Context extends CanvasAnimation {
         const tankR = 14;
 
         // Tank shell
-        ctx.fillStyle = isDark ? '#0B1220' : '#F1F5F9';
+        ctx.fillStyle = isDark ? t.surfaceDark : t.surfaceCard;
         this.roundRect(ctx, tankX, tankY, tankW, tankH, tankR);
         ctx.fill();
-        ctx.strokeStyle = isDark ? '#475569' : '#CBD5E1';
+        ctx.strokeStyle = isDark ? t.muted : t.hairline;
         ctx.lineWidth = 2;
         this.roundRect(ctx, tankX, tankY, tankW, tankH, tankR);
         ctx.stroke();
@@ -367,15 +370,18 @@ class Ch9Context extends CanvasAnimation {
 
             // Gradient water
             const grad = ctx.createLinearGradient(0, waterY, 0, waterY + waterH);
+            const low = t.accentTeal;          // calm / safe state
+            const high = t.warning;            // getting near the cap
+            const danger = t.error;            // overflow
             if (overflow) {
-                grad.addColorStop(0, 'rgba(239,68,68,0.85)');
-                grad.addColorStop(1, 'rgba(220,38,38,0.95)');
+                grad.addColorStop(0, this._withAlpha(danger, 0.85));
+                grad.addColorStop(1, this._shade(danger, -0.15));
             } else if (fillRatio > 0.8) {
-                grad.addColorStop(0, 'rgba(245,158,11,0.75)');
-                grad.addColorStop(1, 'rgba(217,119,6,0.85)');
+                grad.addColorStop(0, this._withAlpha(high, 0.75));
+                grad.addColorStop(1, this._shade(high, -0.15));
             } else {
-                grad.addColorStop(0, 'rgba(99,102,241,0.7)');
-                grad.addColorStop(1, 'rgba(79,70,229,0.85)');
+                grad.addColorStop(0, this._withAlpha(low, 0.70));
+                grad.addColorStop(1, this._shade(low, -0.20));
             }
             ctx.fillStyle = grad;
             ctx.fillRect(tankX + 4, waterY, tankW - 8, waterH + 4);
@@ -392,8 +398,10 @@ class Ch9Context extends CanvasAnimation {
             ctx.lineTo(tankX + tankW - 4, waterY + 4);
             ctx.closePath();
             ctx.fillStyle = overflow
-                ? 'rgba(254,202,202,0.55)'
-                : (fillRatio > 0.8 ? 'rgba(253,224,153,0.55)' : 'rgba(165,180,252,0.55)');
+                ? this._withAlpha(t.surfaceCard, 0.55)
+                : (fillRatio > 0.8
+                    ? this._withAlpha(t.surfaceCard, 0.55)
+                    : this._withAlpha(t.surfaceCard, 0.55));
             ctx.fill();
 
             // Bubbles in water
@@ -403,7 +411,7 @@ class Ch9Context extends CanvasAnimation {
                 if (by < waterY) continue;
                 ctx.beginPath();
                 ctx.arc(bx, by, b.r, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(255,255,255,0.45)';
+                ctx.fillStyle = this._withAlpha(t.onPrimary, 0.45);
                 ctx.fill();
             }
             ctx.restore();
@@ -417,25 +425,25 @@ class Ch9Context extends CanvasAnimation {
         const pct = (this.usedTokens / MAX_TOKENS) * 100;
         ctx.fillText(pct.toFixed(0) + '%', x + w / 2, tankY + tankH / 2 - 4);
         ctx.font = '10px sans-serif';
-        ctx.fillStyle = overflow ? '#EF4444' : subColor;
+        ctx.fillStyle = overflow ? t.error : subColor;
         ctx.fillText(Math.round(this.usedTokens).toLocaleString() + ' / ' + MAX_TOKENS + ' tok', x + w / 2, tankY + tankH / 2 + 14);
 
         if (overflow) {
-            ctx.fillStyle = '#EF4444';
+            ctx.fillStyle = t.error;
             ctx.font = 'bold 10px sans-serif';
             ctx.fillText('⚠ 上下文腐蚀风险', x + w / 2, tankY + tankH / 2 + 30);
         }
 
         // Composition legend (4 categories)
         const legendY = tankY + tankH + 16;
-        const cats = this._composition();
+        const cats = this._composition(t);
         const totalShown = cats.reduce((s, c) => s + c.value, 0) || 1;
         const barX = x + 14;
         const barW = w - 28;
         const barH = 14;
         const segGap = 1;
         let runX = barX;
-        ctx.fillStyle = isDark ? '#0B1220' : '#F1F5F9';
+        ctx.fillStyle = isDark ? t.surfaceDark : t.surfaceCard;
         this.roundRect(ctx, barX, legendY, barW, barH, 4);
         ctx.fill();
         for (const c of cats) {
@@ -459,16 +467,17 @@ class Ch9Context extends CanvasAnimation {
         }
     }
 
-    _composition() {
-        // Derive composition from current step (mock realistic numbers)
+    _composition(t) {
+        // Derive composition from current step (mock realistic numbers).
+        // Each category maps to one of the pipeline-stage accents.
         const stepMul = [0.25, 0.45, 0.65, 0.5][this.step] || 0.4;
         const overflow = this.usedTokens > MAX_TOKENS;
         return [
-            { label: 'System', value: Math.round(220 * (overflow ? 0.9 : 1)), color: '#3B82F6' },
-            { label: 'History', value: Math.round(900 * stepMul * (overflow ? 0.7 : 1)), color: '#10B981' },
-            { label: 'Tools', value: Math.round(600 * (0.4 + stepMul * 0.5)), color: '#F59E0B' },
-            { label: 'RAG', value: Math.round(1100 * (0.3 + stepMul * 0.6) * (overflow ? 0.55 : 1)), color: '#8B5CF6' }
-        ];
+            { label: 'System', value: Math.round(220 * (overflow ? 0.9 : 1)), colorKey: 'accentTeal' },
+            { label: 'History', value: Math.round(900 * stepMul * (overflow ? 0.7 : 1)), colorKey: 'primary' },
+            { label: 'Tools', value: Math.round(600 * (0.4 + stepMul * 0.5)), colorKey: 'accentAmber' },
+            { label: 'RAG', value: Math.round(1100 * (0.3 + stepMul * 0.6) * (overflow ? 0.55 : 1)), colorKey: 'success' }
+        ].map((c) => { c.color = t[c.colorKey]; return c; });
     }
 
     // ----- Right: GSSC Pipeline -----
@@ -513,14 +522,14 @@ class Ch9Context extends CanvasAnimation {
             const ay = positions[i].y + positions[i].h / 2;
             const bx = positions[i + 1].x;
             const by = positions[i + 1].y + positions[i + 1].h / 2;
-            this._drawConnector(ctx, ax, ay, bx, by, isDark, i === this.step || i + 1 === this.step);
+            this._drawConnector(ctx, ax, ay, bx, by, isDark, i === this.step || i + 1 === this.step, t);
         }
 
         // Draw step cards
         for (let i = 0; i < stepsCount; i++) {
             const active = i === this.step;
             const hover = i === this.hoverIndex;
-            this._drawStepCard(ctx, positions[i], PIPELINE[i], active, hover, textColor, subColor, isDark);
+            this._drawStepCard(ctx, positions[i], PIPELINE[i], active, hover, textColor, subColor, isDark, t);
             this._stepRects.push(positions[i]);
         }
 
@@ -559,8 +568,8 @@ class Ch9Context extends CanvasAnimation {
         wrapLines.forEach((ln, i) => ctx.fillText(ln, x + 14, descY + 16 + i * 13));
     }
 
-    _drawStepCard(ctx, r, stage, active, hover, textColor, subColor, isDark) {
-        const fill = isDark ? '#0B1220' : '#F8FAFC';
+    _drawStepCard(ctx, r, stage, active, hover, textColor, subColor, isDark, t) {
+        const fill = isDark ? t.surfaceDark : t.canvas;
         const stroke = isDark ? stage.colorDark : stage.color;
         const pulse = 0.5 + 0.5 * Math.sin(this.pulse + active ? 0 : 1);
 
@@ -572,7 +581,7 @@ class Ch9Context extends CanvasAnimation {
 
         // Border (highlighted when active/hover)
         const borderW = active || hover ? 2.5 : 1.2;
-        ctx.strokeStyle = active || hover ? stroke : (isDark ? '#334155' : '#E2E8F0');
+        ctx.strokeStyle = active || hover ? stroke : (isDark ? t.muted : t.hairline);
         ctx.lineWidth = borderW;
         this.roundRect(ctx, r.x, r.y, r.w, r.h, 10);
         ctx.stroke();
@@ -600,7 +609,7 @@ class Ch9Context extends CanvasAnimation {
         ctx.arc(bx, by, badgeR, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = t.onDark;
         ctx.font = 'bold ' + Math.round(badgeR * 1.1) + 'px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -638,7 +647,7 @@ class Ch9Context extends CanvasAnimation {
         ctx.restore();
     }
 
-    _drawConnector(ctx, ax, ay, bx, by, isDark, highlight) {
+    _drawConnector(ctx, ax, ay, bx, by, isDark, highlight, t) {
         const margin = 8;
         const sx = ax + margin;
         const sy = ay;
@@ -646,7 +655,7 @@ class Ch9Context extends CanvasAnimation {
         const ey = by;
 
         // Base line
-        ctx.strokeStyle = isDark ? '#475569' : '#CBD5E1';
+        ctx.strokeStyle = isDark ? t.muted : t.hairline;
         ctx.lineWidth = highlight ? 2.5 : 1.5;
         ctx.beginPath();
         ctx.moveTo(sx, sy);
@@ -654,7 +663,7 @@ class Ch9Context extends CanvasAnimation {
         ctx.stroke();
 
         // Arrowhead
-        ctx.fillStyle = highlight ? (isDark ? '#94A3B8' : '#64748B') : (isDark ? '#475569' : '#CBD5E1');
+        ctx.fillStyle = highlight ? (isDark ? t.mutedSoft : t.body) : (isDark ? t.muted : t.hairline);
         ctx.beginPath();
         ctx.moveTo(ex, ey);
         ctx.lineTo(ex - 7, ey - 4);
@@ -708,6 +717,27 @@ class Ch9Context extends CanvasAnimation {
             yy += 12;
         }
         ctx.restore();
+    }
+
+    _withAlpha(hex, alpha) {
+        if (typeof hex !== 'string' || hex[0] !== '#' || hex.length < 7) return hex;
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r},${g},${b},${alpha})`;
+    }
+
+    _shade(hex, amount) {
+        if (typeof hex !== 'string' || hex[0] !== '#' || hex.length < 7) return hex;
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        const target = amount < 0 ? 0 : 255;
+        const p = Math.abs(amount);
+        const nr = Math.round((target - r) * p + r);
+        const ng = Math.round((target - g) * p + g);
+        const nb = Math.round((target - b) * p + b);
+        return '#' + [nr, ng, nb].map(v => v.toString(16).padStart(2, '0')).join('');
     }
 }
 
