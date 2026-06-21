@@ -48,11 +48,13 @@ class Ch13Travel extends CanvasAnimation {
         this.simpleAgent = {
             name: 'SimpleAgent',
             desc: '一个 Agent 包揽全部',
-            color: '#EF4444',
+            colorKey: 'error',
             tasks: ['POI 搜索', '天气查询', '酒店搜索', '路线规划', '行程整合']
         };
 
         // -------- multi agents (right side, 5) --------
+        // 4 worker agents use ink / primary / accentTeal / muted per spec.
+        // Planner is the integrator — accentAmber (a warm highlight tone).
         this.agents = [
             {
                 key: 'attraction',
@@ -60,7 +62,7 @@ class Ch13Travel extends CanvasAnimation {
                 role: 'AttractionSearchAgent',
                 tools: ['amap_maps_text_search'],
                 desc: '按用户偏好(历史/自然/美食)搜索 POI',
-                color: '#6366F1'
+                colorKey: 'ink'
             },
             {
                 key: 'weather',
@@ -68,7 +70,7 @@ class Ch13Travel extends CanvasAnimation {
                 role: 'WeatherQueryAgent',
                 tools: ['amap_maps_weather'],
                 desc: '查询未来几天的天气预报',
-                color: '#0EA5E9'
+                colorKey: 'primary'
             },
             {
                 key: 'hotel',
@@ -76,7 +78,7 @@ class Ch13Travel extends CanvasAnimation {
                 role: 'HotelAgent',
                 tools: ['amap_maps_text_search'],
                 desc: '按价位 / 区域推荐住宿',
-                color: '#10B981'
+                colorKey: 'accentTeal'
             },
             {
                 key: 'transport',
@@ -84,7 +86,7 @@ class Ch13Travel extends CanvasAnimation {
                 role: 'TransportAgent',
                 tools: ['amap_maps_direction'],
                 desc: '规划两点之间的交通路线',
-                color: '#F59E0B'
+                colorKey: 'muted'
             },
             {
                 key: 'planner',
@@ -92,19 +94,20 @@ class Ch13Travel extends CanvasAnimation {
                 role: 'PlannerAgent',
                 tools: ['(无外部工具)'],
                 desc: '把前 4 个 Agent 的结果整合为最终 JSON 行程',
-                color: '#EC4899'
+                colorKey: 'accentAmber'
             }
         ];
 
         // -------- pipeline sub-tasks (bottom) --------
         // 5 cards. index 0..3 are PARALLEL upstream tasks, index 4 is the
         // planner / integrator that depends on all 4.
+        // Colors mirror the agent colorKeys so the cards line up visually.
         this.tasks = [
-            { icon: '🗺', title: '收集景点', agent: 'attraction', cost: 12, color: '#6366F1' },
-            { icon: '🌤', title: '查天气',   agent: 'weather',    cost:  8, color: '#0EA5E9' },
-            { icon: '🏨', title: '订酒店',   agent: 'hotel',      cost: 10, color: '#10B981' },
-            { icon: '🚇', title: '安排交通', agent: 'transport',  cost:  9, color: '#F59E0B' },
-            { icon: '📋', title: '输出整合方案', agent: 'planner', cost: 12, color: '#EC4899' }
+            { icon: '🗺', title: '收集景点', agent: 'attraction', cost: 12, colorKey: 'ink' },
+            { icon: '🌤', title: '查天气',   agent: 'weather',    cost:  8, colorKey: 'primary' },
+            { icon: '🏨', title: '订酒店',   agent: 'hotel',      cost: 10, colorKey: 'accentTeal' },
+            { icon: '🚇', title: '安排交通', agent: 'transport',  cost:  9, colorKey: 'muted' },
+            { icon: '📋', title: '输出整合方案', agent: 'planner', cost: 12, colorKey: 'accentAmber' }
         ];
 
         // cache hit-rects for the 5 agent circles (right side)
@@ -331,12 +334,23 @@ class Ch13Travel extends CanvasAnimation {
     draw() {
         const ctx = this.ctx;
         const w = this.width, h = this.height;
+        const t = this.theme();
         const dark = this.isDarkTheme();
-        const bg = dark ? '#0F172A' : '#F8FAFC';
-        const textColor = dark ? '#F1F5F9' : '#0F172A';
-        const subColor  = dark ? '#94A3B8' : '#475569';
-        const borderCol = dark ? 'rgba(148,163,184,0.25)' : 'rgba(100,116,139,0.25)';
-        const panelBg   = dark ? 'rgba(30,41,59,0.6)' : 'rgba(241,245,249,0.85)';
+        const bg = dark ? t.surfaceDarkSoft : t.canvas;
+        const textColor = t.ink;
+        const subColor  = t.muted;
+        const borderCol = this._withAlpha(t.body, dark ? 0.25 : 0.25);
+        const panelBg   = dark
+            ? this._withAlpha(t.surfaceDark, 0.6)
+            : this._withAlpha(t.surfaceCard, 0.85);
+        // Resolve agent + task colors from theme tokens
+        this.simpleAgent.color = t[this.simpleAgent.colorKey];
+        for (let i = 0; i < this.agents.length; i++) {
+            this.agents[i].color = t[this.agents[i].colorKey];
+        }
+        for (let i = 0; i < this.tasks.length; i++) {
+            this.tasks[i].color = t[this.tasks[i].colorKey];
+        }
 
         ctx.clearRect(0, 0, w, h);
         ctx.fillStyle = bg;
@@ -351,32 +365,32 @@ class Ch13Travel extends CanvasAnimation {
 
         // ---- Top: side-by-side comparison ----
         const top = this._topRegion();
-        this._drawTopCompare(ctx, top, textColor, subColor, borderCol, panelBg, dark);
+        this._drawTopCompare(ctx, top, textColor, subColor, borderCol, panelBg, dark, t);
 
         // ---- Bottom: pipeline ----
         const bot = this._bottomRegion();
-        this._drawPipeline(ctx, bot, textColor, subColor, borderCol, panelBg, dark);
+        this._drawPipeline(ctx, bot, textColor, subColor, borderCol, panelBg, dark, t);
 
         // ---- Footer / status bar ----
         this._drawFooter(ctx, w, h, subColor, textColor, dark);
 
         // ---- Tooltip on top ----
-        if (this._hoveredAgent >= 0) this._drawTooltip(ctx, w, h, textColor, subColor, dark);
+        if (this._hoveredAgent >= 0) this._drawTooltip(ctx, w, h, textColor, subColor, dark, t);
     }
 
     // ---------- top: single vs multi agent ----------
-    _drawTopCompare(ctx, r, textColor, subColor, borderCol, panelBg, dark) {
+    _drawTopCompare(ctx, r, textColor, subColor, borderCol, panelBg, dark, t) {
         // Two side-by-side panels
         const gap = 12;
         const halfW = (r.w - gap) / 2;
         const left  = { x: r.x,          y: r.y, w: halfW,        h: r.h };
         const right = { x: r.x + halfW + gap, y: r.y, w: halfW,   h: r.h };
 
-        this._drawSingleAgentPanel(ctx, left, textColor, subColor, borderCol, panelBg, dark);
-        this._drawMultiAgentPanel (ctx, right, textColor, subColor, borderCol, panelBg, dark);
+        this._drawSingleAgentPanel(ctx, left, textColor, subColor, borderCol, panelBg, dark, t);
+        this._drawMultiAgentPanel (ctx, right, textColor, subColor, borderCol, panelBg, dark, t);
     }
 
-    _drawSingleAgentPanel(ctx, p, textColor, subColor, borderCol, panelBg, dark) {
+    _drawSingleAgentPanel(ctx, p, textColor, subColor, borderCol, panelBg, dark, t) {
         // panel background
         ctx.fillStyle = panelBg;
         this.roundRect(ctx, p.x, p.y, p.w, p.h, 10);
@@ -404,26 +418,25 @@ class Ch13Travel extends CanvasAnimation {
             const haloR = baseR + 12 + Math.sin(performance.now() * 0.006) * 4 * stress;
             ctx.beginPath();
             ctx.arc(cx, cy, haloR, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(239,68,68,${0.18 * stress})`;
+            ctx.fillStyle = this._withAlpha(t.error, 0.18 * stress);
             ctx.fill();
         }
 
-        // main circle — color shifts from amber → red as stress rises
-        const r = 239, g = Math.round(68 + (187 - 68) * (1 - stress)), b = 68;
-        const bodyColor = stress > 0.4 ? `rgb(${r},${g},${b})` : this.simpleAgent.color;
+        // main circle — color shifts from error-light → error as stress rises
+        const bodyColor = this.simpleAgent.color;
         const grad = ctx.createRadialGradient(cx - 6, cy - 6, 2, cx, cy, baseR);
-        grad.addColorStop(0, stress > 0.4 ? '#FCA5A5' : '#FECACA');
+        grad.addColorStop(0, stress > 0.4 ? this._lighten(t.error, 0.6) : this._lighten(t.error, 0.75));
         grad.addColorStop(1, bodyColor);
         ctx.fillStyle = grad;
         ctx.beginPath();
         ctx.arc(cx, cy, baseR, 0, Math.PI * 2);
         ctx.fill();
-        ctx.strokeStyle = '#FFFFFF';
+        ctx.strokeStyle = t.onDark;
         ctx.lineWidth = 2;
         ctx.stroke();
 
         // label inside
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = t.onDark;
         ctx.font = 'bold 12px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -440,10 +453,10 @@ class Ch13Travel extends CanvasAnimation {
             const a = (i / tasks.length) * Math.PI * 2 - Math.PI / 2;
             const lx = cx + labelR * Math.cos(a);
             const ly = cy + labelR * Math.sin(a);
-            ctx.fillStyle = stress > 0.4 ? '#EF4444' : subColor;
+            ctx.fillStyle = stress > 0.4 ? t.error : subColor;
             ctx.fillText(tasks[i], lx, ly);
             // small connector line
-            ctx.strokeStyle = `rgba(239,68,68,${0.25 + stress * 0.5})`;
+            ctx.strokeStyle = this._withAlpha(t.error, 0.25 + stress * 0.5);
             ctx.lineWidth = 0.8;
             ctx.beginPath();
             ctx.moveTo(cx + baseR * Math.cos(a), cy + baseR * Math.sin(a));
@@ -453,7 +466,7 @@ class Ch13Travel extends CanvasAnimation {
 
         // warning text — only when this agent is "stressed"
         if (stress > 0.05) {
-            ctx.fillStyle = '#EF4444';
+            ctx.fillStyle = t.error;
             ctx.font = 'bold 10px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'top';
@@ -463,7 +476,7 @@ class Ch13Travel extends CanvasAnimation {
         }
     }
 
-    _drawMultiAgentPanel(ctx, p, textColor, subColor, borderCol, panelBg, dark) {
+    _drawMultiAgentPanel(ctx, p, textColor, subColor, borderCol, panelBg, dark, t) {
         ctx.fillStyle = panelBg;
         this.roundRect(ctx, p.x, p.y, p.w, p.h, 10);
         ctx.fill();
@@ -494,14 +507,14 @@ class Ch13Travel extends CanvasAnimation {
             positions.push({ x: cx + radius * Math.cos(a), y: cy + radius * Math.sin(a) });
         }
 
-        // connecting ring (the "team" line)
+        // connecting ring (the "team" line) — uses t.body (slate)
         ctx.beginPath();
         for (let i = 0; i <= this.agents.length; i++) {
             const pt = positions[i % this.agents.length];
             if (i === 0) ctx.moveTo(pt.x, pt.y); else ctx.lineTo(pt.x, pt.y);
         }
         ctx.closePath();
-        ctx.strokeStyle = dark ? 'rgba(148,163,184,0.30)' : 'rgba(100,116,139,0.30)';
+        ctx.strokeStyle = this._withAlpha(t.body, 0.30);
         ctx.lineWidth = 1;
         ctx.setLineDash([3, 4]);
         ctx.stroke();
@@ -520,24 +533,24 @@ class Ch13Travel extends CanvasAnimation {
             if (isHover || isActive) {
                 ctx.beginPath();
                 ctx.arc(pt.x, pt.y, agentR + 6, 0, Math.PI * 2);
-                ctx.fillStyle = ag.color + (isActive ? '55' : '33');
+                ctx.fillStyle = this._withAlpha(ag.color, isActive ? 0.55 : 0.33);
                 ctx.fill();
             }
 
             const grad = ctx.createRadialGradient(pt.x - 5, pt.y - 5, 2, pt.x, pt.y, agentR);
-            grad.addColorStop(0, '#FFFFFF');
+            grad.addColorStop(0, t.onDark);
             grad.addColorStop(0.5, ag.color);
             grad.addColorStop(1, this._darken(ag.color, 0.3));
             ctx.fillStyle = grad;
             ctx.beginPath();
             ctx.arc(pt.x, pt.y, agentR, 0, Math.PI * 2);
             ctx.fill();
-            ctx.strokeStyle = '#FFFFFF';
+            ctx.strokeStyle = t.onDark;
             ctx.lineWidth = 1.5;
             ctx.stroke();
 
             // name
-            ctx.fillStyle = '#FFFFFF';
+            ctx.fillStyle = t.onDark;
             ctx.font = 'bold 9px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -547,16 +560,16 @@ class Ch13Travel extends CanvasAnimation {
         // center "User" hub
         const hubR = 14;
         const hubGrad = ctx.createRadialGradient(cx - 3, cy - 3, 1, cx, cy, hubR);
-        hubGrad.addColorStop(0, '#F1F5F9');
-        hubGrad.addColorStop(1, dark ? '#475569' : '#94A3B8');
+        hubGrad.addColorStop(0, t.hairline);
+        hubGrad.addColorStop(1, t.body);
         ctx.fillStyle = hubGrad;
         ctx.beginPath();
         ctx.arc(cx, cy, hubR, 0, Math.PI * 2);
         ctx.fill();
-        ctx.strokeStyle = '#FFFFFF';
+        ctx.strokeStyle = t.onDark;
         ctx.lineWidth = 1.5;
         ctx.stroke();
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = t.onDark;
         ctx.font = 'bold 9px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -564,7 +577,7 @@ class Ch13Travel extends CanvasAnimation {
     }
 
     // ---------- bottom: pipeline ----------
-    _drawPipeline(ctx, r, textColor, subColor, borderCol, panelBg, dark) {
+    _drawPipeline(ctx, r, textColor, subColor, borderCol, panelBg, dark, t) {
         // panel background
         ctx.fillStyle = panelBg;
         this.roundRect(ctx, r.x, r.y, r.w, r.h, 10);
@@ -582,7 +595,7 @@ class Ch13Travel extends CanvasAnimation {
         ctx.fillText('3 天上海旅行  ·  多 Agent 规划流水线', r.x + 10, r.y + 6);
 
         // right-side parallel callout
-        ctx.fillStyle = '#10B981';
+        ctx.fillStyle = t.success;
         ctx.font = 'bold 9px sans-serif';
         ctx.textAlign = 'right';
         ctx.fillText('↗  并行  ·  节省 ≈ 60% 时间', r.x + r.w - 10, r.y + 8);
@@ -590,13 +603,13 @@ class Ch13Travel extends CanvasAnimation {
 
         // 5 cards
         for (let i = 0; i < this.tasks.length; i++) {
-            this._drawPipelineCard(ctx, i, textColor, subColor, borderCol, dark);
+            this._drawPipelineCard(ctx, i, textColor, subColor, borderCol, dark, t);
         }
 
         // PARALLEL arrows: 4 upstream tasks (0..3) → planner card (4).
         // Drawn as flat multiple arrows (a "highway" of arrows) to hammer
         // home the parallel concept.
-        this._drawParallelArrows(ctx, r, dark);
+        this._drawParallelArrows(ctx, r, dark, t);
 
         // standard sequential arrows between consecutive cards
         for (let i = 0; i < this.tasks.length - 1; i++) {
@@ -607,30 +620,34 @@ class Ch13Travel extends CanvasAnimation {
             this._drawSeqArrow(ctx,
                 a.x + a.w, a.y + a.h / 2,
                 b.x,        b.y + b.h / 2,
-                dark, false);
+                dark, false, t);
         }
 
         // flowing particles (one of the key visualisations)
-        this._drawParticles(ctx, dark);
+        this._drawParticles(ctx, dark, t);
 
         // time-comparison strip at the bottom of the panel
-        this._drawTimeCompare(ctx, r, textColor, subColor, borderCol, dark);
+        this._drawTimeCompare(ctx, r, textColor, subColor, borderCol, dark, t);
     }
 
-    _drawPipelineCard(ctx, i, textColor, subColor, borderCol, dark) {
+    _drawPipelineCard(ctx, i, textColor, subColor, borderCol, dark, t) {
         const task = this.tasks[i];
         const rect = this._cardRect(i);
         const isActive = (this._phase === 'pipeline' && i === Math.min(this._step - 2, 3)) ||
                          (this._phase === 'done');
 
-        // card background
+        // card background — t.surfaceCard (light) or dark-equivalent (active)
         const grad = ctx.createLinearGradient(rect.x, rect.y, rect.x, rect.y + rect.h);
         if (dark) {
-            grad.addColorStop(0, isActive ? 'rgba(51,65,85,0.95)' : 'rgba(51,65,85,0.55)');
-            grad.addColorStop(1, isActive ? 'rgba(30,41,59,0.95)' : 'rgba(30,41,59,0.55)');
+            grad.addColorStop(0, isActive
+                ? this._withAlpha(t.surfaceDark, 0.95)
+                : this._withAlpha(t.surfaceDark, 0.55));
+            grad.addColorStop(1, isActive
+                ? this._withAlpha(t.surfaceDark, 0.95)
+                : this._withAlpha(t.surfaceDark, 0.55));
         } else {
-            grad.addColorStop(0, isActive ? 'rgba(255,255,255,1.0)' : 'rgba(255,255,255,0.65)');
-            grad.addColorStop(1, isActive ? 'rgba(241,245,249,1.0)' : 'rgba(241,245,249,0.65)');
+            grad.addColorStop(0, isActive ? t.surfaceCard : this._withAlpha(t.surfaceCard, 0.65));
+            grad.addColorStop(1, isActive ? t.surfaceCard : this._withAlpha(t.surfaceCard, 0.65));
         }
         ctx.fillStyle = grad;
         this.roundRect(ctx, rect.x, rect.y, rect.w, rect.h, 8);
@@ -673,10 +690,12 @@ class Ch13Travel extends CanvasAnimation {
         const chipW = 50, chipH = 16;
         const chipX = rect.x + (rect.w - chipW) / 2;
         const chipY = rect.y + rect.h - chipH - 8;
-        ctx.fillStyle = dark ? 'rgba(15,23,42,0.85)' : 'rgba(226,232,240,0.95)';
+        ctx.fillStyle = dark
+            ? this._withAlpha(t.surfaceDark, 0.85)
+            : this._withAlpha(t.hairline, 0.95);
         this.roundRect(ctx, chipX, chipY, chipW, chipH, 8);
         ctx.fill();
-        ctx.strokeStyle = task.color + '88';
+        ctx.strokeStyle = this._withAlpha(task.color, 0.55);
         ctx.lineWidth = 1;
         this.roundRect(ctx, chipX, chipY, chipW, chipH, 8);
         ctx.stroke();
@@ -700,8 +719,8 @@ class Ch13Travel extends CanvasAnimation {
         return map[key] || key;
     }
 
-    _drawSeqArrow(ctx, x1, y1, x2, y2, dark, active) {
-        const color = active ? '#10B981' : (dark ? '#64748B' : '#94A3B8');
+    _drawSeqArrow(ctx, x1, y1, x2, y2, dark, active, t) {
+        const color = active ? t.success : (dark ? t.mutedSoft : t.body);
         const midX = (x1 + x2) / 2;
         ctx.save();
         ctx.strokeStyle = color;
@@ -721,7 +740,7 @@ class Ch13Travel extends CanvasAnimation {
         ctx.restore();
     }
 
-    _drawParallelArrows(ctx, r, dark) {
+    _drawParallelArrows(ctx, r, dark, t) {
         // 4 upstream task cards (indices 0..3) all fan into card index 4.
         // We render a bundle of 3 short arrows per upstream card for a clear
         // "parallel highway" look.
@@ -741,8 +760,9 @@ class Ch13Travel extends CanvasAnimation {
                 const yEnd = targetY + yOff;
 
                 const active = (this._phase === 'pipeline' && i === Math.min(this._step - 2, 3));
-                const color = active ? this.tasks[i].color
-                                     : (dark ? 'rgba(99,102,241,0.55)' : 'rgba(99,102,241,0.6)');
+                const color = active
+                    ? this.tasks[i].color
+                    : this._withAlpha(t.primary, dark ? 0.55 : 0.6);
 
                 ctx.save();
                 ctx.strokeStyle = color;
@@ -769,7 +789,7 @@ class Ch13Travel extends CanvasAnimation {
 
         // "PARALLEL" label above the bundle
         ctx.save();
-        ctx.fillStyle = dark ? '#A5B4FC' : '#4F46E5';
+        ctx.fillStyle = dark ? this._lighten(t.primary, 0.35) : t.primary;
         ctx.font = 'bold 9px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'bottom';
@@ -779,7 +799,7 @@ class Ch13Travel extends CanvasAnimation {
         ctx.restore();
     }
 
-    _drawParticles(ctx, dark) {
+    _drawParticles(ctx, dark, t) {
         // Compute source/target anchors for cards 0..4 → 5 (a small "完成" badge
         // sits to the right of card 4). If 5 is off-screen we just use card 4
         // as a self-loop indicator.
@@ -820,14 +840,14 @@ class Ch13Travel extends CanvasAnimation {
             ctx.beginPath();
             ctx.arc(x, y, p.width || 2.5, 0, Math.PI * 2);
             ctx.fill();
-            ctx.strokeStyle = '#FFFFFF';
+            ctx.strokeStyle = t.onDark;
             ctx.lineWidth = 0.8;
             ctx.stroke();
             ctx.restore();
         });
     }
 
-    _drawTimeCompare(ctx, r, textColor, subColor, borderCol, dark) {
+    _drawTimeCompare(ctx, r, textColor, subColor, borderCol, dark, t) {
         // Time-comparison strip: serial 4 tasks add up; parallel takes the
         // max. Computed from this.tasks[0..3] .cost.
         const serial = this.tasks.slice(0, 4).reduce((a, b) => a + b.cost, 0);
@@ -845,28 +865,28 @@ class Ch13Travel extends CanvasAnimation {
         ctx.textAlign = 'left';
         ctx.textBaseline = 'bottom';
         ctx.fillText('串行 (单 Agent)', stripX, stripY - 1);
-        // serial bar — full width
-        ctx.fillStyle = '#EF4444';
+        // serial bar — full width, t.error
+        ctx.fillStyle = t.error;
         this.roundRect(ctx, stripX, stripY, stripW, stripH * 0.4, 2);
         ctx.fill();
 
-        // parallel bar — proportional
+        // parallel bar — proportional, t.success
         const paraW = Math.max(20, (parallel / serial) * stripW);
-        ctx.fillStyle = '#10B981';
+        ctx.fillStyle = t.success;
         this.roundRect(ctx, stripX, stripY + stripH * 0.55, paraW, stripH * 0.4, 2);
         ctx.fill();
 
         // labels
-        ctx.fillStyle = dark ? '#A7F3D0' : '#065F46';
+        ctx.fillStyle = dark ? this._lighten(t.success, 0.45) : this._darken(t.success, 0.15);
         ctx.font = 'bold 9px sans-serif';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'top';
         ctx.fillText('并行 (多 Agent)', stripX, stripY - 0);
         // wait — we already drew serial label above; keep it consistent
         ctx.textAlign = 'right';
-        ctx.fillStyle = dark ? '#FCA5A5' : '#991B1B';
+        ctx.fillStyle = dark ? this._lighten(t.error, 0.45) : this._darken(t.error, 0.15);
         ctx.fillText('≈ ' + serial + 's', stripX + stripW, stripY - 1);
-        ctx.fillStyle = dark ? '#A7F3D0' : '#065F46';
+        ctx.fillStyle = dark ? this._lighten(t.success, 0.45) : this._darken(t.success, 0.15);
         ctx.fillText('≈ ' + parallel + 's  ·  节省 ' + pct + '%', stripX + stripW, stripY + stripH * 0.55);
         ctx.textAlign = 'left';
     }
@@ -895,12 +915,12 @@ class Ch13Travel extends CanvasAnimation {
     }
 
     // ---------- tooltip ----------
-    _drawTooltip(ctx, w, h, textColor, subColor, dark) {
+    _drawTooltip(ctx, w, h, textColor, subColor, dark, t) {
         const ag = this.agents[this._hoveredAgent];
         const lines = [
             { t: ag.name + '  ·  ' + ag.role, bold: true, color: ag.color },
             { t: ag.desc, color: textColor },
-            { t: '工具: ' + ag.tools.join(', '), color: dark ? '#A5F3FC' : '#0E7490' }
+            { t: '工具: ' + ag.tools.join(', '), color: dark ? this._lighten(t.accentTeal, 0.5) : t.accentTeal }
         ];
 
         ctx.font = '11px sans-serif';
@@ -921,7 +941,9 @@ class Ch13Travel extends CanvasAnimation {
         if (tx < 4) tx = 4;
         if (ty < 4) ty = 4;
 
-        ctx.fillStyle = dark ? 'rgba(15,23,42,0.96)' : 'rgba(255,255,255,0.98)';
+        ctx.fillStyle = dark
+            ? this._withAlpha(t.surfaceDark, 0.96)
+            : this._withAlpha(t.onDark, 0.98);
         this.roundRect(ctx, tx, ty, boxW, boxH, 6);
         ctx.fill();
         ctx.strokeStyle = ag.color;
@@ -939,6 +961,13 @@ class Ch13Travel extends CanvasAnimation {
     }
 
     // ---------- color helpers ----------
+    _withAlpha(hex, alpha) {
+        if (typeof hex !== 'string' || hex[0] !== '#' || hex.length < 7) return hex;
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r},${g},${b},${alpha})`;
+    }
     _hexToRgb(hex) {
         if (typeof hex !== 'string' || hex[0] !== '#') return { r: 99, g: 102, b: 241 };
         const m = hex.replace('#', '');
