@@ -26,10 +26,10 @@ class Ch10Protocol extends CanvasAnimation {
                 key: 'MCP',
                 title: 'MCP — Model Context Protocol',
                 desc: '请求-响应式：Agent 通过标准化接口调用 Tool（Anthropic 提出，USB-C 比喻）',
-                accent: '#6366F1',
+                accentKey: 'primary',
                 actors: [
-                    { name: 'Agent',       color: '#6366F1' },
-                    { name: 'Tool Server', color: '#10B981' }
+                    { name: 'Agent',       colorKey: 'primary' },
+                    { name: 'Tool Server', colorKey: 'success' }
                 ],
                 messages: [
                     { from: 0, to: 1, text: '1. list_tools()',                 kind: 'sync' },
@@ -42,10 +42,10 @@ class Ch10Protocol extends CanvasAnimation {
                 key: 'A2A',
                 title: 'A2A — Agent-to-Agent Protocol',
                 desc: '任务协作式：两个 Agent 通过 Task / Artifact 双向对话（Google 提出，微信/钉钉比喻）',
-                accent: '#3B82F6',
+                accentKey: 'primary',
                 actors: [
-                    { name: 'Coordinator',  color: '#6366F1' },
-                    { name: 'Worker Agent', color: '#3B82F6' }
+                    { name: 'Coordinator',  colorKey: 'primary' },
+                    { name: 'Worker Agent', colorKey: 'primary' }
                 ],
                 messages: [
                     { from: 0, to: 1, text: '1. GET Agent Card',             kind: 'sync' },
@@ -59,11 +59,11 @@ class Ch10Protocol extends CanvasAnimation {
                 key: 'ANP',
                 title: 'ANP — Agent Network Protocol',
                 desc: '发现-路由式：3+ Agent + Directory 中心，动态发现最佳节点（去中心化服务发现）',
-                accent: '#8B5CF6',
+                accentKey: 'primary',
                 actors: [
-                    { name: 'Task Agent',     color: '#6366F1' },
-                    { name: 'Directory',      color: '#8B5CF6' },
-                    { name: 'Service Agent',  color: '#10B981' }
+                    { name: 'Task Agent',     colorKey: 'primary' },
+                    { name: 'Directory',      colorKey: 'primary' },
+                    { name: 'Service Agent',  colorKey: 'success' }
                 ],
                 messages: [
                     { from: 0, to: 1, text: '1. discover(type, caps)',     kind: 'sync' },
@@ -201,11 +201,21 @@ class Ch10Protocol extends CanvasAnimation {
         const ctx = this.ctx;
         const w = this.width;
         const h = this.height;
+        const t = this.theme();
         const isDark = this.isDarkTheme();
-        const bg = isDark ? '#0F172A' : '#F8FAFC';
-        const textColor = isDark ? '#F1F5F9' : '#0F172A';
-        const subTextColor = isDark ? '#94A3B8' : '#475569';
-        const accent = this.protocols[this.activeTab].accent;
+        const bg = isDark ? t.surfaceDarkSoft : t.canvas;
+        const textColor = t.ink;
+        const subTextColor = t.muted;
+        // Resolve protocol accent + actor colors from theme tokens
+        const activeProto = this.protocols[this.activeTab];
+        const accent = t[activeProto.accentKey];
+        for (let pi = 0; pi < this.protocols.length; pi++) {
+            const p = this.protocols[pi];
+            p.accent = t[p.accentKey];
+            for (let ai = 0; ai < p.actors.length; ai++) {
+                p.actors[ai].color = t[p.actors[ai].colorKey];
+            }
+        }
 
         ctx.clearRect(0, 0, w, h);
         ctx.fillStyle = bg;
@@ -233,22 +243,22 @@ class Ch10Protocol extends CanvasAnimation {
             // tab background
             ctx.fillStyle = isActive
                 ? accent
-                : (isDark ? '#1E293B' : '#E2E8F0');
+                : (isDark ? t.surfaceDark : t.hairline);
             this.roundRect(ctx, x, tabBarY, tabW, tabBarH, 6);
             ctx.fill();
             if (isActive) {
-                ctx.strokeStyle = isDark ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.6)';
+                ctx.strokeStyle = this._withAlpha(t.onDark, isDark ? 0.35 : 0.6);
                 ctx.lineWidth = 1.5;
                 ctx.stroke();
             }
             // tab text
-            ctx.fillStyle = isActive ? '#FFFFFF' : textColor;
+            ctx.fillStyle = isActive ? t.onDark : textColor;
             ctx.font = isActive ? 'bold 14px sans-serif' : '600 13px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(this.tabs[i], x + tabW / 2, tabBarY + tabBarH / 2 - 1);
             // sub label
-            ctx.fillStyle = isActive ? 'rgba(255,255,255,0.85)' : subTextColor;
+            ctx.fillStyle = isActive ? this._withAlpha(t.onDark, 0.85) : subTextColor;
             ctx.font = '9px sans-serif';
             ctx.fillText(this.tabSubs[i], x + tabW / 2, tabBarY + tabBarH - 7);
             // store hit area
@@ -281,8 +291,8 @@ class Ch10Protocol extends CanvasAnimation {
         // Compute actor X positions evenly spaced
         const actorXs = [];
         for (let i = 0; i < n; i++) {
-            const t = n === 1 ? 0.5 : i / (n - 1);
-            actorXs.push(seqLeft + t * seqW);
+            const ti = n === 1 ? 0.5 : i / (n - 1);
+            actorXs.push(seqLeft + ti * seqW);
         }
 
         // Actor boxes
@@ -296,11 +306,11 @@ class Ch10Protocol extends CanvasAnimation {
             ctx.fillStyle = grad;
             this.roundRect(ctx, bx, actorY, actorBoxW, actorBoxH, 6);
             ctx.fill();
-            ctx.strokeStyle = isDark ? 'rgba(255,255,255,0.25)' : 'rgba(15,23,42,0.18)';
+            ctx.strokeStyle = isDark ? this._withAlpha(t.onDark, 0.25) : this._withAlpha(t.ink, 0.18);
             ctx.lineWidth = 1;
             ctx.stroke();
             // label
-            ctx.fillStyle = '#FFFFFF';
+            ctx.fillStyle = t.onDark;
             ctx.font = 'bold 11px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -314,7 +324,7 @@ class Ch10Protocol extends CanvasAnimation {
             ctx.beginPath();
             ctx.moveTo(x, lifeTop);
             ctx.lineTo(x, lifeBottom);
-            ctx.strokeStyle = isDark ? 'rgba(148,163,184,0.45)' : 'rgba(100,116,139,0.5)';
+            ctx.strokeStyle = this._withAlpha(t.muted, isDark ? 0.45 : 0.5);
             ctx.lineWidth = 1.2;
             ctx.setLineDash([4, 5]);
             ctx.stroke();
@@ -337,7 +347,7 @@ class Ch10Protocol extends CanvasAnimation {
                 const x = actorXs[idx];
                 ctx.beginPath();
                 ctx.arc(x, y, 2.5, 0, Math.PI * 2);
-                ctx.fillStyle = isDark ? 'rgba(99,102,241,0.85)' : 'rgba(99,102,241,0.9)';
+                ctx.fillStyle = this._withAlpha(t.primary, isDark ? 0.85 : 0.9);
                 ctx.fill();
             });
         }
@@ -353,14 +363,14 @@ class Ch10Protocol extends CanvasAnimation {
             let stroke;
             let labelColor;
             if (isActive) {
-                stroke = '#EF4444';
-                labelColor = '#EF4444';
+                stroke = t.error;
+                labelColor = t.error;
             } else if (isDone) {
-                stroke = isDark ? 'rgba(99,102,241,0.85)' : 'rgba(79,70,229,0.85)';
+                stroke = this._withAlpha(t.primary, isDark ? 0.85 : 0.85);
                 labelColor = textColor;
             } else {
-                stroke = isDark ? 'rgba(148,163,184,0.25)' : 'rgba(100,116,139,0.25)';
-                labelColor = isDark ? 'rgba(148,163,184,0.5)' : 'rgba(100,116,139,0.55)';
+                stroke = this._withAlpha(t.muted, isDark ? 0.25 : 0.25);
+                labelColor = this._withAlpha(t.muted, isDark ? 0.5 : 0.55);
             }
 
             if (m.from === m.to) {
@@ -405,7 +415,7 @@ class Ch10Protocol extends CanvasAnimation {
                 const pulseT = (Math.sin(this._pulse) + 1) / 2; // 0..1
                 ctx.save();
                 ctx.globalAlpha = 0.25 + 0.5 * pulseT;
-                ctx.fillStyle = '#EF4444';
+                ctx.fillStyle = t.error;
                 ctx.beginPath();
                 ctx.arc(bx, y, 4 + pulseT * 3, 0, Math.PI * 2);
                 ctx.fill();
@@ -423,18 +433,18 @@ class Ch10Protocol extends CanvasAnimation {
             if (isActive) {
                 const text = m.text;
                 const tw = ctx.measureText(text).width;
-                ctx.fillStyle = isDark ? 'rgba(239,68,68,0.18)' : 'rgba(239,68,68,0.14)';
+                ctx.fillStyle = this._withAlpha(t.error, isDark ? 0.18 : 0.14);
                 const ph = 14;
                 const pw = tw + 10;
                 this.roundRect(ctx, labelX - pw / 2, labelY - ph + 2, pw, ph, 4);
                 ctx.fill();
-                ctx.fillStyle = '#EF4444';
+                ctx.fillStyle = t.error;
             }
             ctx.fillText(m.text, labelX, labelY);
         });
 
         // ============ RIGHT SIDEBAR: COMPARISON TABLE ============
-        this._drawSidebar(sidebarW, padX, tabBarY, h - statusH, accent, textColor, subTextColor, isDark);
+        this._drawSidebar(sidebarW, padX, tabBarY, h - statusH, accent, textColor, subTextColor, isDark, t);
 
         // ============ STATUS BAR ============
         const cur = messages[this.step];
@@ -448,17 +458,19 @@ class Ch10Protocol extends CanvasAnimation {
         ctx.fillText(statusText, padX, h - 8);
     }
 
-    _drawSidebar(sidebarW, padX, top, height, accent, textColor, subTextColor, isDark) {
+    _drawSidebar(sidebarW, padX, top, height, accent, textColor, subTextColor, isDark, t) {
         const ctx = this.ctx;
         const w = this.width;
         const tableX = w - sidebarW;
         const tableW = sidebarW;
 
         // Panel background
-        ctx.fillStyle = isDark ? 'rgba(30,41,59,0.55)' : 'rgba(241,245,249,0.85)';
+        ctx.fillStyle = isDark
+            ? this._withAlpha(t.surfaceDark, 0.55)
+            : this._withAlpha(t.surfaceCard, 0.85);
         this.roundRect(ctx, tableX, top, tableW, height, 10);
         ctx.fill();
-        ctx.strokeStyle = isDark ? 'rgba(148,163,184,0.25)' : 'rgba(100,116,139,0.25)';
+        ctx.strokeStyle = this._withAlpha(t.muted, isDark ? 0.25 : 0.25);
         ctx.lineWidth = 1;
         ctx.stroke();
 
@@ -491,7 +503,7 @@ class Ch10Protocol extends CanvasAnimation {
         ctx.beginPath();
         ctx.moveTo(tx, ty + 14);
         ctx.lineTo(tx + usableW, ty + 14);
-        ctx.strokeStyle = isDark ? 'rgba(148,163,184,0.3)' : 'rgba(100,116,139,0.3)';
+        ctx.strokeStyle = this._withAlpha(t.muted, isDark ? 0.3 : 0.3);
         ctx.lineWidth = 1;
         ctx.stroke();
 
@@ -501,9 +513,7 @@ class Ch10Protocol extends CanvasAnimation {
             const ry = ty + 20 + r * rowH;
             const isActive = r === this.activeTab;
             if (isActive) {
-                ctx.fillStyle = isDark
-                    ? 'rgba(99,102,241,0.25)'
-                    : 'rgba(99,102,241,0.12)';
+                ctx.fillStyle = this._withAlpha(t.primary, isDark ? 0.25 : 0.12);
                 this.roundRect(ctx, tx - 4, ry - 4, usableW + 8, rowH - 2, 6);
                 ctx.fill();
                 // accent bar on left
@@ -516,7 +526,7 @@ class Ch10Protocol extends CanvasAnimation {
             ctx.fillStyle = isActive ? accent : subTextColor;
             this.roundRect(ctx, cx, ry + 1, 32, 16, 4);
             ctx.fill();
-            ctx.fillStyle = '#FFFFFF';
+            ctx.fillStyle = t.onDark;
             ctx.font = 'bold 9px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -553,12 +563,19 @@ class Ch10Protocol extends CanvasAnimation {
         });
 
         // Tip
-        ctx.fillStyle = isDark ? 'rgba(148,163,184,0.6)' : 'rgba(100,116,139,0.65)';
+        ctx.fillStyle = this._withAlpha(t.muted, isDark ? 0.6 : 0.65);
         ctx.font = 'italic 9px sans-serif';
         ctx.fillText('提示: 点击 Tab 切换协议', tx, top + height - 18);
     }
 
     // ---- small color helpers (avoid pulling CSS libs) ----
+    _withAlpha(hex, alpha) {
+        if (typeof hex !== 'string' || hex[0] !== '#' || hex.length < 7) return hex;
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r},${g},${b},${alpha})`;
+    }
     _hexToRgb(hex) {
         const m = hex.replace('#', '');
         const n = parseInt(m.length === 3
