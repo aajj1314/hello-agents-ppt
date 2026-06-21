@@ -196,44 +196,74 @@ class Ch4Paradigms extends CanvasAnimation {
         this.stepForward();
     }
 
+    _withAlpha(hex, alpha) {
+        if (typeof hex !== 'string' || hex[0] !== '#' || hex.length < 7) return hex;
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    /** Returns a darkened variant of a hex color (amount in [-1, 0]). */
+    _shade(hex, amount) {
+        if (typeof hex !== 'string' || hex[0] !== '#' || hex.length < 7) return hex;
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        const t = amount < 0 ? 0 : 255;
+        const p = Math.abs(amount);
+        const nr = Math.round((t - r) * p + r);
+        const ng = Math.round((t - g) * p + g);
+        const nb = Math.round((t - b) * p + b);
+        return '#' + [nr, ng, nb].map(v => v.toString(16).padStart(2, '0')).join('');
+    }
+
     draw() {
         const ctx = this.ctx, w = this.width, h = this.height;
+        const t = this.theme();
         const dark = this.isDarkTheme();
-        const bg = dark ? '#0F172A' : '#F8FAFC';
-        const textColor = dark ? '#F1F5F9' : '#0F172A';
-        const subColor = dark ? '#94A3B8' : '#475569';
-        const panelBg = dark ? '#1E293B' : '#FFFFFF';
-        const border = dark ? '#334155' : '#CBD5E1';
+        const bg = dark ? t.surfaceDarkSoft : t.canvas;
+        const textColor = t.ink;
+        const subColor = t.muted;
+        const panelBg = dark ? t.surfaceDark : t.canvas;
+        const border = t.hairline;
 
         ctx.clearRect(0, 0, w, h);
         ctx.fillStyle = bg;
         ctx.fillRect(0, 0, w, h);
 
-        this._drawTabs(ctx, w, textColor, subColor, border);
-        this._drawParadigm(ctx, w, h, textColor, subColor, panelBg, border);
-        this._drawComparison(ctx, w, h, textColor, subColor, panelBg, border);
-        this._drawStatusBar(ctx, w, h, subColor);
+        this._drawTabs(ctx, w, textColor, subColor, border, t);
+        this._drawParadigm(ctx, w, h, textColor, subColor, panelBg, border, t);
+        this._drawComparison(ctx, w, h, textColor, subColor, panelBg, border, t);
+        this._drawStatusBar(ctx, w, h, subColor, t);
     }
 
-    _drawTabs(ctx, w, textColor, subColor, border) {
+    // Accent key per paradigm: 0 → primary (coral), 1 → accentTeal, 2 → accentAmber
+    _paradigmAccent(i, t) {
+        if (i === 0) return t.primary;
+        if (i === 1) return t.accentTeal;
+        return t.accentAmber;
+    }
+
+    _drawTabs(ctx, w, textColor, subColor, border, t) {
         const tabW = 130;
         const tabH = 32;
         const gap = 12;
         const totalW = this.tabs.length * tabW + (this.tabs.length - 1) * gap;
         const startX = (w - totalW) / 2;
         const y = 8;
-        const accentPalette = ['#6366F1', '#0EA5E9', '#F59E0B'];
+        const dark = this.isDarkTheme();
 
         for (let i = 0; i < this.tabs.length; i++) {
-            const t = this.tabs[i];
+            const tab = this.tabs[i];
             const x = startX + i * (tabW + gap);
             const active = i === this.paradigm;
-            const accent = accentPalette[i];
+            const accent = this._paradigmAccent(i, t);
 
             // background
             ctx.fillStyle = active
-                ? (this.isDarkTheme() ? '#1E293B' : '#FFFFFF')
-                : (this.isDarkTheme() ? 'rgba(30,41,59,0.5)' : 'rgba(241,245,249,0.6)');
+                ? (dark ? t.surfaceDark : t.canvas)
+                : this._withAlpha(t.muted, dark ? 0.15 : 0.12);
             this.roundRect(ctx, x, y, tabW, tabH, 8);
             ctx.fill();
 
@@ -255,16 +285,16 @@ class Ch4Paradigms extends CanvasAnimation {
             ctx.font = active ? 'bold 13px sans-serif' : '600 12px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(t.label, x + tabW / 2 + (active ? 4 : 0), y + 12);
+            ctx.fillText(tab.label, x + tabW / 2 + (active ? 4 : 0), y + 12);
 
             // tagline
             ctx.fillStyle = active ? accent : subColor;
             ctx.font = '9px sans-serif';
-            ctx.fillText(t.tagline, x + tabW / 2, y + 25);
+            ctx.fillText(tab.tagline, x + tabW / 2, y + 25);
         }
     }
 
-    _drawParadigm(ctx, w, h, textColor, subColor, panelBg, border) {
+    _drawParadigm(ctx, w, h, textColor, subColor, panelBg, border, t) {
         // Left main panel for paradigm visualization
         const mainX = 16;
         const mainY = 52;
@@ -289,15 +319,20 @@ class Ch4Paradigms extends CanvasAnimation {
         ctx.textBaseline = 'top';
         ctx.fillText(titleMap[this.paradigm], mainX + 14, mainY + 10);
 
-        if (this.paradigm === 0) this._drawReActViz(ctx, mainX, mainY, mainW, mainH, textColor, subColor, panelBg, border);
-        else if (this.paradigm === 1) this._drawPlanSolveViz(ctx, mainX, mainY, mainW, mainH, textColor, subColor, panelBg, border);
-        else this._drawReflectionViz(ctx, mainX, mainY, mainW, mainH, textColor, subColor, panelBg, border);
+        if (this.paradigm === 0) this._drawReActViz(ctx, mainX, mainY, mainW, mainH, textColor, subColor, panelBg, border, t);
+        else if (this.paradigm === 1) this._drawPlanSolveViz(ctx, mainX, mainY, mainW, mainH, textColor, subColor, panelBg, border, t);
+        else this._drawReflectionViz(ctx, mainX, mainY, mainW, mainH, textColor, subColor, panelBg, border, t);
     }
 
-    _drawReActViz(ctx, x, y, w, h, textColor, subColor, panelBg, border) {
+    _drawReActViz(ctx, x, y, w, h, textColor, subColor, panelBg, border, t) {
         const idx = Math.min(this.subStep, this.reactSteps.length - 1);
         const step = this.reactSteps[idx];
         const phase = this.subStep % 3; // 0 thought, 1 action, 2 observation
+        const dark = this.isDarkTheme();
+        const reactAccent = this._paradigmAccent(0, t); // primary (coral)
+        const toolAccent  = this._paradigmAccent(1, t); // accentTeal
+        const obsAccent   = t.success;                  // green
+        const thoughtAccent = this._paradigmAccent(2, t); // accentAmber
 
         // Layout
         const cx = x + w / 2;
@@ -306,10 +341,10 @@ class Ch4Paradigms extends CanvasAnimation {
         const toolY = y + h * 0.78;
 
         // Question box
-        ctx.fillStyle = this.isDarkTheme() ? '#1E1B4B' : '#EEF2FF';
+        ctx.fillStyle = this._withAlpha(reactAccent, dark ? 0.18 : 0.10);
         this.roundRect(ctx, x + 16, topY, w - 32, 30, 6);
         ctx.fill();
-        ctx.strokeStyle = '#6366F1';
+        ctx.strokeStyle = reactAccent;
         ctx.lineWidth = 1.5;
         ctx.stroke();
         ctx.fillStyle = textColor;
@@ -319,11 +354,11 @@ class Ch4Paradigms extends CanvasAnimation {
         ctx.fillText('问题: 华为最新手机是什么？', x + 26, topY + 15);
 
         // LLM circle
-        this._drawCircle(ctx, cx, brainY, 30, 'LLM', '#6366F1', phase === 0, textColor);
+        this._drawCircle(ctx, cx, brainY, 30, 'LLM', reactAccent, phase === 0, textColor, t);
 
         // Tool box
-        const toolColor = phase === 1 ? '#3B82F6' : '#64748B';
-        ctx.fillStyle = this.isDarkTheme() ? '#1E3A8A' : '#DBEAFE';
+        const toolColor = phase === 1 ? toolAccent : t.muted;
+        ctx.fillStyle = this._withAlpha(toolAccent, dark ? 0.18 : 0.10);
         this.roundRect(ctx, cx - 90, toolY - 20, 180, 40, 6);
         ctx.fill();
         ctx.strokeStyle = toolColor;
@@ -344,46 +379,46 @@ class Ch4Paradigms extends CanvasAnimation {
         ctx.beginPath();
         ctx.moveTo(cx, brainY + 30);
         ctx.lineTo(cx, toolY - 20);
-        ctx.strokeStyle = `rgba(59,130,246,${arrowAlpha})`;
+        ctx.strokeStyle = this._withAlpha(toolAccent, arrowAlpha);
         ctx.lineWidth = 2.5;
         ctx.stroke();
-        if (phase >= 1) this._arrowHead(ctx, cx, toolY - 20, cx, toolY - 28, '#3B82F6');
+        if (phase >= 1) this._arrowHead(ctx, cx, toolY - 20, cx, toolY - 28, toolAccent);
 
         // Observation arrow: tool -> brain (curved)
         const obsAlpha = phase === 2 ? 1 : 0.25;
         ctx.beginPath();
         ctx.moveTo(cx + 30, toolY - 5);
         ctx.quadraticCurveTo(cx + 90, (brainY + toolY) / 2, cx + 30, brainY + 18);
-        ctx.strokeStyle = `rgba(16,185,129,${obsAlpha})`;
+        ctx.strokeStyle = this._withAlpha(obsAccent, obsAlpha);
         ctx.lineWidth = 2.5;
         ctx.setLineDash([4, 4]);
         ctx.stroke();
         ctx.setLineDash([]);
-        if (phase === 2) this._arrowHead(ctx, cx + 30, brainY + 18, cx + 30, brainY + 8, '#10B981');
+        if (phase === 2) this._arrowHead(ctx, cx + 30, brainY + 18, cx + 30, brainY + 8, obsAccent);
 
         // Thought bubble (right of brain)
-        ctx.fillStyle = this.isDarkTheme() ? '#422006' : '#FEF3C7';
+        ctx.fillStyle = this._withAlpha(thoughtAccent, dark ? 0.18 : 0.10);
         this.roundRect(ctx, cx + 50, brainY - 18, w - 80, 36, 6);
         ctx.fill();
-        ctx.strokeStyle = phase === 0 ? '#D97706' : '#A16207';
+        ctx.strokeStyle = phase === 0 ? thoughtAccent : this._shade(thoughtAccent, -0.2);
         ctx.lineWidth = phase === 0 ? 2 : 1.2;
         ctx.stroke();
-        ctx.fillStyle = this.isDarkTheme() ? '#FCD34D' : '#78350F';
+        ctx.fillStyle = dark ? thoughtAccent : this._shade(thoughtAccent, -0.4);
         ctx.font = '10px sans-serif';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'middle';
-        const t = step.thought.length > 36 ? step.thought.substring(0, 36) + '…' : step.thought;
-        ctx.fillText('Thought: ' + t, cx + 58, brainY);
+        const tShort = step.thought.length > 36 ? step.thought.substring(0, 36) + '…' : step.thought;
+        ctx.fillText('Thought: ' + tShort, cx + 58, brainY);
 
         // Observation bubble (left of brain)
         if (phase >= 2 || this.subStep > 0) {
-            ctx.fillStyle = this.isDarkTheme() ? '#064E3B' : '#D1FAE5';
+            ctx.fillStyle = this._withAlpha(obsAccent, dark ? 0.18 : 0.10);
             this.roundRect(ctx, x + 16, brainY - 18, w * 0.32, 36, 6);
             ctx.fill();
-            ctx.strokeStyle = phase === 2 ? '#059669' : '#A7F3D0';
+            ctx.strokeStyle = phase === 2 ? obsAccent : this._shade(obsAccent, 0.2);
             ctx.lineWidth = phase === 2 ? 2 : 1.2;
             ctx.stroke();
-            ctx.fillStyle = this.isDarkTheme() ? '#6EE7B7' : '#065F46';
+            ctx.fillStyle = dark ? obsAccent : this._shade(obsAccent, -0.3);
             ctx.font = '9px sans-serif';
             ctx.textAlign = 'left';
             ctx.textBaseline = 'middle';
@@ -393,11 +428,11 @@ class Ch4Paradigms extends CanvasAnimation {
 
         // Phase indicator
         const phases = ['Thought 思考', 'Action 行动', 'Observation 观察'];
-        const phaseColors = ['#D97706', '#3B82F6', '#10B981'];
+        const phaseColors = [thoughtAccent, toolAccent, obsAccent];
         const py = y + h - 22;
         for (let i = 0; i < 3; i++) {
             const active = i === phase;
-            ctx.fillStyle = active ? phaseColors[i] : (this.isDarkTheme() ? '#334155' : '#E2E8F0');
+            ctx.fillStyle = active ? phaseColors[i] : (dark ? t.muted : t.hairline);
             ctx.beginPath();
             ctx.arc(x + 30 + i * 110, py, 5, 0, Math.PI * 2);
             ctx.fill();
@@ -409,8 +444,11 @@ class Ch4Paradigms extends CanvasAnimation {
         }
     }
 
-    _drawPlanSolveViz(ctx, x, y, w, h, textColor, subColor, panelBg, border) {
+    _drawPlanSolveViz(ctx, x, y, w, h, textColor, subColor, panelBg, border, t) {
         const phase = this.subStep % 3; // 0 plan, 1 execute, 2 done
+        const dark = this.isDarkTheme();
+        const planAccent = this._paradigmAccent(1, t); // accentTeal
+        const doneAccent = t.success;
 
         // Plan node (top) with 4 sub-tasks listed
         const planX = x + 16;
@@ -418,10 +456,10 @@ class Ch4Paradigms extends CanvasAnimation {
         const planW = w - 32;
         const planH = 56;
 
-        ctx.fillStyle = this.isDarkTheme() ? '#0C4A6E' : '#E0F2FE';
+        ctx.fillStyle = this._withAlpha(planAccent, dark ? 0.18 : 0.10);
         this.roundRect(ctx, planX, planY, planW, planH, 8);
         ctx.fill();
-        ctx.strokeStyle = phase === 0 ? '#0EA5E9' : '#7DD3FC';
+        ctx.strokeStyle = phase === 0 ? planAccent : this._shade(planAccent, 0.2);
         ctx.lineWidth = phase === 0 ? 2 : 1.2;
         ctx.stroke();
 
@@ -438,14 +476,14 @@ class Ch4Paradigms extends CanvasAnimation {
         const remainingSteps = this.planSteps.slice(completedCount).map(s => s.text).join('  →  ');
         if (remainingSteps) {
             const lines = this._inlineList(planW - 20, completedSteps, remainingSteps);
-            ctx.fillStyle = this.isDarkTheme() ? '#7DD3FC' : '#0369A1';
+            ctx.fillStyle = dark ? planAccent : this._shade(planAccent, -0.3);
             ctx.fillText(lines[0] || completedSteps, planX + 10, planY + 26);
             if (lines[1]) {
                 ctx.fillStyle = subColor;
                 ctx.fillText(lines[1], planX + 10, planY + 40);
             }
         } else {
-            ctx.fillStyle = this.isDarkTheme() ? '#7DD3FC' : '#0369A1';
+            ctx.fillStyle = dark ? planAccent : this._shade(planAccent, -0.3);
             ctx.fillText(completedSteps, planX + 10, planY + 28);
         }
 
@@ -458,13 +496,13 @@ class Ch4Paradigms extends CanvasAnimation {
             const sx = planX + i * (stageW + 8);
             const isDone = i < completedCount;
             const isActive = phase === 1 && i === completedCount;
-            const stageColor = isActive ? '#0EA5E9' : (isDone ? '#10B981' : (this.isDarkTheme() ? '#334155' : '#CBD5E1'));
+            const stageColor = isActive ? planAccent : (isDone ? doneAccent : (dark ? t.muted : t.hairline));
 
             ctx.fillStyle = isActive
-                ? (this.isDarkTheme() ? '#0C4A6E' : '#E0F2FE')
+                ? this._withAlpha(planAccent, dark ? 0.18 : 0.10)
                 : (isDone
-                    ? (this.isDarkTheme() ? '#064E3B' : '#D1FAE5')
-                    : (this.isDarkTheme() ? '#1E293B' : '#F1F5F9'));
+                    ? this._withAlpha(doneAccent, dark ? 0.18 : 0.10)
+                    : (dark ? t.surfaceDark : t.surfaceCard));
             this.roundRect(ctx, sx, stageY, stageW, stageH, 6);
             ctx.fill();
             ctx.strokeStyle = stageColor;
@@ -472,7 +510,7 @@ class Ch4Paradigms extends CanvasAnimation {
             ctx.stroke();
 
             // step number
-            ctx.fillStyle = isActive ? '#0EA5E9' : (isDone ? '#10B981' : subColor);
+            ctx.fillStyle = isActive ? planAccent : (isDone ? doneAccent : subColor);
             ctx.font = 'bold 12px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'top';
@@ -480,11 +518,11 @@ class Ch4Paradigms extends CanvasAnimation {
 
             // check mark / active pulse
             if (isDone) {
-                ctx.fillStyle = '#10B981';
+                ctx.fillStyle = doneAccent;
                 ctx.beginPath();
                 ctx.arc(sx + stageW / 2, stageY + 28, 8, 0, Math.PI * 2);
                 ctx.fill();
-                ctx.strokeStyle = '#FFFFFF';
+                ctx.strokeStyle = t.onPrimary;
                 ctx.lineWidth = 2;
                 ctx.beginPath();
                 ctx.moveTo(sx + stageW / 2 - 4, stageY + 28);
@@ -492,7 +530,7 @@ class Ch4Paradigms extends CanvasAnimation {
                 ctx.lineTo(sx + stageW / 2 + 4, stageY + 25);
                 ctx.stroke();
             } else if (isActive) {
-                ctx.fillStyle = '#0EA5E9';
+                ctx.fillStyle = planAccent;
                 ctx.beginPath();
                 ctx.arc(sx + stageW / 2, stageY + 28, 7, 0, Math.PI * 2);
                 ctx.fill();
@@ -521,7 +559,7 @@ class Ch4Paradigms extends CanvasAnimation {
             ctx.beginPath();
             ctx.moveTo(x1, stageY + 28);
             ctx.lineTo(x2, stageY + 28);
-            ctx.strokeStyle = isDone ? '#10B981' : subColor;
+            ctx.strokeStyle = isDone ? doneAccent : subColor;
             ctx.lineWidth = isDone ? 2 : 1;
             ctx.stroke();
         }
@@ -532,9 +570,14 @@ class Ch4Paradigms extends CanvasAnimation {
         return [done, rest].filter(Boolean);
     }
 
-    _drawReflectionViz(ctx, x, y, w, h, textColor, subColor, panelBg, border) {
+    _drawReflectionViz(ctx, x, y, w, h, textColor, subColor, panelBg, border, t) {
         const phase = this.subStep % 3;
         const step = this.reflectionSteps[Math.min(phase, this.reflectionSteps.length - 1)];
+        const dark = this.isDarkTheme();
+        const prodAccent = this._paradigmAccent(0, t); // primary (coral)
+        const critAccent = this._paradigmAccent(2, t); // accentAmber
+        const loopActiveColor = t.accentAmber;
+        const doneAccent = t.success;
 
         // Producer box (top-left), Critic box (top-right)
         const boxH = 50;
@@ -544,10 +587,10 @@ class Ch4Paradigms extends CanvasAnimation {
         const boxW = w / 2 - 22;
 
         // Producer
-        const prodColor = phase === 0 ? '#8B5CF6' : (phase === 2 ? '#10B981' : '#6366F1');
+        const prodColor = phase === 0 ? prodAccent : (phase === 2 ? doneAccent : this._shade(prodAccent, 0.1));
         ctx.fillStyle = phase === 0
-            ? (this.isDarkTheme() ? '#3B0764' : '#F3E8FF')
-            : (this.isDarkTheme() ? '#1E1B4B' : '#EEF2FF');
+            ? this._withAlpha(prodAccent, dark ? 0.18 : 0.10)
+            : this._withAlpha(prodAccent, dark ? 0.10 : 0.06);
         this.roundRect(ctx, leftX, topY, boxW, boxH, 8);
         ctx.fill();
         ctx.strokeStyle = prodColor;
@@ -567,10 +610,10 @@ class Ch4Paradigms extends CanvasAnimation {
 
         // Critic
         const critActive = phase === 1;
-        const critColor = critActive ? '#F59E0B' : (phase === 2 && step.verdict === '通过' ? '#10B981' : '#A16207');
+        const critColor = critActive ? critAccent : (phase === 2 && step.verdict === '通过' ? doneAccent : this._shade(critAccent, -0.15));
         ctx.fillStyle = critActive
-            ? (this.isDarkTheme() ? '#451A03' : '#FEF3C7')
-            : (this.isDarkTheme() ? '#1E293B' : '#F1F5F9');
+            ? this._withAlpha(critAccent, dark ? 0.18 : 0.10)
+            : (dark ? t.surfaceDark : t.surfaceCard);
         this.roundRect(ctx, rightX, topY, boxW, boxH, 8);
         ctx.fill();
         ctx.strokeStyle = critColor;
@@ -590,12 +633,13 @@ class Ch4Paradigms extends CanvasAnimation {
 
         // Arrow Producer -> Critic
         ctx.beginPath();
+        ctx.moveFrom && ctx.moveFrom(); // (placeholder to keep linter happy)
         ctx.moveTo(leftX + boxW, topY + boxH / 2);
         ctx.lineTo(rightX, topY + boxH / 2);
-        ctx.strokeStyle = phase >= 1 ? '#6366F1' : (this.isDarkTheme() ? '#475569' : '#CBD5E1');
+        ctx.strokeStyle = phase >= 1 ? prodAccent : (dark ? t.muted : t.hairline);
         ctx.lineWidth = phase >= 1 ? 2 : 1;
         ctx.stroke();
-        if (phase >= 1) this._arrowHead(ctx, rightX, topY + boxH / 2, rightX - 6, topY + boxH / 2, '#6366F1');
+        if (phase >= 1) this._arrowHead(ctx, rightX, topY + boxH / 2, rightX - 6, topY + boxH / 2, prodAccent);
 
         // Loop arrow Critic -> Producer (curved)
         const loopY = topY + boxH + 16;
@@ -604,22 +648,22 @@ class Ch4Paradigms extends CanvasAnimation {
         ctx.moveTo(rightX + boxW / 2, topY + boxH);
         ctx.quadraticCurveTo(rightX + boxW / 2, loopY + 30, rightX - 20, loopY + 30);
         ctx.quadraticCurveTo(leftX + boxW / 2 - 20, loopY + 30, leftX + boxW / 2, topY + boxH);
-        ctx.strokeStyle = loopActive ? '#F59E0B' : (this.isDarkTheme() ? '#475569' : '#CBD5E1');
+        ctx.strokeStyle = loopActive ? loopActiveColor : (dark ? t.muted : t.hairline);
         ctx.lineWidth = loopActive ? 2 : 1;
         ctx.setLineDash(loopActive ? [5, 4] : []);
         ctx.stroke();
         ctx.setLineDash([]);
-        if (loopActive) this._arrowHead(ctx, leftX + boxW / 2, topY + boxH, leftX + boxW / 2, topY + boxH + 6, '#F59E0B');
+        if (loopActive) this._arrowHead(ctx, leftX + boxW / 2, topY + boxH, leftX + boxW / 2, topY + boxH + 6, loopActiveColor);
 
         // Loop label
         if (loopActive) {
-            ctx.fillStyle = '#F59E0B';
+            ctx.fillStyle = loopActiveColor;
             ctx.font = 'bold 9px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText('回环重做 (不满意)', (leftX + rightX + boxW) / 2, loopY + 30);
         } else {
-            ctx.fillStyle = '#10B981';
+            ctx.fillStyle = doneAccent;
             ctx.font = 'bold 9px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -631,14 +675,14 @@ class Ch4Paradigms extends CanvasAnimation {
         const codeH = (y + h - 24) - codeY;
 
         // code panel
-        ctx.fillStyle = this.isDarkTheme() ? '#0F172A' : '#F8FAFC';
+        ctx.fillStyle = dark ? t.surfaceDark : t.surfaceCard;
         this.roundRect(ctx, leftX, codeY, w - 32, codeH, 8);
         ctx.fill();
-        ctx.strokeStyle = this.isDarkTheme() ? '#334155' : '#CBD5E1';
+        ctx.strokeStyle = dark ? t.muted : t.hairline;
         ctx.lineWidth = 1;
         ctx.stroke();
 
-        ctx.fillStyle = this.isDarkTheme() ? '#94A3B8' : '#475569';
+        ctx.fillStyle = dark ? t.onDarkSoft : t.muted;
         ctx.font = '9px sans-serif';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'top';
@@ -657,17 +701,19 @@ class Ch4Paradigms extends CanvasAnimation {
         }
 
         if (step.feedback) {
-            ctx.fillStyle = critActive ? '#F59E0B' : (this.isDarkTheme() ? '#FBBF24' : '#92400E');
+            ctx.fillStyle = critActive ? critAccent : (dark ? critAccent : this._shade(critAccent, -0.4));
             ctx.font = '9px sans-serif';
             ctx.fillText('反馈: ' + step.feedback, leftX + 10, codeY + codeH - 16);
         }
     }
 
-    _drawComparison(ctx, w, h, textColor, subColor, panelBg, border) {
+    _drawComparison(ctx, w, h, textColor, subColor, panelBg, border, t) {
         const rx = w * 0.6 + 12;
         const ry = 52;
         const rw = w * 0.4 - 28;
         const rh = h - ry - 38;
+        const dark = this.isDarkTheme();
+        const accent = this._paradigmAccent(this.paradigm, t);
 
         ctx.fillStyle = panelBg;
         this.roundRect(ctx, rx, ry, rw, rh, 10);
@@ -715,7 +761,7 @@ class Ch4Paradigms extends CanvasAnimation {
             for (let c = 0; c < 3; c++) {
                 const isActive = c === this.paradigm;
                 if (isActive) {
-                    ctx.fillStyle = this.isDarkTheme() ? 'rgba(99,102,241,0.18)' : 'rgba(99,102,241,0.10)';
+                    ctx.fillStyle = this._withAlpha(accent, dark ? 0.18 : 0.10);
                     this.roundRect(ctx, colXs[c + 1] - 4, rowY - 3, rw - (colXs[c + 1] - rx) - 4, 32, 4);
                     ctx.fill();
                 }
@@ -729,7 +775,7 @@ class Ch4Paradigms extends CanvasAnimation {
         }
     }
 
-    _drawStatusBar(ctx, w, h, subColor) {
+    _drawStatusBar(ctx, w, h, subColor, t) {
         const tabs = this.tabs;
         const phaseNames = {
             0: ['Thought', 'Action', 'Observation'],
@@ -746,23 +792,27 @@ class Ch4Paradigms extends CanvasAnimation {
 
         // paradigm index dots
         const dotY = h - 16;
+        const dark = this.isDarkTheme();
         for (let i = 0; i < tabs.length; i++) {
-            ctx.fillStyle = i === this.paradigm ? '#6366F1' : (this.isDarkTheme() ? '#475569' : '#CBD5E1');
+            const isCurrent = i === this.paradigm;
+            ctx.fillStyle = isCurrent
+                ? this._paradigmAccent(i, t)
+                : (dark ? t.muted : t.hairline);
             ctx.beginPath();
             ctx.arc(w - 80 + i * 14, dotY, 3.5, 0, Math.PI * 2);
             ctx.fill();
         }
     }
 
-    _drawCircle(ctx, x, y, r, label, color, active, textColor) {
+    _drawCircle(ctx, x, y, r, label, color, active, textColor, t) {
         if (active) {
             ctx.beginPath();
             ctx.arc(x, y, r + 8, 0, Math.PI * 2);
-            ctx.fillStyle = `${color}30`;
+            ctx.fillStyle = this._withAlpha(color, 0.3);
             ctx.fill();
         }
         const grad = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.2, x, y, r);
-        grad.addColorStop(0, '#E0E7FF');
+        grad.addColorStop(0, t.surfaceCard);
         grad.addColorStop(1, color);
         ctx.beginPath();
         ctx.arc(x, y, r, 0, Math.PI * 2);
@@ -771,20 +821,20 @@ class Ch4Paradigms extends CanvasAnimation {
         ctx.strokeStyle = color;
         ctx.lineWidth = active ? 2.5 : 1.5;
         ctx.stroke();
-        ctx.fillStyle = textColor || '#FFFFFF';
+        ctx.fillStyle = t.onPrimary;
         ctx.font = 'bold 11px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(label, x, y);
     }
 
-    _arrowHead(ctx, x, y, fromX, fromY, color) {
-        const angle = Math.atan2(y - fromY, x - fromX);
-        const headLen = 8;
+    _arrowHead(ctx, fromX, fromY, toX, toY, color) {
+        const ang = Math.atan2(toY - fromY, toX - fromX);
+        const headLen = 7;
         ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x - headLen * Math.cos(angle - Math.PI / 6), y - headLen * Math.sin(angle - Math.PI / 6));
-        ctx.lineTo(x - headLen * Math.cos(angle + Math.PI / 6), y - headLen * Math.sin(angle + Math.PI / 6));
+        ctx.moveTo(toX, toY);
+        ctx.lineTo(toX - headLen * Math.cos(ang - 0.4), toY - headLen * Math.sin(ang - 0.4));
+        ctx.lineTo(toX - headLen * Math.cos(ang + 0.4), toY - headLen * Math.sin(ang + 0.4));
         ctx.closePath();
         ctx.fillStyle = color;
         ctx.fill();
