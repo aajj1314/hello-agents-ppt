@@ -33,7 +33,7 @@ class Ch11RL extends CanvasAnimation {
                 name: 'SFT 监督微调',
                 desc: '看示范学格式',
                 formula: 'L = -Σ log P(yₜ | x, y<ₜ)',
-                accent: '#3B82F6',
+                accentKey: 'primary',
                 details: [
                     ['输入数据', '标注样本 (prompt + completion)'],
                     ['训练方式', '最大似然 / 交叉熵'],
@@ -47,7 +47,7 @@ class Ch11RL extends CanvasAnimation {
                 name: 'RLHF 人类反馈',
                 desc: '奖励模型 + PPO 闭环',
                 formula: 'L = -E[ A·log π(a|s) ]',
-                accent: '#8B5CF6',
+                accentKey: 'primary',
                 details: [
                     ['输入数据', '人类偏好对 (y_a > y_b)'],
                     ['训练方式', 'Reward Model → PPO'],
@@ -61,7 +61,7 @@ class Ch11RL extends CanvasAnimation {
                 name: 'GRPO 组相对优化',
                 desc: '无 Critic，省显存',
                 formula: 'Aᵢ = (rᵢ - mean) / std',
-                accent: '#EC4899',
+                accentKey: 'primary',
                 details: [
                     ['输入数据', '可验证答案 (数学 / 代码)'],
                     ['训练方式', '同组内相对优势'],
@@ -76,10 +76,10 @@ class Ch11RL extends CanvasAnimation {
         // 4 nodes around the agent. Order matters — the particle travels
         // through them in this exact order (clockwise).
         this.loopNodes = [
-            { key: 'Action',     cn: '动作 aₜ',   detail: 'Policy πθ 选出的下一步行为', color: '#10B981' },
-            { key: 'Environment',cn: '环境 Env',   detail: '状态转移 s → s′, 给 reward',    color: '#3B82F6' },
-            { key: 'Reward',     cn: '奖励 rₜ',    detail: '0/1 准确率 + 长度/步骤奖励',     color: '#F59E0B' },
-            { key: 'NextState',  cn: '下一态 s′',  detail: '新观测, 回到策略, 闭环',        color: '#8B5CF6' }
+            { key: 'Action',     cn: '动作 aₜ',   detail: 'Policy πθ 选出的下一步行为', colorKey: 'success' },
+            { key: 'Environment',cn: '环境 Env',   detail: '状态转移 s → s′, 给 reward',    colorKey: 'body' },
+            { key: 'Reward',     cn: '奖励 rₜ',    detail: '0/1 准确率 + 长度/步骤奖励',     colorKey: 'success' },
+            { key: 'NextState',  cn: '下一态 s′',  detail: '新观测, 回到策略, 闭环',        colorKey: 'muted' }
         ];
 
         // Cached hit areas (recomputed in draw())
@@ -198,12 +198,22 @@ class Ch11RL extends CanvasAnimation {
     // -------- main draw --------
     draw() {
         const ctx = this.ctx, w = this.width, h = this.height;
+        const t = this.theme();
         const dark = this.isDarkTheme();
-        const bg = dark ? '#0F172A' : '#F8FAFC';
-        const textColor = dark ? '#F1F5F9' : '#0F172A';
-        const subColor = dark ? '#94A3B8' : '#475569';
-        const borderColor = dark ? 'rgba(148,163,184,0.25)' : 'rgba(100,116,139,0.25)';
-        const panelBg = dark ? 'rgba(30,41,59,0.6)' : 'rgba(241,245,249,0.85)';
+        const bg = dark ? t.surfaceDarkSoft : t.canvas;
+        const textColor = t.ink;
+        const subColor = t.muted;
+        const borderColor = this._withAlpha(t.muted, dark ? 0.25 : 0.25);
+        const panelBg = dark
+            ? this._withAlpha(t.surfaceDark, 0.6)
+            : this._withAlpha(t.surfaceCard, 0.85);
+        // Resolve accent + node colors from theme tokens
+        for (let i = 0; i < this.stageDefs.length; i++) {
+            this.stageDefs[i].accent = t[this.stageDefs[i].accentKey];
+        }
+        for (let i = 0; i < this.loopNodes.length; i++) {
+            this.loopNodes[i].color = t[this.loopNodes[i].colorKey];
+        }
 
         ctx.clearRect(0, 0, w, h);
         ctx.fillStyle = bg;
@@ -228,11 +238,11 @@ class Ch11RL extends CanvasAnimation {
 
         // ===== TOP: 3-stage pipeline =====
         this._drawPipeline(ctx, padX, pipelineTop, w - padX * 2, pipelineH,
-                           textColor, subColor, borderColor, panelBg, dark);
+                           textColor, subColor, borderColor, panelBg, dark, t);
 
         // ===== BOTTOM: reward feedback loop =====
         this._drawLoop(ctx, padX, loopTop, w - padX * 2, loopH,
-                       textColor, subColor, borderColor, panelBg, dark);
+                       textColor, subColor, borderColor, panelBg, dark, t);
 
         // ===== FOOTER =====
         ctx.fillStyle = subColor;
@@ -251,18 +261,18 @@ class Ch11RL extends CanvasAnimation {
 
         // ===== TOOLTIP (drawn last so it sits on top) =====
         if (this.hoveredStage >= 0 && this.hoveredStage < this.stageDefs.length) {
-            this._drawTooltip(ctx, w, h, textColor, subColor, panelBg, dark);
+            this._drawTooltip(ctx, w, h, textColor, subColor, panelBg, dark, t);
         }
     }
 
-    _drawTooltip(ctx, w, h, textColor, subColor, panelBg, dark) {
+    _drawTooltip(ctx, w, h, textColor, subColor, panelBg, dark, t) {
         const def = this.stageDefs[this.hoveredStage];
         const lines = [
             { t: def.key + ' · ' + def.name, bold: true, color: def.accent },
             { t: def.desc, bold: false, color: textColor }
         ];
         def.details.forEach(([k, v]) => {
-            lines.push({ t: k + ': ' + v, bold: false, color: dark ? '#E2E8F0' : '#1E293B' });
+            lines.push({ t: k + ': ' + v, bold: false, color: dark ? t.hairline : t.surfaceDark });
         });
 
         ctx.font = '11px sans-serif';
@@ -287,7 +297,9 @@ class Ch11RL extends CanvasAnimation {
         if (ty < 4) ty = 4;
 
         // background
-        ctx.fillStyle = dark ? 'rgba(15,23,42,0.95)' : 'rgba(255,255,255,0.98)';
+        ctx.fillStyle = dark
+            ? this._withAlpha(t.surfaceDark, 0.95)
+            : this._withAlpha(t.onDark, 0.98);
         this.roundRect(ctx, tx, ty, boxW, boxH, 6);
         ctx.fill();
         ctx.strokeStyle = def.accent;
@@ -306,7 +318,7 @@ class Ch11RL extends CanvasAnimation {
     }
 
     // ----- pipeline drawing -----
-    _drawPipeline(ctx, x, y, w, h, textColor, subColor, borderColor, panelBg, dark) {
+    _drawPipeline(ctx, x, y, w, h, textColor, subColor, borderColor, panelBg, dark, t) {
         // 3 stage cards
         const cardCount = 3;
         const arrowW = 28; // horizontal space reserved for arrows between cards
@@ -330,11 +342,11 @@ class Ch11RL extends CanvasAnimation {
             // Card background
             const grad = ctx.createLinearGradient(cx, cy, cx, cy + cardH);
             if (dark) {
-                grad.addColorStop(0, `rgba(51,65,85,${0.85 * baseAlpha})`);
-                grad.addColorStop(1, `rgba(30,41,59,${0.85 * baseAlpha})`);
+                grad.addColorStop(0, this._withAlpha(t.surfaceDark, 0.85 * baseAlpha));
+                grad.addColorStop(1, this._withAlpha(t.surfaceDark, 0.85 * baseAlpha));
             } else {
-                grad.addColorStop(0, `rgba(255,255,255,${0.95 * baseAlpha})`);
-                grad.addColorStop(1, `rgba(241,245,249,${0.95 * baseAlpha})`);
+                grad.addColorStop(0, this._withAlpha(t.onDark, 0.95 * baseAlpha));
+                grad.addColorStop(1, this._withAlpha(t.surfaceCard, 0.95 * baseAlpha));
             }
             ctx.fillStyle = grad;
             this.roundRect(ctx, cx, cy, cardW, cardH, 10);
@@ -377,7 +389,7 @@ class Ch11RL extends CanvasAnimation {
             ctx.arc(badgeX, badgeY + badgeR, badgeR, 0, Math.PI * 2);
             ctx.fillStyle = def.accent;
             ctx.fill();
-            ctx.fillStyle = '#FFFFFF';
+            ctx.fillStyle = t.onDark;
             ctx.font = 'bold 10px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -408,7 +420,9 @@ class Ch11RL extends CanvasAnimation {
             const fbH = 22;
             const fbX = cx + padInner - 2;
             const fbW = cardW - (padInner - 2) * 2;
-            ctx.fillStyle = dark ? 'rgba(15,23,42,0.7)' : 'rgba(226,232,240,0.9)';
+            ctx.fillStyle = dark
+                ? this._withAlpha(t.surfaceDark, 0.7)
+                : this._withAlpha(t.hairline, 0.9);
             this.roundRect(ctx, fbX, fbY, fbW, fbH, 5);
             ctx.fill();
             ctx.strokeStyle = def.accent + '55';
@@ -455,7 +469,7 @@ class Ch11RL extends CanvasAnimation {
     }
 
     // ----- reward feedback loop drawing -----
-    _drawLoop(ctx, x, y, w, h, textColor, subColor, borderColor, panelBg, dark) {
+    _drawLoop(ctx, x, y, w, h, textColor, subColor, borderColor, panelBg, dark, t) {
         // Panel background
         ctx.fillStyle = panelBg;
         this.roundRect(ctx, x, y, w, h, 10);
@@ -527,7 +541,7 @@ class Ch11RL extends CanvasAnimation {
             ctx.arc(cx, cy, baseRadius, a1, a2);
             ctx.strokeStyle = isActiveEdge
                 ? this.loopNodes[i].color
-                : (dark ? 'rgba(148,163,184,0.45)' : 'rgba(100,116,139,0.5)');
+                : this._withAlpha(t.muted, dark ? 0.45 : 0.5);
             ctx.lineWidth = isActiveEdge ? 2.5 : 1.4;
             if (isActiveEdge) {
                 ctx.shadowColor = this.loopNodes[i].color;
@@ -552,7 +566,7 @@ class Ch11RL extends CanvasAnimation {
             ctx.closePath();
             ctx.fillStyle = isActiveEdge
                 ? this.loopNodes[i].color
-                : (dark ? '#94A3B8' : '#64748B');
+                : (dark ? t.mutedSoft : t.body);
             ctx.fill();
         }
 
@@ -578,12 +592,12 @@ class Ch11RL extends CanvasAnimation {
             ctx.beginPath();
             ctx.arc(p.x, p.y, nodeR, 0, Math.PI * 2);
             ctx.fill();
-            ctx.strokeStyle = dark ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.7)';
+            ctx.strokeStyle = this._withAlpha(t.onDark, dark ? 0.4 : 0.7);
             ctx.lineWidth = 1.5;
             ctx.stroke();
 
             // node label
-            ctx.fillStyle = '#FFFFFF';
+            ctx.fillStyle = t.onDark;
             ctx.font = 'bold 10px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -595,27 +609,27 @@ class Ch11RL extends CanvasAnimation {
         // ---- Center: Agent ----
         const agentR = 30 + Math.sin(this.pulse) * 1.5;
         const agentGrad = ctx.createRadialGradient(cx - 6, cy - 6, 2, cx, cy, agentR);
-        agentGrad.addColorStop(0, '#A78BFA');
-        agentGrad.addColorStop(1, '#5B21B6');
+        agentGrad.addColorStop(0, this._lighten(t.primary, 0.2));
+        agentGrad.addColorStop(1, this._darken(t.primary, 0.2));
         ctx.fillStyle = agentGrad;
         ctx.beginPath();
         ctx.arc(cx, cy, agentR, 0, Math.PI * 2);
         ctx.fill();
-        ctx.strokeStyle = '#FFFFFF';
+        ctx.strokeStyle = t.onDark;
         ctx.lineWidth = 2;
         ctx.stroke();
 
         // ring around agent
         ctx.beginPath();
         ctx.arc(cx, cy, agentR + 5, 0, Math.PI * 2);
-        ctx.strokeStyle = dark ? 'rgba(167,139,250,0.5)' : 'rgba(91,33,182,0.45)';
+        ctx.strokeStyle = this._withAlpha(t.primary, dark ? 0.5 : 0.45);
         ctx.setLineDash([3, 3]);
         ctx.lineWidth = 1;
         ctx.stroke();
         ctx.setLineDash([]);
 
         // agent label
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = t.onDark;
         ctx.font = 'bold 11px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -623,16 +637,16 @@ class Ch11RL extends CanvasAnimation {
         ctx.fillText('πθ', cx, cy + 6);
 
         // ---- Flowing particle ----
-        this._drawParticle(ctx, cx, cy, baseRadius, positions, dark);
+        this._drawParticle(ctx, cx, cy, baseRadius, positions, dark, t);
     }
 
-    _drawParticle(ctx, cx, cy, baseRadius, positions, dark) {
+    _drawParticle(ctx, cx, cy, baseRadius, positions, dark, t) {
         // The particle is at parameter t in [0,1) around the loop.
         // Each edge (action→env, env→reward, reward→next, next→action)
         // occupies t in [i/4, (i+1)/4).
-        const t = this.particleT;
-        const segIdx = Math.min(3, Math.floor(t * 4));
-        const segT = (t * 4) - segIdx; // 0..1 within this segment
+        const ti = this.particleT;
+        const segIdx = Math.min(3, Math.floor(ti * 4));
+        const segT = (ti * 4) - segIdx; // 0..1 within this segment
         const a = positions[segIdx];
         const b = positions[(segIdx + 1) % 4];
 
@@ -653,7 +667,7 @@ class Ch11RL extends CanvasAnimation {
         ctx.save();
         const tailLen = 0.18;
         for (let k = 0; k < 6; k++) {
-            const tBack = (t - k * tailLen / 6 + 1) % 1;
+            const tBack = (ti - k * tailLen / 6 + 1) % 1;
             const sIdx = Math.min(3, Math.floor(tBack * 4));
             const sFrac = (tBack * 4) - sIdx;
             const aa = positions[sIdx];
@@ -678,7 +692,7 @@ class Ch11RL extends CanvasAnimation {
 
         // particle core
         const grad = ctx.createRadialGradient(px, py, 1, px, py, 7);
-        grad.addColorStop(0, '#FFFFFF');
+        grad.addColorStop(0, t.onDark);
         grad.addColorStop(0.4, this.loopNodes[segIdx].color);
         grad.addColorStop(1, this.loopNodes[segIdx].color + '00');
         ctx.fillStyle = grad;
@@ -688,7 +702,7 @@ class Ch11RL extends CanvasAnimation {
 
         ctx.beginPath();
         ctx.arc(px, py, 3.2, 0, Math.PI * 2);
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = t.onDark;
         ctx.fill();
         ctx.strokeStyle = this.loopNodes[segIdx].color;
         ctx.lineWidth = 1.2;
@@ -713,6 +727,13 @@ class Ch11RL extends CanvasAnimation {
     }
 
     // ---- helpers ----
+    _withAlpha(hex, alpha) {
+        if (typeof hex !== 'string' || hex[0] !== '#' || hex.length < 7) return hex;
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r},${g},${b},${alpha})`;
+    }
     _hexToRgb(hex) {
         const m = hex.replace('#', '');
         const n = parseInt(m.length === 3
