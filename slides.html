@@ -3,8 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Hello-Agents 幻灯片播放器">
-    <meta name="theme-color" content="#1E1B4B">
+    <meta name="description" content="Hello-Agents 交互式学习平台：基于 Claude 风格设计，从零开始构建 AI 智能体。">
+    <meta name="theme-color" content="#faf9f5">
+    <script>
+      (function() {
+        const update = () => {
+          const t = document.documentElement.getAttribute('data-theme') || 'light';
+          const c = t === 'dark' ? '#0d253d' : '#faf9f5';
+          document.querySelector('meta[name="theme-color"]')?.setAttribute('content', c);
+        };
+        update();
+        new MutationObserver(update).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+      })();
+    </script>
     <title>幻灯片 - Hello-Agents</title>
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/slides.css">
