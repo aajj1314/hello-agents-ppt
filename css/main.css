@@ -436,6 +436,68 @@ h6 { font-size: 16px; font-family: var(--font-body); font-weight: 500; }
 }
 
 /* ============================================================
+ * Hero band (Claude editorial)
+ * ============================================================ */
+.hero-band {
+    background-color: var(--canvas);
+    padding: var(--space-section) var(--space-xl);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+@media (min-width: 1024px) {
+    .hero-band {
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+    }
+}
+.hero-content h1 {
+    font-size: 64px;
+    font-weight: 400;
+    letter-spacing: -1.5px;
+    line-height: 1.05;
+    margin-bottom: var(--space-lg);
+    color: var(--ink);
+}
+.hero-content p {
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--body);
+    margin-bottom: var(--space-xl);
+    max-width: 540px;
+}
+.hero-eyebrow {
+    display: inline-block;
+    background-color: var(--primary);
+    color: var(--on-primary);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+    margin-bottom: var(--space-md);
+    text-transform: uppercase;
+}
+.hero-cta {
+    display: flex;
+    gap: var(--space-md);
+    align-items: center;
+}
+.hero-illustration-card {
+    background-color: var(--surface-dark);
+    color: var(--on-dark);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    min-height: 360px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.6;
+    overflow: hidden;
+}
+
+/* ============================================================
  * Section heading
  * ============================================================ */
 .section-heading {

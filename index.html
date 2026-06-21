@@ -46,41 +46,25 @@
         <a id="top"></a>
 
         <!-- Hero -->
-        <header class="hero-banner reveal" id="heroBanner">
-            <div class="hero-tag" aria-hidden="true">
-                <span class="hero-tag__dot"></span>
-                <span>AI Agent · 交互式教程</span>
-            </div>
-            <h1>Hello-Agents</h1>
-            <p class="subtitle">从零开始构建智能体 · 16 章系统化课程，包含交互动画、配套测验与代码示例。</p>
-
-            <div class="hero-stats" id="heroStats" role="group" aria-label="学习统计">
-                <div class="stat-tile">
-                    <div class="stat-tile__value" id="statChapters" aria-live="polite">0</div>
-                    <div class="stat-tile__label">章节</div>
-                </div>
-                <div class="stat-tile">
-                    <div class="stat-tile__value" id="statPages" aria-live="polite">0</div>
-                    <div class="stat-tile__label">幻灯片</div>
-                </div>
-                <div class="stat-tile">
-                    <div class="stat-tile__value" id="statAnimations" aria-live="polite">0</div>
-                    <div class="stat-tile__label">交互动画</div>
-                </div>
-                <div class="stat-tile">
-                    <div class="stat-tile__value" id="statQuizzes" aria-live="polite">0</div>
-                    <div class="stat-tile__label">测验</div>
+        <section class="hero-band reveal" id="heroBanner">
+            <div class="hero-content">
+                <span class="hero-eyebrow">AI AGENTS · 16 章</span>
+                <h1>Meet your thinking partner for building Agents</h1>
+                <p>16 章交互式学习 · 338 张幻灯片 · 20 个 Canvas 动画</p>
+                <div class="hero-cta">
+                    <button class="btn-primary" id="btnStart" aria-label="开始学习第一章">开始学习</button>
+                    <button class="btn-text-link" id="btnContinue" aria-label="继续上次学习进度">继续上次 →</button>
                 </div>
             </div>
-
-            <div class="progress-overview" id="heroProgress">
-                <span id="heroProgressLabel">整体进度</span>
-                <div class="progress-bar-hero" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="heroProgressBar" aria-label="整体学习进度">
-                    <div class="fill" id="heroProgressFill" style="width: 0%"></div>
-                </div>
-                <span id="heroProgressText">0%</span>
+            <div class="hero-illustration-card">
+                <pre style="margin: 0; color: var(--on-dark-soft);"><code>// agent loop
+while (true) {
+  thought = llm(observation)
+  action = tool(thought)
+  observation = env(action)
+}</code></pre>
             </div>
-        </header>
+        </section>
 
         <section class="hero-guide reveal" id="heroGuide" aria-label="新手指引">
             <div class="guide-grid" id="guideGrid"></div>
