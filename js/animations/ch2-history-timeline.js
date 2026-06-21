@@ -1,18 +1,8 @@
 /**
- * CH2: AI Agent History Timeline - "Problem-Driven" Evolution Ladder
- *
- * Renders 9 milestones (1950 Turing Test -> 2023 AutoGPT) arranged left-to-right
- * with 4 era color bands (萌芽期 / 符号主义 / 深度学习 / LLM时代) as background.
- *
- * Modes:
- *  - Auto play: sequentially highlight each milestone, advance automatically.
- *  - Click: toggle a node; on selected, show the "问题 → 解决" before/after card.
- *
- * Controls (bound by id):
- *   btn-play-ch2-history-timeline     toggle play/pause
- *   btn-step-ch2-history-timeline     advance to next milestone
- *   btn-reset-ch2-history-timeline   rewind to start
- *   speed-ch2-history-timeline        playback speed multiplier
+ * CH2: AI 发展史时间线 — 9 个里程碑 · 4 个时代
+ * 播放：从 1950 到 2023，依次高亮每个节点
+ * 单步：跳到下一个
+ * 悬停/点击：展开该里程碑的"上一代痛点 → 本代方案"对比
  */
 import { CanvasAnimation } from './canvas-animation.js';
 import { registerAnimation } from './animation-registry.js';
@@ -20,43 +10,43 @@ import { registerAnimation } from './animation-registry.js';
 class Ch2HistoryTimeline extends CanvasAnimation {
     constructor() {
         super();
-        this.speed = 1;
+        this._activeIndex   = -1;
+        this._selectedIndex = -1;
+        this._hoverIndex    = -1;
         this._playing = false;
         this._rafId = null;
-        this._activeIndex = -1;     // currently highlighted milestone in play mode
-        this._selectedIndex = -1;   // user-clicked milestone (locks details card)
-        this._hoverIndex = -1;
         this._lastTick = 0;
-        this._holdTime = 0;         // accumulated time on current milestone (ms)
-        this._holdDuration = 2400;  // ms per milestone during auto-play
+        this._holdTime = 0;
+        this._holdDuration = 1800; // ms per milestone
+        this.speed = 1;
     }
 
     /* ---------------------------------------------------------------
-     *  Milestone data: 9 nodes, 4 eras
+     *  Data — 9 milestones, 4 eras
      * ------------------------------------------------------------- */
     get milestones() {
         return [
-            { year: '1950', title: '图灵测试',        era: 0,
-              desc: '图灵提出"机器能否思考"的判定标准，AI 思想先河。',
-              before: '哲学思辨："机器能思考吗？"',
-              after:  '可操作的判定标准：模仿游戏。' },
-            { year: '1956', title: '达特茅斯会议',    era: 0,
-              desc: '麦卡锡、明斯基等正式提出"Artificial Intelligence" 一词，学科诞生。',
-              before: '没有统一的"AI"概念，散落在数学/控制论/语言学。',
-              after:  'AI 作为独立学科登上舞台。' },
-            { year: '1966', title: 'ELIZA',          era: 1,
-              desc: '魏泽鲍姆开发首个对话程序。模式匹配 + 句式替换，无任何语义理解。',
-              before: '无法让机器"说人话"。',
-              after:  '模式匹配即可制造"理解"假象（ELIZA 效应）。' },
-            { year: '1980s', title: '专家系统',       era: 1,
-              desc: 'MYCIN / XCON 等实现商业化。知识库 + 推理机的符号 AI 达到鼎盛。',
-              before: '无法把专家经验系统化部署到生产环境。',
-              after:  '知识可编码、推理可执行，垂直领域效率倍增。' },
-            { year: '1997', title: 'Deep Blue',      era: 1,
-              desc: 'IBM 深蓝击败国际象棋世界冠军卡斯帕罗夫，符号主义 + 搜索登顶。',
-              before: '机器在国际象棋这种"知识+搜索"任务上不可战胜人类。',
-              after:  '暴力搜索 + 评估函数战胜世界冠军。' },
-            { year: '2016', title: 'AlphaGo',         era: 2,
+            { year: '1950', title: '图灵测试',       era: 0,
+              desc: '图灵提出 "机器能思考吗？" —— 用文字对话间接判断机器是否具有人类智能。',
+              before: '没有可操作的"智能"定义，全靠哲学思辨。',
+              after:  '"如果分不清是人还是机器，就算有智能"——第一次给出可测试判据。' },
+            { year: '1956', title: 'AI 诞生',         era: 0,
+              desc: '达特茅斯会议正式提出 "Artificial Intelligence" 一词，AI 成为独立学科。',
+              before: '研究散落在数学、心理学、工程里，缺少共同语言。',
+              after:  'AI 作为独立学科诞生，吸引首批研究资金与人才。' },
+            { year: '1980', title: '专家系统',         era: 1,
+              desc: '把领域专家的知识编码成 "IF…THEN…" 规则，机器第一次在医疗、地质等垂直领域商用。',
+              before: '通用 AI 进展缓慢，无法落地。',
+              after:  '知识 + 推理 = 商用 AI，DENDRAL、MYCIN 等系统证明价值。' },
+            { year: '1997', title: '深蓝',             era: 1,
+              desc: 'IBM DeepBlue 击败国际象棋世界冠军卡斯帕罗夫，符号搜索达到巅峰。',
+              before: '公众怀疑机器能否在复杂博弈中战胜人类。',
+              after:  '暴力搜索 + 评估函数在封闭规则游戏中胜出。' },
+            { year: '2012', title: 'AlexNet',           era: 1,
+              desc: 'Hinton 团队用 CNN + GPU 把 ImageNet 错误率从 26% 降到 15%，深度学习正式爆发。',
+              before: '传统视觉算法在自然图像上长期停滞。',
+              after:  'CNN + 大数据 + GPU = 视觉突破，引爆深度学习浪潮。' },
+            { year: '2016', title: 'AlphaGo',           era: 2,
               desc: 'DeepMind AlphaGo 击败李世石。强化学习 + 深度网络让机器学会"直觉"。',
               before: '围棋复杂度 10^170，符号搜索完全失效。',
               after:  '策略网络 + 价值网络把"直觉"学了出来。' },
@@ -76,19 +66,24 @@ class Ch2HistoryTimeline extends CanvasAnimation {
     }
 
     get eras() {
+        // `colorKey` is resolved against this.theme() inside draw().
         return [
             { id: 0, label: '萌芽期',   from: 0, to: 1,
-              color: { light: '#3B82F6', dark: '#60A5FA' },
-              fill:  { light: 'rgba(59,130,246,0.06)',  dark: 'rgba(96,165,250,0.07)'  } },
+              colorKey: 'mutedSoft',
+              colorKeyDark: 'muted',
+              fillAlphaLight: 0.10, fillAlphaDark: 0.14 },
             { id: 1, label: '符号主义', from: 2, to: 4,
-              color: { light: '#D97706', dark: '#F59E0B' },
-              fill:  { light: 'rgba(217,119,6,0.06)',   dark: 'rgba(245,158,11,0.07)'  } },
+              colorKey: 'accentAmber',
+              colorKeyDark: 'accentAmber',
+              fillAlphaLight: 0.12, fillAlphaDark: 0.16 },
             { id: 2, label: '深度学习', from: 5, to: 5,
-              color: { light: '#059669', dark: '#10B981' },
-              fill:  { light: 'rgba(5,150,105,0.07)',   dark: 'rgba(16,185,129,0.08)'  } },
+              colorKey: 'accentTeal',
+              colorKeyDark: 'accentTeal',
+              fillAlphaLight: 0.12, fillAlphaDark: 0.16 },
             { id: 3, label: 'LLM 时代', from: 6, to: 8,
-              color: { light: '#7C3AED', dark: '#A78BFA' },
-              fill:  { light: 'rgba(124,58,237,0.06)',  dark: 'rgba(167,139,250,0.07)' } }
+              colorKey: 'primary',
+              colorKeyDark: 'primary',
+              fillAlphaLight: 0.10, fillAlphaDark: 0.16 }
         ];
     }
 
@@ -187,10 +182,11 @@ class Ch2HistoryTimeline extends CanvasAnimation {
 
     stepForward() {
         this.pause();
-        if (this._activeIndex < this.milestones.length - 1) {
-            this._activeIndex++;
+        this._activeIndex++;
+        if (this._activeIndex >= this.milestones.length) {
+            this._activeIndex = this.milestones.length - 1;
         }
-        this._holdTime = 0;
+        this._selectedIndex = this._activeIndex;
         this.draw();
     }
 
@@ -198,34 +194,28 @@ class Ch2HistoryTimeline extends CanvasAnimation {
         this.pause();
         this._activeIndex = -1;
         this._selectedIndex = -1;
+        this._hoverIndex = -1;
         this._holdTime = 0;
         this.draw();
     }
 
-    setSpeed(v) {
-        this.speed = v;
-    }
-
-    step() {
-        this.stepForward();
-    }
+    setSpeed(v) { this.speed = v; }
 
     /* ---------------------------------------------------------------
-     *  Hit-testing & interaction
+     *  Layout
      * ------------------------------------------------------------- */
     _getPositions() {
         const w = this.width;
         const h = this.height;
-        const count = this.milestones.length;
+        const n = this.milestones.length;
+        const margin = w * 0.06;
+        const usable = w - margin * 2;
+        const timelineY = h * 0.50;
         const positions = [];
-        const margin = Math.max(48, w * 0.05);
-        const usableW = w - margin * 2;
-        const spacing = usableW / (count - 1);
-        const timelineY = h * 0.4;
-
-        for (let i = 0; i < count; i++) {
-            const x = margin + i * spacing;
-            // Alternate above/below the timeline for legibility
+        for (let i = 0; i < n; i++) {
+            const x = margin + (usable * i) / (n - 1);
+            // Alternate above/below for the label, but use a deterministic pattern
+            // so the layout stays stable.
             const yOff = (i % 2 === 0) ? -1 : 1;
             const labelY = timelineY + yOff * Math.max(46, h * 0.12);
             positions.push({ x, y: timelineY, labelY, dir: yOff });
@@ -273,14 +263,25 @@ class Ch2HistoryTimeline extends CanvasAnimation {
     /* ---------------------------------------------------------------
      *  Color helpers
      * ------------------------------------------------------------- */
-    _eraColor(eraId) {
+    _eraColor(eraId, t) {
         const era = this.eras[eraId];
-        return this.isDarkTheme() ? era.color.dark : era.color.light;
+        const key = this.isDarkTheme() ? era.colorKeyDark : era.colorKey;
+        return t[key];
     }
 
-    _eraFill(eraId) {
+    _eraFill(eraId, t) {
         const era = this.eras[eraId];
-        return this.isDarkTheme() ? era.fill.dark : era.fill.light;
+        const key = this.isDarkTheme() ? era.colorKeyDark : era.colorKey;
+        const alpha = this.isDarkTheme() ? era.fillAlphaDark : era.fillAlphaLight;
+        return this._withAlpha(t[key], alpha);
+    }
+
+    _withAlpha(hex, alpha) {
+        if (typeof hex !== 'string' || hex[0] !== '#' || hex.length < 7) return hex;
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r},${g},${b},${alpha})`;
     }
 
     /* ---------------------------------------------------------------
@@ -290,13 +291,14 @@ class Ch2HistoryTimeline extends CanvasAnimation {
         const ctx = this.ctx;
         const w = this.width;
         const h = this.height;
+        const t = this.theme();
         const dark = this.isDarkTheme();
-        const bg = dark ? '#0F172A' : '#F8FAFC';
-        const textColor = dark ? '#F1F5F9' : '#0F172A';
-        const subText = dark ? '#94A3B8' : '#475569';
-        const cardBg = dark ? '#1E293B' : '#FFFFFF';
-        const border = dark ? '#334155' : '#E2E8F0';
-        const track = dark ? '#334155' : '#CBD5E1';
+        const bg = dark ? t.surfaceDarkSoft : t.canvas;
+        const textColor = t.ink;
+        const subText = t.muted;
+        const cardBg = dark ? t.surfaceDark : t.canvas;
+        const border = t.hairline;
+        const track = t.muted;
 
         ctx.clearRect(0, 0, w, h);
         ctx.fillStyle = bg;
@@ -312,11 +314,11 @@ class Ch2HistoryTimeline extends CanvasAnimation {
             const x1 = positions[era.to].x;
             const bandY = h * 0.18;
             const bandH = h * 0.66;
-            ctx.fillStyle = this._eraFill(era.id);
+            ctx.fillStyle = this._eraFill(era.id, t);
             ctx.fillRect(x0 - 6, bandY, (x1 - x0) + 12, bandH);
 
             // Era label at top of band
-            ctx.fillStyle = this._eraColor(era.id);
+            ctx.fillStyle = this._eraColor(era.id, t);
             ctx.font = 'bold 11px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'top';
@@ -327,7 +329,7 @@ class Ch2HistoryTimeline extends CanvasAnimation {
         ctx.beginPath();
         ctx.moveTo(positions[0].x, timelineY);
         ctx.lineTo(positions[positions.length - 1].x, timelineY);
-        ctx.strokeStyle = track;
+        ctx.strokeStyle = this._withAlpha(track, dark ? 0.5 : 0.4);
         ctx.lineWidth = 2.5;
         ctx.stroke();
 
@@ -337,7 +339,7 @@ class Ch2HistoryTimeline extends CanvasAnimation {
             ctx.beginPath();
             ctx.moveTo(p.x, timelineY - 4);
             ctx.lineTo(p.x, timelineY + 4);
-            ctx.strokeStyle = track;
+            ctx.strokeStyle = this._withAlpha(track, dark ? 0.5 : 0.4);
             ctx.lineWidth = 1;
             ctx.stroke();
         }
@@ -348,14 +350,14 @@ class Ch2HistoryTimeline extends CanvasAnimation {
             const p = positions[i];
             const isActive = (i === this._activeIndex);
             const isSelected = (i === this._selectedIndex);
-            const color = this._eraColor(this.milestones[i].era);
+            const color = this._eraColor(this.milestones[i].era, t);
 
             const y1 = timelineY + p.dir * 8;
             const y2 = p.labelY - p.dir * labelOffset;
             ctx.beginPath();
             ctx.moveTo(p.x, y1);
             ctx.lineTo(p.x, y2);
-            ctx.strokeStyle = (isActive || isSelected) ? color : track;
+            ctx.strokeStyle = (isActive || isSelected) ? color : this._withAlpha(track, dark ? 0.5 : 0.4);
             ctx.lineWidth = (isActive || isSelected) ? 2 : 1.2;
             ctx.stroke();
         }
@@ -364,7 +366,7 @@ class Ch2HistoryTimeline extends CanvasAnimation {
         for (let i = 0; i < positions.length; i++) {
             const p = positions[i];
             const ms = this.milestones[i];
-            const color = this._eraColor(ms.era);
+            const color = this._eraColor(ms.era, t);
             const isActive = (i === this._activeIndex);
             const isSelected = (i === this._selectedIndex);
             const isHover = (i === this._hoverIndex);
@@ -379,7 +381,7 @@ class Ch2HistoryTimeline extends CanvasAnimation {
             if (emphasized) {
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, r + 10, 0, Math.PI * 2);
-                ctx.fillStyle = color + (dark ? '35' : '28');
+                ctx.fillStyle = this._withAlpha(color, dark ? 0.3 : 0.22);
                 ctx.fill();
             }
 
@@ -390,7 +392,7 @@ class Ch2HistoryTimeline extends CanvasAnimation {
                 p.x - r * 0.35, p.y - r * 0.35, r * 0.1,
                 p.x, p.y, r
             );
-            grad.addColorStop(0, '#FFFFFF');
+            grad.addColorStop(0, t.surfaceCard);
             grad.addColorStop(1, color);
             ctx.fillStyle = grad;
             ctx.fill();
@@ -424,14 +426,14 @@ class Ch2HistoryTimeline extends CanvasAnimation {
         ctx.fillStyle = cardBg;
         ctx.fill();
         ctx.strokeStyle = showDetails
-            ? this._eraColor(this.milestones[this._selectedIndex].era)
+            ? this._eraColor(this.milestones[this._selectedIndex].era, t)
             : border;
         ctx.lineWidth = showDetails ? 2 : 1;
         ctx.stroke();
 
         if (showDetails) {
             this._drawDetailsCard(cardX, cardY, cardW, cardH,
-                this.milestones[this._selectedIndex], cardBg, textColor, subText, border);
+                this.milestones[this._selectedIndex], cardBg, textColor, subText, border, t);
         } else {
             this._drawInstructionCard(cardX, cardY, cardW, cardH, textColor, subText);
         }
@@ -459,10 +461,10 @@ class Ch2HistoryTimeline extends CanvasAnimation {
         }
     }
 
-    _drawDetailsCard(x, y, w, h, ms, cardBg, textColor, subText, border) {
+    _drawDetailsCard(x, y, w, h, ms, cardBg, textColor, subText, border, t) {
         const ctx = this.ctx;
         const era = this.eras[ms.era];
-        const accent = this._eraColor(ms.era);
+        const accent = this._eraColor(ms.era, t);
 
         // Era badge
         const badgeW = 64;
@@ -470,7 +472,7 @@ class Ch2HistoryTimeline extends CanvasAnimation {
         const badgeX = x + 14;
         const badgeY = y + 12;
         this.roundRect(ctx, badgeX, badgeY, badgeW, badgeH, 11);
-        ctx.fillStyle = accent + (this.isDarkTheme() ? '30' : '22');
+        ctx.fillStyle = this._withAlpha(accent, this.isDarkTheme() ? 0.25 : 0.18);
         ctx.fill();
         ctx.fillStyle = accent;
         ctx.font = 'bold 11px sans-serif';
@@ -501,16 +503,17 @@ class Ch2HistoryTimeline extends CanvasAnimation {
         const cmpY = ly + 6;
         const colW = (w - 32 - 12) / 2;
         const colH = h - (cmpY - y) - 12;
+        const dark = this.isDarkTheme();
 
-        // Before column
+        // Before column (痛点) — uses t.error
         this.roundRect(ctx, x + 14, cmpY, colW, colH, 8);
-        ctx.fillStyle = this.isDarkTheme() ? '#3F1D1D' : '#FEF2F2';
+        ctx.fillStyle = this._withAlpha(t.error, dark ? 0.18 : 0.10);
         ctx.fill();
-        ctx.strokeStyle = this.isDarkTheme() ? '#7F1D1D' : '#FCA5A5';
+        ctx.strokeStyle = this._withAlpha(t.error, dark ? 0.55 : 0.45);
         ctx.lineWidth = 1;
         ctx.stroke();
 
-        ctx.fillStyle = this.isDarkTheme() ? '#FCA5A5' : '#B91C1C';
+        ctx.fillStyle = t.error;
         ctx.font = 'bold 10px sans-serif';
         ctx.textBaseline = 'top';
         ctx.fillText('上一代痛点', x + 22, cmpY + 8);
@@ -523,15 +526,15 @@ class Ch2HistoryTimeline extends CanvasAnimation {
             by += 14;
         }
 
-        // After column
+        // After column (突破) — uses t.success
         const ax2 = x + 14 + colW + 12;
         this.roundRect(ctx, ax2, cmpY, colW, colH, 8);
-        ctx.fillStyle = this.isDarkTheme() ? '#1E3A2A' : '#F0FDF4';
+        ctx.fillStyle = this._withAlpha(t.success, dark ? 0.18 : 0.12);
         ctx.fill();
-        ctx.strokeStyle = this.isDarkTheme() ? '#15803D' : '#86EFAC';
+        ctx.strokeStyle = this._withAlpha(t.success, dark ? 0.55 : 0.45);
         ctx.stroke();
 
-        ctx.fillStyle = this.isDarkTheme() ? '#86EFAC' : '#15803D';
+        ctx.fillStyle = t.success;
         ctx.font = 'bold 10px sans-serif';
         ctx.fillText('本代突破', ax2 + 8, cmpY + 8);
         ctx.fillStyle = textColor;
