@@ -590,6 +590,106 @@ body .product-mockup-card-dark {
 }
 
 /* ============================================================
+ * Overlays: search / TOC / keyboard help
+ * (Higher specificity than slides.css .search-* rules)
+ * ============================================================ */
+body .search-modal {
+    background: rgba(11, 10, 42, 0.45);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
+body .search-input-wrap {
+    background-color: var(--canvas);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-2);
+}
+body .search-input {
+    color: var(--ink);
+    font-family: var(--font-body);
+}
+body .search-input::placeholder { color: var(--muted); }
+body .search-input:focus { outline: 2px solid var(--primary); outline-offset: -1px; }
+body .search-close {
+    color: var(--muted);
+}
+body .search-close:hover { background: var(--surface-cream-strong); color: var(--ink); }
+body .search-list {
+    background-color: var(--canvas);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-2);
+}
+body .search-result {
+    color: var(--ink);
+}
+body .search-result:hover,
+body .search-result.active {
+    background-color: var(--surface-cream-strong);
+}
+body .search-result .search-text { color: var(--ink); }
+body .search-result .search-chapter { color: var(--muted); }
+
+/* TOC drawer (created by js/features/toc-sidebar.js) */
+.toc-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 360px;
+    max-width: 90vw;
+    background-color: var(--canvas);
+    border-left: 1px solid var(--hairline);
+    box-shadow: var(--shadow-2);
+    transform: translateX(100%);
+    transition: transform var(--t-base);
+    z-index: 200;
+    overflow-y: auto;
+    padding: var(--space-lg);
+}
+.toc-drawer.open { transform: translateX(0); }
+.toc-list { display: flex; flex-direction: column; gap: 2px; }
+.toc-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.4;
+    transition: background-color var(--t-fast);
+}
+.toc-item:hover { background-color: var(--surface-cream-strong); }
+.toc-item.active {
+    background-color: var(--primary);
+    color: var(--on-primary);
+}
+.toc-icon { width: 20px; text-align: center; font-size: 14px; }
+.toc-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.toc-num {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+}
+.toc-item.active .toc-num { color: var(--on-primary); opacity: 0.8; }
+
+/* Keyboard help (if rendered as a modal in the future) */
+.keyboard-help {
+    background-color: var(--canvas);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-2);
+    color: var(--ink);
+    padding: var(--space-lg);
+}
+
+/* ============================================================
  * Section heading
  * ============================================================ */
 .section-heading {
