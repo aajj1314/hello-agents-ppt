@@ -19,15 +19,20 @@ class Ch12Radar extends CanvasAnimation {
         this.animId = 'ch12-radar';
 
         // Six evaluation dimensions
+        // Each dimension uses t.ink with an alpha step (0.2, 0.35, 0.5, 0.65, 0.8, 1.0)
+        // so they read as 6 distinct endpoints in a monochrome scale, with the
+        // "current" data polygon (filled shape) drawn in t.primary coral.
         this.dimensions = [
-            { name: '准确率',   short: 'Acc',  desc: '任务成功率 / 答案正确率',     weight: 1.0, color: '#6366F1' },
-            { name: '鲁棒性',   short: 'Rob',  desc: '异常输入 / 模糊需求下稳定性',  weight: 1.0, color: '#3B82F6' },
-            { name: '工具调用', short: 'Tool', desc: '工具选对率 + 参数填对率',      weight: 1.0, color: '#10B981' },
-            { name: '任务完成', short: 'Comp', desc: '多步任务的最终完成度',         weight: 1.0, color: '#F59E0B' },
-            { name: '推理能力', short: 'Reas', desc: '多步推理 / 复杂问题分解',      weight: 1.0, color: '#EC4899' },
-            { name: '效率',     short: 'Eff',  desc: '完成任务的步数 / Token 消耗',  weight: 1.0, color: '#8B5CF6' }
+            { name: '准确率',   short: 'Acc',  desc: '任务成功率 / 答案正确率',     weight: 1.0, dimIndex: 0 },
+            { name: '鲁棒性',   short: 'Rob',  desc: '异常输入 / 模糊需求下稳定性',  weight: 1.0, dimIndex: 1 },
+            { name: '工具调用', short: 'Tool', desc: '工具选对率 + 参数填对率',      weight: 1.0, dimIndex: 2 },
+            { name: '任务完成', short: 'Comp', desc: '多步任务的最终完成度',         weight: 1.0, dimIndex: 3 },
+            { name: '推理能力', short: 'Reas', desc: '多步推理 / 复杂问题分解',      weight: 1.0, dimIndex: 4 },
+            { name: '效率',     short: 'Eff',  desc: '完成任务的步数 / Token 消耗',  weight: 1.0, dimIndex: 5 }
         ];
         this.dimCount = this.dimensions.length;
+        // Ink alpha gradient for the 6 dim endpoints
+        this.dimAlphas = [0.20, 0.35, 0.50, 0.65, 0.80, 1.00];
 
         // Target scores (for play-mode demo) and current scores (what the user sees / drags)
         this.targetScores  = [85, 70, 78, 75, 80, 65];
@@ -279,12 +284,21 @@ class Ch12Radar extends CanvasAnimation {
         const ctx = this.ctx;
         const w = this.width;
         const h = this.height;
+        const t = this.theme();
         const dark = this.isDarkTheme();
-        const bg = dark ? '#0F172A' : '#F8FAFC';
-        const textColor = dark ? '#F1F5F9' : '#0F172A';
-        const subColor  = dark ? '#94A3B8' : '#475569';
-        const borderCol = dark ? 'rgba(148,163,184,0.25)' : 'rgba(100,116,139,0.25)';
-        const panelBg   = dark ? 'rgba(30,41,59,0.6)' : 'rgba(241,245,249,0.85)';
+        const bg = dark ? t.surfaceDarkSoft : t.canvas;
+        const textColor = t.ink;
+        const subColor  = t.muted;
+        const borderCol = this._withAlpha(t.muted, dark ? 0.25 : 0.25);
+        const panelBg   = dark
+            ? this._withAlpha(t.surfaceDark, 0.6)
+            : this._withAlpha(t.surfaceCard, 0.85);
+        // Resolve per-dimension colors from ink alpha gradient (0.2..1.0)
+        for (let i = 0; i < this.dimCount; i++) {
+            this.dimensions[i].color = t.ink;
+            this.dimensions[i].alpha = this.dimAlphas[i];
+        }
+        const dataColor = t.primary; // "current" data polygon uses coral
 
         ctx.clearRect(0, 0, w, h);
         ctx.fillStyle = bg;
@@ -304,17 +318,17 @@ class Ch12Radar extends CanvasAnimation {
         ctx.fillText('拖动任一端点即可调整该维度分数 (0-100)', 16, 8 + 16);
 
         // ---- Radar (concentric rings, axes, polygon, draggable points) ----
-        this._drawRadar(ctx, cx, cy, maxR, textColor, subColor, borderCol, dark);
+        this._drawRadar(ctx, cx, cy, maxR, textColor, subColor, borderCol, dark, dataColor, t);
 
         // ---- Right sidebar: 6-dim score card ----
-        this._drawScoreCard(ctx, sidebarX, sidebarY, sidebarW, sidebarH, textColor, subColor, borderCol, panelBg, dark);
+        this._drawScoreCard(ctx, sidebarX, sidebarY, sidebarW, sidebarH, textColor, subColor, borderCol, panelBg, dark, t);
 
         // ---- Footer status ----
         this._drawFooter(ctx, w, h, subColor, textColor);
     }
 
     // -------- radar drawing --------
-    _drawRadar(ctx, cx, cy, maxR, textColor, subColor, borderCol, dark) {
+    _drawRadar(ctx, cx, cy, maxR, textColor, subColor, borderCol, dark, dataColor, t) {
         // 1) 4 tick rings at 25/50/75/100%
         const ringFractions = [0.25, 0.50, 0.75, 1.00];
         for (const f of ringFractions) {
@@ -367,9 +381,8 @@ class Ch12Radar extends CanvasAnimation {
             ctx.fillText(this.dimensions[i].name, lx, ly);
         }
 
-        // 3) Filled data polygon (uses current scores)
-        const dataColor = '#6366F1';
-        const fillColor = dark ? 'rgba(99,102,241,0.28)' : 'rgba(99,102,241,0.18)';
+        // 3) Filled data polygon — uses t.primary (coral) as the "current" highlight
+        const fillColor = this._withAlpha(t.primary, dark ? 0.28 : 0.18);
         ctx.beginPath();
         for (let i = 0; i <= this.dimCount; i++) {
             const idx = i % this.dimCount;
@@ -390,45 +403,59 @@ class Ch12Radar extends CanvasAnimation {
         // 4) Center disc (just for aesthetics)
         ctx.beginPath();
         ctx.arc(cx, cy, 3, 0, Math.PI * 2);
-        ctx.fillStyle = dark ? 'rgba(148,163,184,0.45)' : 'rgba(100,116,139,0.5)';
+        ctx.fillStyle = this._withAlpha(t.muted, dark ? 0.45 : 0.5);
         ctx.fill();
 
-        // 5) 6 draggable endpoint circles
+        // 5) 6 draggable endpoint circles — each uses t.ink with its own alpha step
         this._pointRects = [];
         for (let i = 0; i < this.dimCount; i++) {
             const angle = this._axisAngle(i);
             const r = maxR * (this.currentScores[i] / 100);
             const x = cx + r * Math.cos(angle);
             const y = cy + r * Math.sin(angle);
+            const dim = this.dimensions[i];
             const isHover = i === this._hovering;
             const isDrag  = i === this._dragging;
+
+            ctx.save();
+            ctx.globalAlpha = dim.alpha;
 
             // Outer halo on hover/drag
             if (isHover || isDrag) {
                 ctx.beginPath();
                 ctx.arc(x, y, isDrag ? 13 : 11, 0, Math.PI * 2);
-                ctx.fillStyle = this.dimensions[i].color + (isDrag ? '55' : '33');
+                ctx.fillStyle = dim.color;
+                ctx.globalAlpha = dim.alpha * (isDrag ? 0.55 : 0.33);
                 ctx.fill();
+                ctx.globalAlpha = dim.alpha;
             }
 
-            // Solid white center with colored stroke (or fully colored if dragging)
+            // Solid white center with ink stroke (or fully colored if dragging)
             ctx.beginPath();
             ctx.arc(x, y, isDrag ? 7 : 5.5, 0, Math.PI * 2);
-            ctx.fillStyle = isDrag ? this.dimensions[i].color : '#FFFFFF';
+            ctx.fillStyle = isDrag ? dim.color : t.onDark;
+            ctx.globalAlpha = isDrag ? dim.alpha : 1.0;
             ctx.fill();
-            ctx.strokeStyle = this.dimensions[i].color;
+            ctx.strokeStyle = dim.color;
             ctx.lineWidth = isDrag ? 2.5 : 2;
+            ctx.globalAlpha = dim.alpha;
             ctx.stroke();
 
-            // Score label a little further along the axis
+            ctx.restore();
+
+            // Score label a little further along the axis (always full alpha
+            // so the number remains readable regardless of dim opacity).
             const labelR2 = r + 14;
             const lx2 = cx + labelR2 * Math.cos(angle);
             const ly2 = cy + labelR2 * Math.sin(angle);
-            ctx.fillStyle = this.dimensions[i].color;
+            ctx.save();
+            ctx.globalAlpha = dim.alpha;
+            ctx.fillStyle = dim.color;
             ctx.font = 'bold 10px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(Math.round(this.currentScores[i]) + '%', lx2, ly2);
+            ctx.restore();
 
             // Save a generous hit rectangle (handles ~12px radius around the point)
             this._pointRects.push({ idx: i, x, y, hw: 14, hh: 14 });
@@ -438,8 +465,10 @@ class Ch12Radar extends CanvasAnimation {
         if (this._dragging >= 0) {
             const i = this._dragging;
             const angle = this._axisAngle(i);
+            const dim = this.dimensions[i];
             ctx.save();
-            ctx.strokeStyle = this.dimensions[i].color + '88';
+            ctx.globalAlpha = dim.alpha * 0.55;
+            ctx.strokeStyle = dim.color;
             ctx.lineWidth = 1;
             ctx.setLineDash([3, 3]);
             ctx.beginPath();
@@ -452,7 +481,7 @@ class Ch12Radar extends CanvasAnimation {
     }
 
     // -------- sidebar / score card --------
-    _drawScoreCard(ctx, x, y, w, h, textColor, subColor, borderCol, panelBg, dark) {
+    _drawScoreCard(ctx, x, y, w, h, textColor, subColor, borderCol, panelBg, dark, t) {
         // Panel background
         ctx.fillStyle = panelBg;
         this.roundRect(ctx, x, y, w, h, 10);
@@ -473,9 +502,9 @@ class Ch12Radar extends CanvasAnimation {
         ctx.fillText('📊  评估得分', x + padX, cursorY);
         cursorY += 18;
 
-        // Weighted total — large number
+        // Weighted total — large number, color codes the overall grade
         const total = this._weightedTotal();
-        const totalColor = total >= 80 ? '#10B981' : (total >= 60 ? '#F59E0B' : '#EF4444');
+        const totalColor = total >= 80 ? t.success : (total >= 60 ? t.accentAmber : t.error);
         ctx.fillStyle = subColor;
         ctx.font = '10px sans-serif';
         ctx.fillText('当前总分 (加权平均)', x + padX, cursorY);
@@ -500,7 +529,7 @@ class Ch12Radar extends CanvasAnimation {
         // 6 dimension rows (name + bar + score)
         const rowH = Math.min(22, (h - (cursorY - y) - 30) / this.dimCount);
         for (let i = 0; i < this.dimCount; i++) {
-            this._drawScoreRow(ctx, x + padX, cursorY + i * rowH, w - padX * 2, rowH, i, textColor, subColor, dark);
+            this._drawScoreRow(ctx, x + padX, cursorY + i * rowH, w - padX * 2, rowH, i, textColor, subColor, dark, t);
         }
 
         // Footer hint inside the panel
@@ -512,7 +541,7 @@ class Ch12Radar extends CanvasAnimation {
         ctx.fillText('提示: 拖动雷达端点调整权重', x + padX, hintY);
     }
 
-    _drawScoreRow(ctx, x, y, w, h, i, textColor, subColor, dark) {
+    _drawScoreRow(ctx, x, y, w, h, i, textColor, subColor, dark, t) {
         const dim = this.dimensions[i];
         const score = this.currentScores[i];
         const target = this.targetScores[i];
@@ -533,34 +562,38 @@ class Ch12Radar extends CanvasAnimation {
         ctx.fillText(dim.name, x, y + h / 2);
 
         // Bar background
-        ctx.fillStyle = dark ? 'rgba(148,163,184,0.18)' : 'rgba(100,116,139,0.18)';
+        ctx.fillStyle = this._withAlpha(t.muted, dark ? 0.18 : 0.18);
         this.roundRect(ctx, barX, barY, barW, barH, 4);
         ctx.fill();
-        // Bar fill
+        // Bar fill — uses dim.color (ink) at this dim's alpha step, so the
+        // 6 bars fade in steps from 0.2 to 1.0 just like the radar endpoints.
         const fillW = Math.max(0, Math.min(barW, (score / 100) * barW));
         if (fillW > 0) {
-            const grad = ctx.createLinearGradient(barX, 0, barX + barW, 0);
-            grad.addColorStop(0, dim.color);
-            grad.addColorStop(1, this._lighten(dim.color, 0.25));
-            ctx.fillStyle = grad;
+            ctx.save();
+            ctx.globalAlpha = dim.alpha;
+            ctx.fillStyle = dim.color;
             this.roundRect(ctx, barX, barY, fillW, barH, 4);
             ctx.fill();
+            ctx.restore();
         }
         // Target tick (a small mark at the target value)
-        const tx = barX + Math.max(0, Math.min(barW, (target / 100) * barW));
-        ctx.strokeStyle = dark ? 'rgba(255,255,255,0.6)' : 'rgba(15,23,42,0.55)';
+        const tx2 = barX + Math.max(0, Math.min(barW, (target / 100) * barW));
+        ctx.strokeStyle = this._withAlpha(t.ink, dark ? 0.6 : 0.55);
         ctx.lineWidth = 1.2;
         ctx.beginPath();
-        ctx.moveTo(tx, barY - 2);
-        ctx.lineTo(tx, barY + barH + 2);
+        ctx.moveTo(tx2, barY - 2);
+        ctx.lineTo(tx2, barY + barH + 2);
         ctx.stroke();
 
-        // Score number
+        // Score number (dim.alpha)
+        ctx.save();
+        ctx.globalAlpha = dim.alpha;
         ctx.fillStyle = dim.color;
         ctx.font = 'bold 10px sans-serif';
         ctx.textAlign = 'right';
         ctx.textBaseline = 'middle';
         ctx.fillText(Math.round(score), x + w, y + h / 2);
+        ctx.restore();
     }
 
     // -------- footer --------
