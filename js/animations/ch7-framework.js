@@ -30,33 +30,36 @@ class Ch7Framework extends CanvasAnimation {
         this.hover = { type: 'none', index: -1 };   // type: 'layer' | 'pain' | 'project'
 
         // 5 layers (bottom → top). Each layer declares which pain-points it solves.
+        // `colorKey` is resolved against this.theme() inside draw() — so theme
+        // switches re-render correctly. The 5 layers share a single ink-family
+        // progression so the diagram reads as one cohesive stack.
         this.layers = [
             {
-                key: 'L1', title: 'L1 基础层', color: '#6366F1',
+                key: 'L1', title: 'L1 基础层', colorKey: 'ink',
                 desc: 'BaseAgent / HelloAgentsLLM / Config',
                 api: 'llm = HelloAgentsLLM()\nagent = BaseAgent(llm)\nConfig.from_env()',
                 solves: [0, 3]   // 过度抽象 + 依赖复杂
             },
             {
-                key: 'L2', title: 'L2 范式层', color: '#8B5CF6',
+                key: 'L2', title: 'L2 范式层', colorKey: 'body',
                 desc: 'ReAct / Plan-Solve / Reflection',
                 api: 'ReActAgent(llm, tools)\nPlanAndSolveAgent(llm)\nReflectionAgent(llm)',
                 solves: [1, 2]   // 快速迭代不稳定 + 黑盒化
             },
             {
-                key: 'L3', title: 'L3 工具层', color: '#0EA5E9',
+                key: 'L3', title: 'L3 工具层', colorKey: 'muted',
                 desc: 'ToolRegistry / 内置工具 / 外部 API',
                 api: 'registry.register_tool(t)\n@tool def my_tool(...)\nCalculator / Search / HTTP',
                 solves: []
             },
             {
-                key: 'L4', title: 'L4 记忆层', color: '#10B981',
+                key: 'L4', title: 'L4 记忆层', colorKey: 'mutedSoft',
                 desc: 'Memory / RAG / Note / Terminal (→ CH8)',
                 api: 'agent.add_message(m)\nMemoryTool(persist=True)\nRAGTool(vector_db)',
                 solves: []
             },
             {
-                key: 'L5', title: 'L5 应用层', color: '#F59E0B',
+                key: 'L5', title: 'L5 应用层', colorKey: 'primary',
                 desc: 'CH13 旅行助手 / CH14 DeepResearch / CH15 赛博小镇',
                 api: 'agent.run(user_input)\n→ 业务场景',
                 solves: []
@@ -64,18 +67,19 @@ class Ch7Framework extends CanvasAnimation {
         ];
 
         // 4 痛点 cards, each maps to a target layer index.
+        // Colors carry semantic meaning: error / warning / primary / accentTeal.
         this.painPoints = [
-            { title: '过度抽象',     desc: '十几层概念才能跑通简单任务', target: 0, color: '#EF4444' },
-            { title: '快速迭代不稳定', desc: 'API 变更频繁，升级即崩溃',     target: 1, color: '#F59E0B' },
-            { title: '黑盒化',       desc: '核心逻辑封装，看不见内部',     target: 1, color: '#8B5CF6' },
-            { title: '依赖复杂',     desc: '安装包臃肿，版本易冲突',       target: 0, color: '#0EA5E9' }
+            { title: '过度抽象',     desc: '十几层概念才能跑通简单任务', target: 0, colorKey: 'error' },
+            { title: '快速迭代不稳定', desc: 'API 变更频繁，升级即崩溃',     target: 1, colorKey: 'warning' },
+            { title: '黑盒化',       desc: '核心逻辑封装，看不见内部',     target: 1, colorKey: 'primary' },
+            { title: '依赖复杂',     desc: '安装包臃肿，版本易冲突',       target: 0, colorKey: 'accentTeal' }
         ];
 
         // 3 实战项目缩略 (visible at step >= layerCount).
         this.projects = [
-            { ch: 'CH13', name: '旅行助手',    color: '#3B82F6' },
-            { ch: 'CH14', name: 'DeepResearch', color: '#10B981' },
-            { ch: 'CH15', name: '赛博小镇',    color: '#F59E0B' }
+            { ch: 'CH13', name: '旅行助手',    colorKey: 'accentTeal' },
+            { ch: 'CH14', name: 'DeepResearch', colorKey: 'success' },
+            { ch: 'CH15', name: '赛博小镇',    colorKey: 'accentAmber' }
         ];
     }
 
@@ -109,6 +113,14 @@ class Ch7Framework extends CanvasAnimation {
             this.canvas.style.cursor = 'default';
             this.draw();
         });
+    }
+
+    _withAlpha(hex, alpha) {
+        if (typeof hex !== 'string' || hex[0] !== '#' || hex.length < 7) return hex;
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     }
 
     _handleHover(e) {
@@ -285,16 +297,25 @@ class Ch7Framework extends CanvasAnimation {
     }
 
     draw() {
-        const ctx = this.ctx;
-        const w = this.width;
-        const h = this.height;
+        const ctx = this.ctx, w = this.width, h = this.height;
+        const t = this.theme();
         const isDark = this.isDarkTheme();
-        const bg = isDark ? '#0F172A' : '#F8FAFC';
-        const textColor = isDark ? '#F1F5F9' : '#0F172A';
-        const subColor = isDark ? '#94A3B8' : '#475569';
-        const cardBg = isDark ? '#1E293B' : '#FFFFFF';
-        const cardBorder = isDark ? '#334155' : '#E2E8F0';
-        const innerBg = isDark ? '#0B1220' : '#F1F5F9';
+        const bg = isDark ? t.surfaceDarkSoft : t.canvas;
+        const textColor = t.ink;
+        const subColor = t.muted;
+        const cardBg = isDark ? t.surfaceDark : t.canvas;
+        const cardBorder = t.hairline;
+        const innerBg = isDark ? t.surfaceDarkSoft : t.surfaceCard;
+        // Resolve the layer / pain / project color tokens to actual hex
+        for (let i = 0; i < this.layers.length; i++) {
+            this.layers[i].color = t[this.layers[i].colorKey];
+        }
+        for (let i = 0; i < this.painPoints.length; i++) {
+            this.painPoints[i].color = t[this.painPoints[i].colorKey];
+        }
+        for (let i = 0; i < this.projects.length; i++) {
+            this.projects[i].color = t[this.projects[i].colorKey];
+        }
 
         ctx.clearRect(0, 0, w, h);
         ctx.fillStyle = bg;
@@ -322,25 +343,25 @@ class Ch7Framework extends CanvasAnimation {
         ctx.fillText('实战项目 (CH13/14/15)', layout.projects[0].x + layout.projects[0].w, layout.mainTop - 4);
 
         // Pain points
-        layout.painPoints.forEach((r) => this._drawPainPoint(ctx, r, { isDark, textColor, subColor, cardBg, cardBorder }));
+        layout.painPoints.forEach((r) => this._drawPainPoint(ctx, r, { isDark, textColor, subColor, cardBg, cardBorder, t }));
 
         // Connection arrows (pain point → target layer)
         layout.painPoints.forEach((r) => {
             const layer = layout.layers[r.data.target];
             this._drawArrow(ctx, r, layer, r.data.color, {
-                isDark, isActive: this._isPainHighlighted(r.index)
+                isDark, isActive: this._isPainHighlighted(r.index), t
             });
         });
 
         // Pyramid layers
-        layout.layers.forEach((r) => this._drawLayer(ctx, r, { isDark, textColor, subColor, cardBg, cardBorder, innerBg }));
+        layout.layers.forEach((r) => this._drawLayer(ctx, r, { isDark, textColor, subColor, cardBg, cardBorder, innerBg, t }));
 
         // Right column
-        this._drawApiBox(ctx, layout.apiBox, { isDark, textColor, subColor, cardBg, cardBorder, innerBg });
+        this._drawApiBox(ctx, layout.apiBox, { isDark, textColor, subColor, cardBg, cardBorder, innerBg, t });
         if (this.step >= this.layers.length) {
-            this._drawProjects(ctx, layout.projects, { isDark, textColor, subColor, cardBg, cardBorder });
+            this._drawProjects(ctx, layout.projects, { isDark, textColor, subColor, cardBg, cardBorder, t });
         } else {
-            this._drawProjectsLocked(ctx, layout.projects, { isDark, subColor, cardBorder });
+            this._drawProjectsLocked(ctx, layout.projects, { isDark, subColor, cardBorder, t });
         }
 
         // Bottom info bar
@@ -425,7 +446,7 @@ class Ch7Framework extends CanvasAnimation {
     }
 
     _drawLayer(ctx, r, theme) {
-        const { isDark, textColor, subColor, cardBg, cardBorder, innerBg } = theme;
+        const { isDark, textColor, subColor, cardBg, cardBorder, innerBg, t } = theme;
         const isLit = r.index < this.step;
         const isActive = this._isLayerHighlighted(r.index);
         const isDim = (this.hover.type === 'layer' || this.hover.type === 'pain') && !isActive;
@@ -434,7 +455,7 @@ class Ch7Framework extends CanvasAnimation {
 
         // Background gradient
         const gradTop = isLit ? r.data.color : innerBg;
-        const gradBot = isLit ? r.data.color + 'CC' : (isDark ? '#0B1220' : '#E2E8F0');
+        const gradBot = isLit ? this._withAlpha(r.data.color, 0.8) : (isDark ? t.surfaceDark : t.surfaceCard);
         const grad = ctx.createLinearGradient(r.x, r.y, r.x, r.y + r.h);
         grad.addColorStop(0, gradTop);
         grad.addColorStop(1, gradBot);
@@ -463,24 +484,24 @@ class Ch7Framework extends CanvasAnimation {
         const pillW = 28, pillH = 16;
         const pillX = r.x + 10;
         const pillY = r.y + r.h / 2 - pillH / 2;
-        ctx.fillStyle = isLit ? 'rgba(255,255,255,0.18)' : r.data.color + '22';
+        ctx.fillStyle = isLit ? this._withAlpha(t.onPrimary, 0.18) : this._withAlpha(r.data.color, 0.13);
         this.roundRect(ctx, pillX, pillY, pillW, pillH, 4);
         ctx.fill();
-        ctx.fillStyle = isLit ? '#FFFFFF' : r.data.color;
+        ctx.fillStyle = isLit ? t.onPrimary : r.data.color;
         ctx.font = 'bold 10px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(r.data.key, pillX + pillW / 2, pillY + pillH / 2 + 0.5);
 
         // Title
-        ctx.fillStyle = isLit ? '#FFFFFF' : textColor;
+        ctx.fillStyle = isLit ? t.onPrimary : textColor;
         ctx.font = 'bold 13px sans-serif';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'middle';
         ctx.fillText(r.data.title, r.x + 10 + pillW + 8, r.y + r.h / 2 - 7);
 
         // Description
-        ctx.fillStyle = isLit ? 'rgba(255,255,255,0.92)' : subColor;
+        ctx.fillStyle = isLit ? this._withAlpha(t.onPrimary, 0.92) : subColor;
         ctx.font = '10px sans-serif';
         ctx.textAlign = r.w > 220 ? 'right' : 'left';
         const descText = r.data.desc;
@@ -515,7 +536,7 @@ class Ch7Framework extends CanvasAnimation {
         ctx.bezierCurveTo(cp1X, cp1Y, cp2X, cp2Y, toX - 6, toY);
         ctx.strokeStyle = isActive
             ? color
-            : (isDark ? 'rgba(148,163,184,0.4)' : 'rgba(100,116,139,0.4)');
+            : this._withAlpha(opts.t.muted, isDark ? 0.5 : 0.45);
         ctx.lineWidth = isActive ? 2 : 1;
         if (!isActive) ctx.setLineDash([4, 4]);
         ctx.stroke();
@@ -593,7 +614,7 @@ class Ch7Framework extends CanvasAnimation {
         ctx.fillStyle = layer.color;
         this.roundRect(ctx, m.x + 10, badgeY, 32, 16, 4);
         ctx.fill();
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = t.onPrimary;
         ctx.font = 'bold 9px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -630,7 +651,7 @@ class Ch7Framework extends CanvasAnimation {
         this.roundRect(ctx, m.x + 10, codeY, m.w - 20, codeH, 6);
         ctx.fill();
 
-        ctx.fillStyle = isDark ? '#A5B4FC' : '#4338CA';
+        ctx.fillStyle = isDark ? t.mutedSoft : t.primary;
         ctx.font = '10px monospace';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'top';
@@ -645,7 +666,7 @@ class Ch7Framework extends CanvasAnimation {
     }
 
     _drawProjects(ctx, projects, theme) {
-        const { textColor, subColor, cardBorder } = theme;
+        const { textColor, subColor, cardBorder, t } = theme;
         projects.forEach((p) => {
             const r = p;
             ctx.fillStyle = p.data.color;
@@ -657,19 +678,19 @@ class Ch7Framework extends CanvasAnimation {
             ctx.stroke();
 
             // Chapter tag
-            ctx.fillStyle = 'rgba(255,255,255,0.85)';
+            ctx.fillStyle = this._withAlpha(t.onPrimary, 0.85);
             ctx.font = 'bold 10px sans-serif';
             ctx.textAlign = 'left';
             ctx.textBaseline = 'top';
             ctx.fillText(p.data.ch, r.x + 12, r.y + 8);
 
             // Project name
-            ctx.fillStyle = '#FFFFFF';
+            ctx.fillStyle = t.onPrimary;
             ctx.font = 'bold 14px sans-serif';
             ctx.fillText(p.data.name, r.x + 12, r.y + 26);
 
             // Footer: "实战项目"
-            ctx.fillStyle = 'rgba(255,255,255,0.7)';
+            ctx.fillStyle = this._withAlpha(t.onPrimary, 0.7);
             ctx.font = '9px sans-serif';
             ctx.textAlign = 'right';
             ctx.textBaseline = 'bottom';
@@ -678,10 +699,10 @@ class Ch7Framework extends CanvasAnimation {
     }
 
     _drawProjectsLocked(ctx, projects, theme) {
-        const { subColor, cardBorder, isDark } = theme;
+        const { subColor, cardBorder, isDark, t } = theme;
         projects.forEach((p) => {
             const r = p;
-            ctx.fillStyle = isDark ? 'rgba(148,163,184,0.08)' : 'rgba(100,116,139,0.08)';
+            ctx.fillStyle = this._withAlpha(t.muted, isDark ? 0.15 : 0.12);
             this.roundRect(ctx, r.x, r.y, r.w, r.h, 8);
             ctx.fill();
             ctx.strokeStyle = cardBorder;
