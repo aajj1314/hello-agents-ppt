@@ -4,6 +4,9 @@
 
 **数据**: 338 slides · 110 quiz · 20 Canvas 动画 · 103 tests · 0 运行时依赖
 
+Style: Claude-Inspired · warm editorial · cream + coral + serif
+      (Source Serif 4 display + Inter body, 0 backdrop-filter, coral CTAs)
+
 ## 运行
 
 ```bash
