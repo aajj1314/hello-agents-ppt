@@ -749,39 +749,53 @@ h6 { font-size: 16px; font-family: var(--font-body); font-weight: 500; }
 .btn svg { width: 16px; height: 16px; }
 
 .btn-primary {
-    background: var(--primary);
-    color: #fff;
-    box-shadow: var(--glow-violet);
-    border-color: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary);
+    color: var(--on-primary);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.0;
+    height: 40px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background-color var(--t-fast);
 }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 18px 36px -12px rgba(124, 58, 237, 0.55), var(--glow-violet); }
-.btn-primary:active { transform: translateY(0); }
+.btn-primary:hover { background-color: var(--primary-active); }
+.btn-primary:disabled { background-color: var(--primary-disabled); color: var(--muted); cursor: not-allowed; }
 
 .btn-secondary {
-    background: var(--bg-glass);
-    color: var(--text-primary);
-    border-color: var(--border-glass);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--canvas);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.0;
+    height: 40px;
+    padding: 12px 20px;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: border-color var(--t-fast), background-color var(--t-fast);
 }
-.btn-secondary:hover {
-    background: var(--bg-glass-strong);
-    border-color: rgba(124, 58, 237, 0.30);
-    color: var(--violet-700, #6D28D9);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
+.btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
 
 .btn-danger {
-    background: var(--bg-glass);
-    color: #B91C1C;
-    border-color: rgba(239, 68, 68, 0.30);
+    background-color: var(--canvas);
+    color: var(--error);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-md);
+    padding: 12px 20px;
+    height: 40px;
 }
-.btn-danger:hover {
-    background: rgba(239, 68, 68, 0.10);
-    border-color: rgba(239, 68, 68, 0.55);
-    color: #B91C1C;
-    transform: translateY(-2px);
-    box-shadow: 0 10px 24px -10px rgba(239, 68, 68, 0.45);
-}
+.btn-danger:hover { border-color: var(--error); }
 [data-theme="dark"] .btn-danger { color: #FCA5A5; }
 
 .theme-toggle {
