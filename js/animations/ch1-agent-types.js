@@ -22,12 +22,15 @@ class Ch1AgentTypes extends CanvasAnimation {
         this.speed = 1;
         this.cycleInterval = 2400; // ms per type during autoplay
 
+        // Each type carries a `colorKey` that is resolved to an actual hex
+        // from this.theme() inside draw() — so theme switches redraw correctly.
+        // 5 types mapped to a muted → ink → coral progression.
         this.types = [
             {
                 name: '简单反射',
                 nameEn: 'Simple Reflex',
-                color: '#60A5FA',
-                colorSoft: '#93C5FD',
+                colorKey: 'mutedSoft',
+                colorSoftKey: 'hairline',
                 key: '只看现在',
                 desc: '仅看当前感知，按固定规则立刻行动，不记过去也不想未来。',
                 example: '自动恒温器：感知温度 → 低于阈值就加热，高于阈值就制冷。',
@@ -42,8 +45,8 @@ class Ch1AgentTypes extends CanvasAnimation {
             {
                 name: '模型反射',
                 nameEn: 'Model-Based',
-                color: '#A78BFA',
-                colorSoft: '#C4B5FD',
+                colorKey: 'muted',
+                colorSoftKey: 'mutedSoft',
                 key: '记得过去',
                 desc: '维护一份对世界的内部记录，根据历史状态做决定。',
                 example: '扫地机器人：一边扫一边更新房间地图，知道哪里扫过、哪里还没扫。',
@@ -58,8 +61,8 @@ class Ch1AgentTypes extends CanvasAnimation {
             {
                 name: '目标驱动',
                 nameEn: 'Goal-Based',
-                color: '#F472B6',
-                colorSoft: '#F9A8D4',
+                colorKey: 'body',
+                colorSoftKey: 'muted',
                 key: '面向未来',
                 desc: '以目标为导向，主动选择能最快到达目标的行动。',
                 example: '导航软件：目标是"到达公司"，自动搜索距离 / 时间最优路径。',
@@ -74,8 +77,8 @@ class Ch1AgentTypes extends CanvasAnimation {
             {
                 name: '效用驱动',
                 nameEn: 'Utility-Based',
-                color: '#34D399',
-                colorSoft: '#86EFAC',
+                colorKey: 'ink',
+                colorSoftKey: 'body',
                 key: '会权衡',
                 desc: '在多个冲突目标间打分，选期望效用最大的行动。',
                 example: '订餐助手：在价格、配送时间、评分、口味之间综合打分，挑选最优。',
@@ -90,8 +93,8 @@ class Ch1AgentTypes extends CanvasAnimation {
             {
                 name: '学习型',
                 nameEn: 'Learning',
-                color: '#FBBF24',
-                colorSoft: '#FCD34D',
+                colorKey: 'primary',
+                colorSoftKey: 'accentAmber',
                 key: '会进化',
                 desc: '从经验中学习，用反馈不断改进未来的决策。',
                 example: '推荐系统：每次你点击 / 跳过都在告诉它"下次该怎么排"。',
@@ -264,20 +267,22 @@ class Ch1AgentTypes extends CanvasAnimation {
 
     // ---- drawing helpers ----
 
-    _drawNode(ctx, p, type, i) {
+    _drawNode(ctx, p, type, i, t) {
         const isSelected = i === this.selectedIndex;
         const isHover = i === this.hoverIndex;
         const baseR = this._nodeRadius();
         const r = baseR * (isSelected ? 1.12 : isHover ? 1.06 : 1);
         const isDark = this.isDarkTheme();
+        const typeColor = t[type.colorKey];
+        const typeColorSoft = t[type.colorSoftKey] || t.hairline;
 
         // Soft halo (selected / hover)
         if (isSelected || isHover) {
             const haloR = r + 12;
             const halo = ctx.createRadialGradient(p.x, p.y, r * 0.6, p.x, p.y, haloR);
             const alpha = isSelected ? 0.35 : 0.2;
-            halo.addColorStop(0, this._withAlpha(type.color, alpha));
-            halo.addColorStop(1, this._withAlpha(type.color, 0));
+            halo.addColorStop(0, this._withAlpha(typeColor, alpha));
+            halo.addColorStop(1, this._withAlpha(typeColor, 0));
             ctx.fillStyle = halo;
             ctx.beginPath();
             ctx.arc(p.x, p.y, haloR, 0, Math.PI * 2);
@@ -286,7 +291,7 @@ class Ch1AgentTypes extends CanvasAnimation {
 
         // Drop shadow
         ctx.save();
-        ctx.shadowColor = this._withAlpha(type.color, isDark ? 0.45 : 0.35);
+        ctx.shadowColor = this._withAlpha(typeColor, isDark ? 0.45 : 0.35);
         ctx.shadowBlur = isSelected ? 18 : 10;
         ctx.shadowOffsetY = isSelected ? 4 : 2;
 
@@ -295,9 +300,9 @@ class Ch1AgentTypes extends CanvasAnimation {
             p.x - r * 0.35, p.y - r * 0.4, r * 0.15,
             p.x, p.y, r
         );
-        grad.addColorStop(0, '#FFFFFF');
-        grad.addColorStop(0.55, type.colorSoft);
-        grad.addColorStop(1, type.color);
+        grad.addColorStop(0, t.surfaceCard);
+        grad.addColorStop(0.55, typeColorSoft);
+        grad.addColorStop(1, typeColor);
         ctx.fillStyle = grad;
         ctx.beginPath();
         ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
@@ -307,7 +312,7 @@ class Ch1AgentTypes extends CanvasAnimation {
         // Border
         ctx.beginPath();
         ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-        ctx.strokeStyle = isSelected ? type.color : this._withAlpha('#000000', isDark ? 0.25 : 0.12);
+        ctx.strokeStyle = isSelected ? typeColor : this._withAlpha(t.ink, isDark ? 0.25 : 0.12);
         ctx.lineWidth = isSelected ? 3 : 1.5;
         ctx.stroke();
 
@@ -315,55 +320,56 @@ class Ch1AgentTypes extends CanvasAnimation {
         const badgeR = Math.max(9, r * 0.28);
         const bx = p.x - r * 0.55;
         const by = p.y - r * 0.55;
-        ctx.fillStyle = isDark ? '#0F172A' : '#FFFFFF';
+        ctx.fillStyle = isDark ? t.surfaceDark : t.canvas;
         ctx.beginPath();
         ctx.arc(bx, by, badgeR, 0, Math.PI * 2);
         ctx.fill();
-        ctx.strokeStyle = type.color;
+        ctx.strokeStyle = typeColor;
         ctx.lineWidth = 1.5;
         ctx.stroke();
-        ctx.fillStyle = type.color;
+        ctx.fillStyle = typeColor;
         ctx.font = 'bold 11px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(String(i + 1), bx, by + 0.5);
 
         // Node short name (centered inside)
-        ctx.fillStyle = isDark ? '#0F172A' : '#FFFFFF';
+        ctx.fillStyle = isDark ? t.surfaceDark : t.canvas;
         ctx.font = 'bold ' + Math.max(11, r * 0.32) + 'px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(type.key, p.x, p.y + r * 0.45);
     }
 
-    _drawConnectorLine(ctx, positions) {
+    _drawConnectorLine(ctx, positions, t) {
         const isDark = this.isDarkTheme();
         const y = positions[0].y;
         ctx.beginPath();
         ctx.moveTo(positions[0].x, y);
         ctx.lineTo(positions[positions.length - 1].x, y);
-        ctx.strokeStyle = isDark ? 'rgba(148,163,184,0.25)' : 'rgba(100,116,139,0.22)';
+        ctx.strokeStyle = isDark ? this._withAlpha(t.muted, 0.4) : this._withAlpha(t.muted, 0.5);
         ctx.lineWidth = 2;
         ctx.setLineDash([4, 6]);
         ctx.stroke();
         ctx.setLineDash([]);
 
         // "复杂度递增" label
-        ctx.fillStyle = isDark ? '#94A3B8' : '#64748B';
+        ctx.fillStyle = t.muted;
         ctx.font = '11px sans-serif';
         ctx.textAlign = 'right';
         ctx.textBaseline = 'middle';
         ctx.fillText('复杂度递增 →', this.width - 12, y - 22);
     }
 
-    _drawDetailCard(ctx, type, i) {
+    _drawDetailCard(ctx, type, i, t) {
         const w = this.width;
         const h = this.height;
         const isDark = this.isDarkTheme();
-        const textColor = isDark ? '#F1F5F9' : '#0F172A';
-        const subColor = isDark ? '#94A3B8' : '#475569';
-        const cardBg = isDark ? '#1E293B' : '#FFFFFF';
-        const borderColor = isDark ? '#334155' : '#E2E8F0';
+        const typeColor = t[type.colorKey];
+        const textColor = t.ink;
+        const subColor = t.muted;
+        const cardBg = isDark ? t.surfaceDark : t.canvas;
+        const borderColor = t.hairline;
 
         const cardX = w * 0.04;
         const cardY = Math.max(this._getNodePositions()[0].y + this._nodeRadius() + 36, h * 0.42);
@@ -372,7 +378,7 @@ class Ch1AgentTypes extends CanvasAnimation {
 
         // Card background
         ctx.save();
-        ctx.shadowColor = this._withAlpha(type.color, isDark ? 0.35 : 0.25);
+        ctx.shadowColor = this._withAlpha(typeColor, isDark ? 0.35 : 0.25);
         ctx.shadowBlur = 16;
         ctx.shadowOffsetY = 4;
         ctx.fillStyle = cardBg;
@@ -386,12 +392,12 @@ class Ch1AgentTypes extends CanvasAnimation {
         this.roundRect(ctx, cardX, cardY, cardW, cardH, 14);
         ctx.clip();
         // Accent stripe
-        ctx.fillStyle = type.color;
+        ctx.fillStyle = typeColor;
         ctx.fillRect(cardX, cardY, 6, cardH);
         // Subtle top-right glow
         const g = ctx.createLinearGradient(cardX, cardY, cardX + cardW, cardY);
-        g.addColorStop(0, this._withAlpha(type.color, 0));
-        g.addColorStop(1, this._withAlpha(type.color, isDark ? 0.12 : 0.08));
+        g.addColorStop(0, this._withAlpha(typeColor, 0));
+        g.addColorStop(1, this._withAlpha(typeColor, isDark ? 0.12 : 0.08));
         ctx.fillStyle = g;
         ctx.fillRect(cardX, cardY, cardW, cardH);
         ctx.restore();
@@ -410,10 +416,10 @@ class Ch1AgentTypes extends CanvasAnimation {
         ctx.textBaseline = 'middle';
 
         // Color chip
-        ctx.fillStyle = type.color;
+        ctx.fillStyle = typeColor;
         this.roundRect(ctx, padX, cursorY - 12, 24, 24, 6);
         ctx.fill();
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = t.onPrimary;
         ctx.font = 'bold 13px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -437,31 +443,32 @@ class Ch1AgentTypes extends CanvasAnimation {
         const leftX = padX;
         const rightX = leftX + leftW + gap;
 
-        this._drawPeasGrid(ctx, leftX, bodyTopY, leftW, bodyH, type, textColor, subColor, isDark);
-        this._drawRightPanel(ctx, rightX, bodyTopY, rightW, bodyH, type, textColor, subColor, isDark);
+        this._drawPeasGrid(ctx, leftX, bodyTopY, leftW, bodyH, type, textColor, subColor, t, isDark);
+        this._drawRightPanel(ctx, rightX, bodyTopY, rightW, bodyH, type, textColor, subColor, t, isDark);
     }
 
-    _drawPeasGrid(ctx, x, y, w, h, type, textColor, subColor, isDark) {
+    _drawPeasGrid(ctx, x, y, w, h, type, textColor, subColor, t, isDark) {
         // 2x2 grid: P | E
         //           A | S
         const gap = 8;
         const cellW = (w - gap) / 2;
         const cellH = (h - gap) / 2;
+        const typeColor = t[type.colorKey];
         const cells = [
-            { key: 'P', full: 'Performance', cn: '性能', val: type.peas.P, accent: type.color },
-            { key: 'E', full: 'Environment', cn: '环境', val: type.peas.E, accent: this._shade(type.color, -0.15) },
-            { key: 'A', full: 'Actuators', cn: '执行器', val: type.peas.A, accent: this._shade(type.color, 0.1) },
-            { key: 'S', full: 'Sensors', cn: '传感器', val: type.peas.S, accent: this._shade(type.color, -0.05) }
+            { key: 'P', full: 'Performance', cn: '性能', val: type.peas.P, accent: typeColor },
+            { key: 'E', full: 'Environment', cn: '环境', val: type.peas.E, accent: this._shade(typeColor, -0.15) },
+            { key: 'A', full: 'Actuators', cn: '执行器', val: type.peas.A, accent: this._shade(typeColor, 0.1) },
+            { key: 'S', full: 'Sensors', cn: '传感器', val: type.peas.S, accent: this._shade(typeColor, -0.05) }
         ];
         for (let i = 0; i < 4; i++) {
             const cx = x + (i % 2) * (cellW + gap);
             const cy = y + Math.floor(i / 2) * (cellH + gap);
-            this._drawPeasCell(ctx, cx, cy, cellW, cellH, cells[i], textColor, subColor, isDark);
+            this._drawPeasCell(ctx, cx, cy, cellW, cellH, cells[i], textColor, subColor, t, isDark);
         }
     }
 
-    _drawPeasCell(ctx, x, y, w, h, cell, textColor, subColor, isDark) {
-        const bgFill = isDark ? 'rgba(148,163,184,0.06)' : 'rgba(100,116,139,0.06)';
+    _drawPeasCell(ctx, x, y, w, h, cell, textColor, subColor, t, isDark) {
+        const bgFill = isDark ? this._withAlpha(t.muted, 0.12) : this._withAlpha(t.muted, 0.10);
         ctx.fillStyle = bgFill;
         this.roundRect(ctx, x, y, w, h, 8);
         ctx.fill();
@@ -497,7 +504,7 @@ class Ch1AgentTypes extends CanvasAnimation {
         }
     }
 
-    _drawRightPanel(ctx, x, y, w, h, type, textColor, subColor, isDark) {
+    _drawRightPanel(ctx, x, y, w, h, type, textColor, subColor, t, isDark) {
         // Two stacked sections: 生活例子 / 和我有什么关系
         const sectionH = (h - 10) / 2;
 
@@ -506,18 +513,18 @@ class Ch1AgentTypes extends CanvasAnimation {
             label: '生活例子',
             icon: 'EX',
             text: type.example
-        }, textColor, subColor, isDark, type.color);
+        }, textColor, subColor, isDark, t[type.colorKey], t);
 
         // 和我有什么关系
         this._drawSection(ctx, x, y + sectionH + 10, w, sectionH, {
             label: '和我有什么关系',
             icon: 'ME',
             text: type.relation
-        }, textColor, subColor, isDark, type.color);
+        }, textColor, subColor, isDark, t[type.colorKey], t);
     }
 
-    _drawSection(ctx, x, y, w, h, sec, textColor, subColor, isDark, accent) {
-        const bgFill = isDark ? 'rgba(148,163,184,0.05)' : 'rgba(100,116,139,0.04)';
+    _drawSection(ctx, x, y, w, h, sec, textColor, subColor, isDark, accent, t) {
+        const bgFill = isDark ? this._withAlpha(t.muted, 0.10) : this._withAlpha(t.muted, 0.08);
         ctx.fillStyle = bgFill;
         this.roundRect(ctx, x, y, w, h, 8);
         ctx.fill();
@@ -530,7 +537,7 @@ class Ch1AgentTypes extends CanvasAnimation {
         ctx.fillStyle = accent;
         this.roundRect(ctx, cx, cy, chipW, chipH, 4);
         ctx.fill();
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = t.onPrimary;
         ctx.font = 'bold 10px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -587,10 +594,11 @@ class Ch1AgentTypes extends CanvasAnimation {
         const ctx = this.ctx;
         const w = this.width;
         const h = this.height;
+        const t = this.theme();
         const isDark = this.isDarkTheme();
-        const bg = isDark ? '#0F172A' : '#F8FAFC';
-        const textColor = isDark ? '#F1F5F9' : '#0F172A';
-        const subColor = isDark ? '#94A3B8' : '#475569';
+        const bg = isDark ? t.surfaceDarkSoft : t.canvas;
+        const textColor = t.ink;
+        const subColor = t.muted;
 
         ctx.clearRect(0, 0, w, h);
         ctx.fillStyle = bg;
@@ -613,11 +621,11 @@ class Ch1AgentTypes extends CanvasAnimation {
 
         // Connector line
         const positions = this._getNodePositions();
-        this._drawConnectorLine(ctx, positions);
+        this._drawConnectorLine(ctx, positions, t);
 
         // Nodes
         for (let i = 0; i < this.types.length; i++) {
-            this._drawNode(ctx, positions[i], this.types[i], i);
+            this._drawNode(ctx, positions[i], this.types[i], i, t);
             // English label under node
             ctx.fillStyle = subColor;
             ctx.font = '10px sans-serif';
@@ -628,21 +636,21 @@ class Ch1AgentTypes extends CanvasAnimation {
 
         // Detail card or instruction
         if (this.selectedIndex >= 0) {
-            this._drawDetailCard(ctx, this.types[this.selectedIndex], this.selectedIndex);
+            this._drawDetailCard(ctx, this.types[this.selectedIndex], this.selectedIndex, t);
         } else {
-            this._drawEmptyHint(ctx, w, h, subColor);
+            this._drawEmptyHint(ctx, w, h, subColor, t);
         }
     }
 
-    _drawEmptyHint(ctx, w, h, subColor) {
+    _drawEmptyHint(ctx, w, h, subColor, t) {
         const cardX = w * 0.04;
         const cardY = Math.max(this._getNodePositions()[0].y + this._nodeRadius() + 36, h * 0.42);
         const cardW = w * 0.92;
         const cardH = h - cardY - 14;
         const isDark = this.isDarkTheme();
-        const cardBg = isDark ? '#1E293B' : '#FFFFFF';
-        const borderColor = isDark ? '#334155' : '#E2E8F0';
-        const textColor = isDark ? '#F1F5F9' : '#0F172A';
+        const cardBg = isDark ? t.surfaceDark : t.canvas;
+        const borderColor = t.hairline;
+        const textColor = t.ink;
 
         ctx.fillStyle = cardBg;
         this.roundRect(ctx, cardX, cardY, cardW, cardH, 14);
