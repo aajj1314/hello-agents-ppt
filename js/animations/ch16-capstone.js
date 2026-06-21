@@ -58,7 +58,7 @@ class Ch16Capstone extends CanvasAnimation {
                 key: 'topic',
                 name: '选题',
                 tag: 'Topic',
-                color: '#6366F1',
+                colorKey: 'primary',
                 desc: '从 5 大方向里挑一个可完成、有亮点的题目。',
                 action: '本周: 在 Co-creation-projects 目录看示范项目，列 3 个候选方向，挑 1 个。'
             },
@@ -66,7 +66,7 @@ class Ch16Capstone extends CanvasAnimation {
                 key: 'env',
                 name: '环境准备',
                 tag: 'Env',
-                color: '#0EA5E9',
+                colorKey: 'accentTeal',
                 desc: 'pip install hello-agents / git / jupyter。',
                 action: '本周: 安装 hello-agents[all]、配好 Git 用户、生成 SSH Key、跑通 jupyter lab。'
             },
@@ -74,7 +74,7 @@ class Ch16Capstone extends CanvasAnimation {
                 key: 'fork',
                 name: 'Fork 仓库',
                 tag: 'Fork',
-                color: '#10B981',
+                colorKey: 'success',
                 desc: 'Fork → clone → 新建 feature 分支。',
                 action: '本周: Fork datawhalechina/hello-agents、git clone、添加 upstream、新建 feature/xxx 分支。'
             },
@@ -82,7 +82,7 @@ class Ch16Capstone extends CanvasAnimation {
                 key: 'dev',
                 name: '开发 + 测试',
                 tag: 'Dev',
-                color: '#F59E0B',
+                colorKey: 'accentAmber',
                 desc: '写 main.ipynb + README + requirements。',
                 action: '本周: 实现核心功能、跑通用例、README 写齐、自检清单 9 项全打勾。'
             },
@@ -90,7 +90,7 @@ class Ch16Capstone extends CanvasAnimation {
                 key: 'pr',
                 name: '提交 PR',
                 tag: 'PR',
-                color: '#EC4899',
+                colorKey: 'primary',
                 desc: 'feat: commit → push → 标题 [毕业设计] xxx。',
                 action: '本周: git push、按模板开 PR、积极响应 Review、合并到 Co-creation-projects。'
             }
@@ -104,8 +104,8 @@ class Ch16Capstone extends CanvasAnimation {
                 key: 'prod',
                 letter: 'P',
                 name: '生产力工具',
-                color: '#3B82F6',
-                colorSoft: '#93C5FD',
+                colorKey: 'primary',
+                colorSoftKey: 'primary',
                 examples: [
                     'CodeReviewAgent 智能代码审查',
                     'DocGenius 文档自动生成',
@@ -117,8 +117,8 @@ class Ch16Capstone extends CanvasAnimation {
                 key: 'learn',
                 letter: 'L',
                 name: '学习辅助',
-                color: '#10B981',
-                colorSoft: '#6EE7B7',
+                colorKey: 'accentTeal',
+                colorSoftKey: 'accentTeal',
                 examples: [
                     'StudyBuddy 学习伙伴',
                     'PaperPilot 论文助手',
@@ -130,8 +130,8 @@ class Ch16Capstone extends CanvasAnimation {
                 key: 'creative',
                 letter: 'C',
                 name: '创意娱乐',
-                color: '#F59E0B',
-                colorSoft: '#FCD34D',
+                colorKey: 'accentAmber',
+                colorSoftKey: 'accentAmber',
                 examples: [
                     'TaleSmith 故事生成器',
                     'NPCMind 游戏 NPC',
@@ -143,8 +143,8 @@ class Ch16Capstone extends CanvasAnimation {
                 key: 'data',
                 letter: 'D',
                 name: '数据分析',
-                color: '#8B5CF6',
-                colorSoft: '#C4B5FD',
+                colorKey: 'primary',
+                colorSoftKey: 'primary',
                 examples: [
                     'DataAnalyst 智能分析师',
                     'StockPilot 股票分析',
@@ -156,8 +156,8 @@ class Ch16Capstone extends CanvasAnimation {
                 key: 'life',
                 letter: 'L',
                 name: '生活服务',
-                color: '#EC4899',
-                colorSoft: '#F9A8D4',
+                colorKey: 'muted',
+                colorSoftKey: 'mutedSoft',
                 examples: [
                     'HealthPal 健康助手',
                     'MoneyBee 理财助手',
@@ -394,13 +394,24 @@ class Ch16Capstone extends CanvasAnimation {
         const ctx = this.ctx;
         const w = this.width;
         const h = this.height;
+        const t = this.theme();
         const dark = this.isDarkTheme();
-        const bg = dark ? '#0F172A' : '#F8FAFC';
-        const textColor = dark ? '#F1F5F9' : '#0F172A';
-        const subColor  = dark ? '#94A3B8' : '#475569';
-        const borderCol = dark ? 'rgba(148,163,184,0.25)' : 'rgba(100,116,139,0.25)';
-        const panelBg   = dark ? 'rgba(30,41,59,0.55)' : 'rgba(241,245,249,0.85)';
-        const cardBg    = dark ? '#1E293B' : '#FFFFFF';
+        const bg = dark ? t.surfaceDarkSoft : t.canvas;
+        const textColor = t.ink;
+        const subColor  = t.muted;
+        const borderCol = this._withAlpha(t.muted, dark ? 0.25 : 0.25);
+        const panelBg   = dark
+            ? this._withAlpha(t.surfaceDark, 0.55)
+            : this._withAlpha(t.surfaceCard, 0.85);
+        const cardBg    = dark ? t.surfaceDark : t.surfaceCard;
+        // Resolve stage + topic colors from theme tokens
+        for (let i = 0; i < this.stages.length; i++) {
+            this.stages[i].color = t[this.stages[i].colorKey];
+        }
+        for (let i = 0; i < this.topics.length; i++) {
+            this.topics[i].color = t[this.topics[i].colorKey];
+            this.topics[i].colorSoft = t[this.topics[i].colorSoftKey];
+        }
 
         ctx.clearRect(0, 0, w, h);
         ctx.fillStyle = bg;
@@ -427,20 +438,20 @@ class Ch16Capstone extends CanvasAnimation {
         this._drawSectionLabel(ctx,
             '▎ 5 阶段路线图  Capstone Roadmap',
             this._roadRect.x, this._sectionLabelY, subColor);
-        this._drawRoadmap(ctx, dark, textColor, subColor, borderCol, cardBg);
+        this._drawRoadmap(ctx, dark, textColor, subColor, borderCol, cardBg, t);
 
         // ---- Section: bottom topics ----
         this._drawSectionLabel(ctx,
             '▎ 5 大选题方向  Topic Directions  ·  鼠标悬停查看示例，点击锁定',
             this._topicRect.x, this._topicRect.y - 14, subColor);
-        this._drawTopics(ctx, dark, textColor, subColor, borderCol, cardBg);
+        this._drawTopics(ctx, dark, textColor, subColor, borderCol, cardBg, t);
 
         // ---- Footer status ----
         this._drawFooter(ctx, w, h, subColor, textColor, dark);
 
         // ---- Tooltip (top-most layer) ----
         if (this._tooltip && this._hoverStage >= 0) {
-            this._drawTooltip(ctx, w, h, textColor, subColor, borderCol, cardBg, dark);
+            this._drawTooltip(ctx, w, h, textColor, subColor, borderCol, cardBg, dark, t);
         }
     }
 
@@ -463,7 +474,7 @@ class Ch16Capstone extends CanvasAnimation {
         ctx.fillText(label, x, y);
     }
 
-    _drawRoadmap(ctx, dark, textColor, subColor, borderCol, cardBg) {
+    _drawRoadmap(ctx, dark, textColor, subColor, borderCol, cardBg, t) {
         const stages = this.stages;
         const n = stages.length;
 
@@ -472,7 +483,7 @@ class Ch16Capstone extends CanvasAnimation {
         ctx.beginPath();
         ctx.moveTo(this._stageRects[0].x, baseY);
         ctx.lineTo(this._stageRects[n - 1].x + this._stageRects[n - 1].w, baseY);
-        ctx.strokeStyle = dark ? 'rgba(148,163,184,0.30)' : 'rgba(100,116,139,0.30)';
+        ctx.strokeStyle = this._withAlpha(t.muted, dark ? 0.30 : 0.30);
         ctx.lineWidth = 2;
         ctx.setLineDash([4, 5]);
         ctx.stroke();
@@ -485,8 +496,9 @@ class Ch16Capstone extends CanvasAnimation {
             const ax = cur.x + cur.w + 1;
             const aw = (next.x - ax) - 2;
             const active = (this._activeStage >= i + 1);
+            const arrowIdle = dark ? t.mutedSoft : t.body;
             this._drawArrow(ctx, ax + aw / 2, baseY, aw,
-                active ? stages[i].color : (dark ? '#64748B' : '#94A3B8'),
+                active ? stages[i].color : arrowIdle,
                 active);
         }
 
@@ -551,11 +563,11 @@ class Ch16Capstone extends CanvasAnimation {
         const bodyY = baseY + (isActive ? -2 : (isHover ? -1 : 0));
         const grad = ctx.createLinearGradient(baseX, bodyY, baseX, bodyY + h);
         if (dark) {
-            grad.addColorStop(0, isActive ? this._shade(color, -0.45) : '#1E293B');
-            grad.addColorStop(1, isActive ? this._shade(color, -0.25) : '#0F172A');
+            grad.addColorStop(0, isActive ? this._shade(color, -0.45) : cardBg);
+            grad.addColorStop(1, isActive ? this._shade(color, -0.25) : this._shade(cardBg, -0.10));
         } else {
-            grad.addColorStop(0, isActive ? this._shade(color, 0.18) : '#FFFFFF');
-            grad.addColorStop(1, isActive ? this._shade(color, 0.05) : '#F1F5F9');
+            grad.addColorStop(0, isActive ? this._shade(color, 0.18) : cardBg);
+            grad.addColorStop(1, isActive ? this._shade(color, 0.05) : this._shade(cardBg, -0.04));
         }
         ctx.fillStyle = grad;
         this.roundRect(ctx, baseX, bodyY, w, h, 10);
@@ -587,7 +599,7 @@ class Ch16Capstone extends CanvasAnimation {
         ctx.arc(badgeX, badgeY + badgeR, badgeR, 0, Math.PI * 2);
         ctx.fillStyle = color;
         ctx.fill();
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = t.onDark;
         ctx.font = 'bold 9px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -628,15 +640,15 @@ class Ch16Capstone extends CanvasAnimation {
         }
     }
 
-    _drawTopics(ctx, dark, textColor, subColor, borderCol, cardBg) {
+    _drawTopics(ctx, dark, textColor, subColor, borderCol, cardBg, t) {
         const topics = this.topics;
         for (let i = 0; i < topics.length; i++) {
             this._drawTopicCard(ctx, this._topicRects[i], topics[i], i,
-                dark, textColor, subColor, borderCol, cardBg);
+                dark, textColor, subColor, borderCol, cardBg, t);
         }
     }
 
-    _drawTopicCard(ctx, box, topic, idx, dark, textColor, subColor, borderCol, cardBg) {
+    _drawTopicCard(ctx, box, topic, idx, dark, textColor, subColor, borderCol, cardBg, t) {
         const isHover = idx === this._hoverTopic;
         const isSelected = idx === this._selectedTopic;
         const emphasized = isHover || isSelected;
@@ -659,7 +671,7 @@ class Ch16Capstone extends CanvasAnimation {
             ctx.shadowBlur = isSelected ? 18 : 14;
             ctx.shadowOffsetY = isSelected ? 4 : 3;
         } else {
-            ctx.shadowColor = 'rgba(0,0,0,0.10)';
+            ctx.shadowColor = this._withAlpha(t.ink, dark ? 0.40 : 0.10);
             ctx.shadowBlur = 4;
             ctx.shadowOffsetY = 1;
         }
@@ -703,10 +715,10 @@ class Ch16Capstone extends CanvasAnimation {
         ctx.beginPath();
         ctx.arc(iconX, iconY, iconR, 0, Math.PI * 2);
         ctx.fill();
-        ctx.strokeStyle = this._shade(color, -0.2);
+        ctx.strokeStyle = t.onDark;
         ctx.lineWidth = 1;
         ctx.stroke();
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = t.onDark;
         ctx.font = 'bold ' + Math.round(iconR * 0.95) + 'px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -757,7 +769,7 @@ class Ch16Capstone extends CanvasAnimation {
             ctx.beginPath();
             ctx.arc(bx, by, 8, 0, Math.PI * 2);
             ctx.fill();
-            ctx.fillStyle = '#FFFFFF';
+            ctx.fillStyle = t.onDark;
             ctx.font = 'bold 10px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -802,14 +814,15 @@ class Ch16Capstone extends CanvasAnimation {
         void textColor; void dark;
     }
 
-    _drawTooltip(ctx, w, h, textColor, subColor, borderCol, cardBg, dark) {
+    _drawTooltip(ctx, w, h, textColor, subColor, borderCol, cardBg, dark, t) {
         const stage = this.stages[this._tooltip.stage];
         const color = stage.color;
+        const bodyColor = dark ? t.hairline : t.surfaceDark;
 
         const lines = [
             { t: '阶段 ' + (this._tooltip.stage + 1) + ' · ' + stage.name, bold: true, color: color },
             { t: stage.desc, bold: false, color: textColor },
-            { t: stage.action, bold: false, color: dark ? '#E2E8F0' : '#1E293B' }
+            { t: stage.action, bold: false, color: bodyColor }
         ];
 
         ctx.font = '11px sans-serif';
@@ -826,8 +839,8 @@ class Ch16Capstone extends CanvasAnimation {
         const actionMaxW = Math.min(320, w - 40);
         ctx.font = '11px sans-serif';
         const actionLines = this.wrapText(ctx, stage.action, 0, 0, actionMaxW, lineH);
-        const wrappedAction = actionLines.map((ln, i) => ({
-            t: ln, bold: false, color: dark ? '#E2E8F0' : '#1E293B'
+        const wrappedAction = actionLines.map((ln) => ({
+            t: ln, bold: false, color: bodyColor
         }));
         const allLines = [lines[0], lines[1], ...wrappedAction];
 
@@ -845,10 +858,12 @@ class Ch16Capstone extends CanvasAnimation {
 
         // background
         ctx.save();
-        ctx.shadowColor = 'rgba(0,0,0,0.25)';
+        ctx.shadowColor = this._withAlpha(t.ink, 0.25);
         ctx.shadowBlur = 10;
         ctx.shadowOffsetY = 3;
-        ctx.fillStyle = dark ? 'rgba(15,23,42,0.97)' : 'rgba(255,255,255,0.98)';
+        ctx.fillStyle = dark
+            ? this._withAlpha(t.surfaceDark, 0.97)
+            : this._withAlpha(t.surfaceCard, 0.98);
         this.roundRect(ctx, tx, ty, boxW, boxH, 7);
         ctx.fill();
         ctx.restore();
