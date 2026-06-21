@@ -26,7 +26,7 @@ class Ch14DeepResearch extends CanvasAnimation {
             {
                 key: 'Plan',
                 label: 'Plan 规划',
-                color: '#6366F1',
+                colorKey: 'primary',
                 shortDesc: '把大问题拆成 5-7 个可搜索子任务',
                 detail: 'Plan 阶段: 让 LLM 把研究问题拆成可被搜索引擎直接回答的子任务, 输出 JSON 列表.',
                 snippet: [
@@ -47,7 +47,7 @@ class Ch14DeepResearch extends CanvasAnimation {
             {
                 key: 'Search',
                 label: 'Search 检索',
-                color: '#3B82F6',
+                colorKey: 'accentTeal',
                 shortDesc: '调搜索 API, 每个子任务拿 Top-5 链接',
                 detail: 'Search 阶段: 对每个子任务用搜索引擎 API 拿 Top-5 链接, 必要时改写查询 (加年份/英文/site:).',
                 snippet: [
@@ -66,7 +66,7 @@ class Ch14DeepResearch extends CanvasAnimation {
             {
                 key: 'Read',
                 label: 'Read 阅读',
-                color: '#10B981',
+                colorKey: 'success',
                 shortDesc: '从每篇网页抽取 3-5 个事实点',
                 detail: 'Read 阶段: 把每篇网页喂给 LLM, 让它抽取 3-5 个事实点, 每点带 [n] 编号, 方便整合与去重.',
                 snippet: [
@@ -85,7 +85,7 @@ class Ch14DeepResearch extends CanvasAnimation {
             {
                 key: 'Write',
                 label: 'Write 写作',
-                color: '#F59E0B',
+                colorKey: 'accentAmber',
                 shortDesc: '整合所有要点为带引用的结构化报告',
                 detail: 'Write 阶段: 把所有抽取的事实按 5 段式骨架 (背景/方法/发现/对比/结论) 整合, 关键数字加 [n] 引用.',
                 snippet: [
@@ -103,13 +103,13 @@ class Ch14DeepResearch extends CanvasAnimation {
             }
         ];
 
-        // Task tree structure
+        // Task tree structure — sub-question colors mirror the steps
         this.rootQuestion = '研究问题: 对比 LoRA 与全参数微调';
         this.subQuestions = [
             {
                 title: '什么是 LoRA',
                 icon: '🔍',
-                color: '#6366F1',
+                colorKey: 'primary',
                 results: [
                     { domain: 'arxiv.org',           url: '/abs/2106.09685',  title: 'LoRA: Low-Rank Adaptation' },
                     { domain: 'huggingface.co',      url: '/docs/peft',       title: 'PEFT / LoRA 文档' }
@@ -118,7 +118,7 @@ class Ch14DeepResearch extends CanvasAnimation {
             {
                 title: '什么是全参数微调',
                 icon: '🔍',
-                color: '#3B82F6',
+                colorKey: 'accentTeal',
                 results: [
                     { domain: 'openai.com',          url: '/docs/guides/fine-tuning', title: 'OpenAI Fine-tuning Guide' },
                     { domain: 'cs224n.stanford.edu', url: '/notes',                   title: 'Stanford CS224N Notes' }
@@ -127,7 +127,7 @@ class Ch14DeepResearch extends CanvasAnimation {
             {
                 title: '显存与成本对比',
                 icon: '💰',
-                color: '#10B981',
+                colorKey: 'success',
                 results: [
                     { domain: 'huggingface.co',      url: '/blog/lora',        title: 'HF Blog: LoRA 显存分析' },
                     { domain: 'developer.nvidia.com',url: '/blog',             title: 'NVIDIA: 大模型微调' },
@@ -137,7 +137,7 @@ class Ch14DeepResearch extends CanvasAnimation {
             {
                 title: '常见误区',
                 icon: '⚠️',
-                color: '#F59E0B',
+                colorKey: 'accentAmber',
                 results: [
                     { domain: 'reddit.com',          url: '/r/MachineLearning', title: 'r/ML: LoRA 误区讨论' },
                     { domain: 'medium.com',          url: '/@lora-misconceptions', title: 'LoRA 5 大误区' }
@@ -291,12 +291,22 @@ class Ch14DeepResearch extends CanvasAnimation {
         const ctx = this.ctx;
         const w = this.width;
         const h = this.height;
+        const t = this.theme();
         const dark      = this.isDarkTheme();
-        const bg        = dark ? '#0F172A' : '#F8FAFC';
-        const textColor = dark ? '#F1F5F9' : '#0F172A';
-        const subColor  = dark ? '#94A3B8' : '#475569';
-        const borderCol = dark ? 'rgba(148,163,184,0.25)' : 'rgba(100,116,139,0.25)';
-        const panelBg   = dark ? 'rgba(30,41,59,0.6)' : 'rgba(241,245,249,0.85)';
+        const bg        = dark ? t.surfaceDarkSoft : t.canvas;
+        const textColor = t.ink;
+        const subColor  = t.muted;
+        const borderCol = this._withAlpha(t.muted, dark ? 0.25 : 0.25);
+        const panelBg   = dark
+            ? this._withAlpha(t.surfaceDark, 0.6)
+            : this._withAlpha(t.surfaceCard, 0.85);
+        // Resolve step + sub-question colors from theme tokens
+        for (let i = 0; i < this.steps.length; i++) {
+            this.steps[i].color = t[this.steps[i].colorKey];
+        }
+        for (let i = 0; i < this.subQuestions.length; i++) {
+            this.subQuestions[i].color = t[this.subQuestions[i].colorKey];
+        }
 
         ctx.clearRect(0, 0, w, h);
         ctx.fillStyle = bg;
@@ -328,25 +338,25 @@ class Ch14DeepResearch extends CanvasAnimation {
         const treeW    = Math.max(280, sidebarX - padX - 14);
 
         // Step bar
-        this._drawStepBar(ctx, 0, stepBarTop, w, stepBarH, textColor, subColor, borderCol, dark);
+        this._drawStepBar(ctx, 0, stepBarTop, w, stepBarH, textColor, subColor, borderCol, dark, t);
 
         // Main task tree
-        this._drawTaskTree(ctx, treeX, bodyTop, treeW, bodyH, textColor, subColor, borderCol, panelBg, dark);
+        this._drawTaskTree(ctx, treeX, bodyTop, treeW, bodyH, textColor, subColor, borderCol, panelBg, dark, t);
 
         // Right sidebar (snippet)
-        this._drawSidebar(ctx, sidebarX, bodyTop, sidebarW, bodyH, textColor, subColor, borderCol, panelBg, dark);
+        this._drawSidebar(ctx, sidebarX, bodyTop, sidebarW, bodyH, textColor, subColor, borderCol, panelBg, dark, t);
 
         // Footer
         this._drawFooter(ctx, w, h, subColor, textColor);
 
         // Tooltip drawn last (on top of everything)
         if (this._hoverStep >= 0) {
-            this._drawTooltip(ctx, w, h, textColor, subColor, borderCol, dark);
+            this._drawTooltip(ctx, w, h, textColor, subColor, borderCol, dark, t);
         }
     }
 
     // ---------------- step bar ----------------
-    _drawStepBar(ctx, x, y, w, h, textColor, subColor, borderCol, dark) {
+    _drawStepBar(ctx, x, y, w, h, textColor, subColor, borderCol, dark, t) {
         this._stepHitRects = [];
         const n = this.steps.length;
         const margin = 70;
@@ -401,7 +411,7 @@ class Ch14DeepResearch extends CanvasAnimation {
             if (isCurrent || isHover) {
                 ctx.beginPath();
                 ctx.arc(cx, cy, r + (isCurrent ? 7 : 5), 0, Math.PI * 2);
-                ctx.fillStyle = color + (isCurrent ? '33' : '22');
+                ctx.fillStyle = this._withAlpha(color, isCurrent ? 0.20 : 0.13);
                 ctx.fill();
             }
 
@@ -412,7 +422,7 @@ class Ch14DeepResearch extends CanvasAnimation {
                 ctx.fillStyle = color;
                 ctx.fill();
             } else if (isCurrent) {
-                ctx.fillStyle = dark ? '#1E293B' : '#FFFFFF';
+                ctx.fillStyle = dark ? t.surfaceDark : t.surfaceCard;
                 ctx.fill();
                 ctx.strokeStyle = color;
                 ctx.lineWidth = 3;
@@ -422,10 +432,10 @@ class Ch14DeepResearch extends CanvasAnimation {
                 ctx.moveTo(cx, cy);
                 ctx.arc(cx, cy, r - 4, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * this._stepProgress);
                 ctx.closePath();
-                ctx.fillStyle = color + 'BB';
+                ctx.fillStyle = this._withAlpha(color, 0.73);
                 ctx.fill();
             } else {
-                ctx.fillStyle = dark ? '#1E293B' : '#FFFFFF';
+                ctx.fillStyle = dark ? t.surfaceDark : t.surfaceCard;
                 ctx.fill();
                 ctx.strokeStyle = borderCol;
                 ctx.lineWidth = 2;
@@ -433,7 +443,7 @@ class Ch14DeepResearch extends CanvasAnimation {
             }
 
             // Check or step number
-            ctx.fillStyle = isDone ? '#FFFFFF' : (isCurrent ? color : subColor);
+            ctx.fillStyle = isDone ? t.onDark : (isCurrent ? color : subColor);
             ctx.font = (isDone || isCurrent) ? 'bold 13px sans-serif' : 'bold 12px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -456,7 +466,7 @@ class Ch14DeepResearch extends CanvasAnimation {
     }
 
     // ---------------- task tree ----------------
-    _drawTaskTree(ctx, x, y, w, h, textColor, subColor, borderCol, panelBg, dark) {
+    _drawTaskTree(ctx, x, y, w, h, textColor, subColor, borderCol, panelBg, dark, t) {
         // Panel background
         ctx.fillStyle = panelBg;
         this.roundRect(ctx, x, y, w, h, 10);
@@ -490,7 +500,7 @@ class Ch14DeepResearch extends CanvasAnimation {
         const rootCy = innerY + rootH / 2;
 
         // --- Root node ---
-        this._drawRootNode(ctx, rootCx, rootCy, rootW, rootH, dark);
+        this._drawRootNode(ctx, rootCx, rootCy, rootW, rootH, dark, t);
 
         // --- Sub-questions ---
         const subY      = innerY + rootH + 32;
@@ -510,13 +520,13 @@ class Ch14DeepResearch extends CanvasAnimation {
                 ctx,
                 rootCx, rootCy + rootH / 2,
                 sx,     sy - subH / 2,
-                this.subQuestions[i].color, dark, subAlpha
+                this.subQuestions[i].color, dark, subAlpha, t
             );
 
             // Sub-question box
             ctx.save();
             ctx.globalAlpha = subAlpha;
-            this._drawSubNode(ctx, sx, sy, subW, subH, this.subQuestions[i], textColor, subColor, dark);
+            this._drawSubNode(ctx, sx, sy, subW, subH, this.subQuestions[i], textColor, subColor, dark, t);
             ctx.restore();
         }
 
@@ -543,14 +553,14 @@ class Ch14DeepResearch extends CanvasAnimation {
                 this._drawConnection(
                     ctx, sx, subY + subH,
                     baseX + subW / 2, ry,
-                    sq.color, dark, reveal
+                    sq.color, dark, reveal, t
                 );
 
                 ctx.save();
                 ctx.globalAlpha = reveal;
                 this._drawResultNode(
                     ctx, baseX, ry, subW, rowH, r,
-                    sq.color, textColor, subColor, dark
+                    sq.color, textColor, subColor, dark, t
                 );
                 ctx.restore();
             }
@@ -563,7 +573,7 @@ class Ch14DeepResearch extends CanvasAnimation {
         const barH = 6;
         const barY = y + h - 18;
 
-        ctx.fillStyle = dark ? 'rgba(148,163,184,0.18)' : 'rgba(100,116,139,0.18)';
+        ctx.fillStyle = this._withAlpha(t.muted, 0.18);
         this.roundRect(ctx, barX, barY, barW, barH, 3);
         ctx.fill();
         const fillW = Math.max(0, Math.min(barW, (progressPct / 100) * barW));
@@ -578,36 +588,36 @@ class Ch14DeepResearch extends CanvasAnimation {
         }
     }
 
-    _drawRootNode(ctx, cx, cy, w, h, dark) {
-        // Soft outer halo
+    _drawRootNode(ctx, cx, cy, w, h, dark, t) {
+        // Soft outer halo (uses primary coral at 20% alpha)
         ctx.beginPath();
         ctx.ellipse(cx, cy, w / 2 + 8, h / 2 + 8, 0, 0, Math.PI * 2);
-        ctx.fillStyle = '#6366F133';
+        ctx.fillStyle = this._withAlpha(t.primary, 0.20);
         ctx.fill();
 
         this.roundRect(ctx, cx - w / 2, cy - h / 2, w, h, 10);
         const g = ctx.createLinearGradient(cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2);
-        g.addColorStop(0, '#6366F1');
-        g.addColorStop(1, '#8B5CF6');
+        g.addColorStop(0, t.primary);
+        g.addColorStop(1, t.accentAmber);
         ctx.fillStyle = g;
         ctx.fill();
 
         // Inner highlight
         this.roundRect(ctx, cx - w / 2 + 2, cy - h / 2 + 2, w - 4, h - 4, 8);
-        ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+        ctx.strokeStyle = this._withAlpha(t.onDark, 0.25);
         ctx.lineWidth = 1;
         ctx.stroke();
 
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = t.onDark;
         ctx.font = 'bold 12px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText('🎯  ' + this.rootQuestion, cx, cy);
     }
 
-    _drawSubNode(ctx, cx, cy, w, h, sq, textColor, subColor, dark) {
+    _drawSubNode(ctx, cx, cy, w, h, sq, textColor, subColor, dark, t) {
         this.roundRect(ctx, cx - w / 2, cy - h / 2, w, h, 8);
-        ctx.fillStyle = dark ? '#1E293B' : '#FFFFFF';
+        ctx.fillStyle = dark ? t.surfaceDark : t.surfaceCard;
         ctx.fill();
         ctx.strokeStyle = sq.color;
         ctx.lineWidth = 1.5;
@@ -631,7 +641,7 @@ class Ch14DeepResearch extends CanvasAnimation {
         ctx.fillText(sq.results.length + ' 个搜索结果', cx, cy + 9);
     }
 
-    _drawResultNode(ctx, x, y, w, h, r, color, textColor, subColor, dark) {
+    _drawResultNode(ctx, x, y, w, h, r, color, textColor, subColor, dark, t) {
         const rx = x;
         const ry = y;
         const rw = w;
@@ -641,12 +651,14 @@ class Ch14DeepResearch extends CanvasAnimation {
         let flashAlpha = 0;
         if (this._currentStep === 2 || this._currentStep === 3) {
             // Pulse goes 0 → 1 → 0 over the step
-            const t = this._stepProgress;
-            flashAlpha = (t < 0.5 ? t * 2 : (1 - t) * 2) * 0.35;
+            const t2 = this._stepProgress;
+            flashAlpha = (t2 < 0.5 ? t2 * 2 : (1 - t2) * 2) * 0.35;
         }
 
         this.roundRect(ctx, rx, ry, rw, rh, 5);
-        ctx.fillStyle = dark ? 'rgba(30,41,59,0.85)' : 'rgba(255,255,255,0.96)';
+        ctx.fillStyle = dark
+            ? this._withAlpha(t.surfaceDark, 0.85)
+            : this._withAlpha(t.surfaceCard, 0.96);
         ctx.fill();
         if (flashAlpha > 0) {
             ctx.save();
@@ -655,7 +667,7 @@ class Ch14DeepResearch extends CanvasAnimation {
             ctx.fill();
             ctx.restore();
         }
-        ctx.strokeStyle = color + '99';
+        ctx.strokeStyle = this._withAlpha(color, 0.60);
         ctx.lineWidth = 1;
         ctx.stroke();
 
@@ -675,8 +687,8 @@ class Ch14DeepResearch extends CanvasAnimation {
 
         // Right-side status badge (text changes by current step)
         const badgeText = (this._currentStep >= 3) ? '✓' : (this._currentStep >= 2 ? '已读' : '搜索');
-        const badgeBg   = (this._currentStep >= 3) ? '#10B981' : (this._currentStep >= 2 ? '#10B981' : color);
-        this._drawBadge(ctx, rx + rw - 4, ry + rh / 2, badgeText, badgeBg, '#FFFFFF', dark, 'right');
+        const badgeBg   = (this._currentStep >= 2) ? t.success : color;
+        this._drawBadge(ctx, rx + rw - 4, ry + rh / 2, badgeText, badgeBg, t.onDark, dark, 'right');
     }
 
     _drawBadge(ctx, anchorX, anchorY, text, bg, fg, dark, align = 'right') {
@@ -695,17 +707,18 @@ class Ch14DeepResearch extends CanvasAnimation {
         ctx.fillText(text, bx + bw / 2, by + bh / 2 + 0.5);
     }
 
-    _drawConnection(ctx, x1, y1, x2, y2, color, dark, alpha = 1) {
+    _drawConnection(ctx, x1, y1, x2, y2, color, dark, alpha, t) {
         ctx.save();
         ctx.globalAlpha = (alpha === undefined ? 1 : alpha);
         ctx.beginPath();
         const midY = (y1 + y2) / 2;
         ctx.moveTo(x1, y1);
         ctx.bezierCurveTo(x1, midY, x2, midY, x2, y2);
-        ctx.strokeStyle = dark ? color + '99' : color + 'BB';
+        // Tree lines use t.muted at 0.60 / 0.73 alpha (light / dark)
+        ctx.strokeStyle = this._withAlpha(t.muted, dark ? 0.60 : 0.73);
         ctx.lineWidth = 1.3;
         ctx.stroke();
-        // Small dot at the child end
+        // Small dot at the child end (kept in the original color for visual link)
         ctx.beginPath();
         ctx.arc(x2, y2, 2.5, 0, Math.PI * 2);
         ctx.fillStyle = color;
@@ -714,7 +727,7 @@ class Ch14DeepResearch extends CanvasAnimation {
     }
 
     // ---------------- right sidebar (snippet) ----------------
-    _drawSidebar(ctx, x, y, w, h, textColor, subColor, borderCol, panelBg, dark) {
+    _drawSidebar(ctx, x, y, w, h, textColor, subColor, borderCol, panelBg, dark, t) {
         ctx.fillStyle = panelBg;
         this.roundRect(ctx, x, y, w, h, 10);
         ctx.fill();
@@ -756,17 +769,18 @@ class Ch14DeepResearch extends CanvasAnimation {
 
         // Code snippet panel
         const snippetH = h - (cursorY - y) - 12;
-        this._drawCodePanel(ctx, x + padX, cursorY, w - padX * 2, snippetH, step.snippet, dark);
+        this._drawCodePanel(ctx, x + padX, cursorY, w - padX * 2, snippetH, step.snippet, dark, t);
     }
 
-    _drawCodePanel(ctx, x, y, w, h, lines, dark) {
-        // Dark code-like background
-        const codeBg = dark ? '#0B1220' : '#1E293B';
-        const codeFg = dark ? '#E2E8F0' : '#F1F5F9';
-        const kwColor  = '#8B5CF6';
-        const strColor = '#10B981';
-        const numColor = '#F59E0B';
-        const comColor = '#94A3B8';
+    _drawCodePanel(ctx, x, y, w, h, lines, dark, t) {
+        // Code-like background: dark theme uses t.surfaceDark, light uses
+        // t.surfaceDarkSoft so the panel reads as a code surface on warm cream.
+        const codeBg = dark ? t.surfaceDark : t.surfaceDarkSoft;
+        const codeFg = dark ? t.hairline : t.surfaceCard;
+        const kwColor  = t.accentAmber;
+        const strColor = t.success;
+        const numColor = t.primary;
+        const comColor = t.muted;
 
         this.roundRect(ctx, x, y, w, h, 8);
         ctx.fillStyle = codeBg;
@@ -775,15 +789,15 @@ class Ch14DeepResearch extends CanvasAnimation {
         // Window dots
         ctx.beginPath();
         ctx.arc(x + 12, y + 12, 3, 0, Math.PI * 2);
-        ctx.fillStyle = '#EF4444';
+        ctx.fillStyle = t.error;
         ctx.fill();
         ctx.beginPath();
         ctx.arc(x + 22, y + 12, 3, 0, Math.PI * 2);
-        ctx.fillStyle = '#F59E0B';
+        ctx.fillStyle = t.accentAmber;
         ctx.fill();
         ctx.beginPath();
         ctx.arc(x + 32, y + 12, 3, 0, Math.PI * 2);
-        ctx.fillStyle = '#10B981';
+        ctx.fillStyle = t.success;
         ctx.fill();
 
         // Code text
@@ -851,7 +865,7 @@ class Ch14DeepResearch extends CanvasAnimation {
     }
 
     // ---------------- tooltip ----------------
-    _drawTooltip(ctx, w, h, textColor, subColor, borderCol, dark) {
+    _drawTooltip(ctx, w, h, textColor, subColor, borderCol, dark, t) {
         const i = this._hoverStep;
         if (i < 0 || i >= this.steps.length) return;
         const step = this.steps[i];
@@ -869,7 +883,9 @@ class Ch14DeepResearch extends CanvasAnimation {
         const tipY       = 98;
 
         // Opaque background
-        ctx.fillStyle = dark ? 'rgba(15,23,42,0.98)' : 'rgba(255,255,255,0.98)';
+        ctx.fillStyle = dark
+            ? this._withAlpha(t.surfaceDark, 0.98)
+            : this._withAlpha(t.surfaceCard, 0.98);
         this.roundRect(ctx, tipX, tipY, tipW, tipH, 8);
         ctx.fill();
         ctx.strokeStyle = step.color;
@@ -893,7 +909,7 @@ class Ch14DeepResearch extends CanvasAnimation {
             ctx.textAlign = 'right';
             ctx.fillText('● 进行中', tipX + tipW - 10, tipY + 10);
         } else if (isDone) {
-            ctx.fillStyle = '#10B981';
+            ctx.fillStyle = t.success;
             ctx.textAlign = 'right';
             ctx.fillText('✓ 已完成', tipX + tipW - 10, tipY + 10);
         } else {
@@ -921,6 +937,15 @@ class Ch14DeepResearch extends CanvasAnimation {
         ctx.closePath();
         ctx.fillStyle = step.color;
         ctx.fill();
+    }
+
+    // ---------------- helpers ----------------
+    _withAlpha(hex, alpha) {
+        if (typeof hex !== 'string' || hex[0] !== '#' || hex.length < 7) return hex;
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r},${g},${b},${alpha})`;
     }
 }
 
