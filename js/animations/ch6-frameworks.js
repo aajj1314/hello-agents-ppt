@@ -33,11 +33,12 @@ class Ch6Frameworks extends CanvasAnimation {
         this._hover = { fw: -1, layer: -1 };
 
         // Four framework columns. The 4th is the "handwritten" baseline.
+        // Each `colorKey` is resolved against this.theme() inside draw().
         this.frameworks = [
             {
                 name: 'LangChain',
-                color: '#3B82F6',
-                bgColor: 'rgba(59,130,246,0.12)',
+                colorKey: 'accentTeal',
+                bgKey: 'accentTeal',
                 codeLines: 5,
                 tagline: '链式组合 (LCEL)',
                 layers: [
@@ -49,8 +50,8 @@ class Ch6Frameworks extends CanvasAnimation {
             },
             {
                 name: 'AutoGen',
-                color: '#8B5CF6',
-                bgColor: 'rgba(139,92,246,0.12)',
+                colorKey: 'primary',
+                bgKey: 'primary',
                 codeLines: 8,
                 tagline: '对话驱动协作',
                 layers: [
@@ -62,8 +63,8 @@ class Ch6Frameworks extends CanvasAnimation {
             },
             {
                 name: 'CrewAI',
-                color: '#10B981',
-                bgColor: 'rgba(16,185,129,0.12)',
+                colorKey: 'success',
+                bgKey: 'success',
                 codeLines: 6,
                 tagline: '角色化任务委派',
                 layers: [
@@ -75,8 +76,8 @@ class Ch6Frameworks extends CanvasAnimation {
             },
             {
                 name: '传统手写',
-                color: '#64748B',
-                bgColor: 'rgba(100,116,139,0.12)',
+                colorKey: 'muted',
+                bgKey: 'muted',
                 codeLines: 32,
                 tagline: '原生代码 (CH4 基线)',
                 layers: [
@@ -131,9 +132,9 @@ class Ch6Frameworks extends CanvasAnimation {
         // 选型矩阵 (3 frameworks × 4 dimensions). Score 1-5 rendered as dots.
         this.matrixHeaders = ['多Agent', '工具链', '易用性', '性能'];
         this.matrixRows = [
-            { name: 'LangChain', color: '#3B82F6', scores: [2, 5, 3, 4] },
-            { name: 'AutoGen',   color: '#8B5CF6', scores: [5, 3, 3, 3] },
-            { name: 'CrewAI',    color: '#10B981', scores: [4, 4, 5, 4] }
+            { name: 'LangChain', colorKey: 'accentTeal', scores: [2, 5, 3, 4] },
+            { name: 'AutoGen',   colorKey: 'primary',    scores: [5, 3, 3, 3] },
+            { name: 'CrewAI',    colorKey: 'success',    scores: [4, 4, 5, 4] }
         ];
     }
 
@@ -192,6 +193,14 @@ class Ch6Frameworks extends CanvasAnimation {
             }
         }
         return { fw: -1, layer: -1 };
+    }
+
+    _withAlpha(hex, alpha) {
+        if (typeof hex !== 'string' || hex[0] !== '#' || hex.length < 7) return hex;
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     }
 
     togglePlay() {
@@ -322,16 +331,24 @@ class Ch6Frameworks extends CanvasAnimation {
     }
 
     draw() {
-        const ctx = this.ctx;
-        const w = this.width;
-        const h = this.height;
+        const ctx = this.ctx, w = this.width, h = this.height;
+        const t = this.theme();
         const isDark = this.isDarkTheme();
-        const bg = isDark ? '#0F172A' : '#F8FAFC';
-        const textColor = isDark ? '#F1F5F9' : '#0F172A';
-        const subColor = isDark ? '#94A3B8' : '#475569';
-        const cardBg = isDark ? '#1E293B' : '#FFFFFF';
-        const cardBorder = isDark ? '#334155' : '#E2E8F0';
-        const innerBg = isDark ? '#0B1220' : '#F1F5F9';
+        const bg = isDark ? t.surfaceDarkSoft : t.canvas;
+        const textColor = t.ink;
+        const subColor = t.muted;
+        const cardBg = isDark ? t.surfaceDark : t.canvas;
+        const cardBorder = t.hairline;
+        const innerBg = isDark ? t.surfaceDarkSoft : t.surfaceCard;
+        // Resolve the framework color/background to actual hex
+        for (let i = 0; i < this.frameworks.length; i++) {
+            const fw = this.frameworks[i];
+            fw.color = t[fw.colorKey];
+            fw.bgColor = this._withAlpha(t[fw.bgKey], isDark ? 0.18 : 0.12);
+        }
+        for (let i = 0; i < this.matrixRows.length; i++) {
+            this.matrixRows[i].color = t[this.matrixRows[i].colorKey];
+        }
 
         ctx.clearRect(0, 0, w, h);
         ctx.fillStyle = bg;
@@ -419,14 +436,14 @@ class Ch6Frameworks extends CanvasAnimation {
         ctx.fill();
 
         // Framework name
-        ctx.fillStyle = isFocus ? '#FFFFFF' : (isDark ? '#F8FAFC' : fw.color);
+        ctx.fillStyle = isFocus ? t.onPrimary : (isDark ? t.surfaceCard : fw.color);
         ctx.font = 'bold 14px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(fw.name, col.x + col.w / 2, col.nameY + 6);
 
         // Tagline
-        ctx.fillStyle = isFocus ? 'rgba(255,255,255,0.85)' : subColor;
+        ctx.fillStyle = isFocus ? this._withAlpha(t.onPrimary, 0.85) : subColor;
         ctx.font = '10px sans-serif';
         ctx.fillText(fw.tagline, col.x + col.w / 2, col.taglineY + 4);
 
@@ -460,7 +477,7 @@ class Ch6Frameworks extends CanvasAnimation {
             bgBot = fw.bgColor;
         } else {
             bgTop = innerBg;
-            bgBot = isDark ? '#0F172A' : '#E2E8F0';
+            bgBot = isDark ? t.surfaceDark : t.surfaceCard;
         }
         const grad = ctx.createLinearGradient(x, y, x, y + h);
         grad.addColorStop(0, bgTop);
@@ -472,7 +489,7 @@ class Ch6Frameworks extends CanvasAnimation {
         // Border
         ctx.strokeStyle = isHover
             ? fw.color
-            : (isFocus ? fw.color : (isDark ? '#334155' : '#CBD5E1'));
+            : (isFocus ? fw.color : (isDark ? t.muted : t.hairline));
         ctx.lineWidth = isHover ? 2 : (isFocus ? 1.5 : 1);
         this.roundRect(ctx, x, y, w, h, 6);
         ctx.stroke();
@@ -482,7 +499,7 @@ class Ch6Frameworks extends CanvasAnimation {
         ctx.fillStyle = fw.color;
         this.roundRect(ctx, x + 4, y + (h - 16) / 2, idxW, 16, 4);
         ctx.fill();
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = t.onPrimary;
         ctx.font = 'bold 9px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -491,12 +508,12 @@ class Ch6Frameworks extends CanvasAnimation {
         // Title + impl
         const textX = x + 4 + idxW + 6;
         const textW = w - (textX - x) - 6;
-        ctx.fillStyle = isHover ? '#FFFFFF' : textColor;
+        ctx.fillStyle = isHover ? t.onPrimary : textColor;
         ctx.font = 'bold 11px sans-serif';
         ctx.textAlign = 'left';
         ctx.fillText(layer.title, textX, y + h / 2 - 6);
 
-        ctx.fillStyle = isHover ? 'rgba(255,255,255,0.92)' : subColor;
+        ctx.fillStyle = isHover ? this._withAlpha(t.onPrimary, 0.92) : subColor;
         ctx.font = '10px sans-serif';
         const implLines = this.wrapText(ctx, layer.impl, textX, 0, textW, 11);
         if (implLines.length === 1) {
@@ -512,7 +529,7 @@ class Ch6Frameworks extends CanvasAnimation {
             const ax = x + w / 2;
             const ay = y + h;
             const ah = 4;
-            ctx.strokeStyle = isFocus ? fw.color : (isDark ? '#475569' : '#CBD5E1');
+            ctx.strokeStyle = isFocus ? fw.color : (isDark ? t.muted : t.hairline);
             ctx.lineWidth = isFocus ? 1.5 : 1;
             ctx.beginPath();
             ctx.moveTo(ax, ay);
@@ -524,7 +541,7 @@ class Ch6Frameworks extends CanvasAnimation {
             ctx.lineTo(ax, ay + ah + 2);
             ctx.lineTo(ax + 3, ay + ah - 1);
             ctx.closePath();
-            ctx.fillStyle = isFocus ? fw.color : (isDark ? '#64748B' : '#94A3B8');
+            ctx.fillStyle = isFocus ? fw.color : (isDark ? t.muted : t.mutedSoft);
             ctx.fill();
         }
     }
@@ -534,10 +551,10 @@ class Ch6Frameworks extends CanvasAnimation {
         const x = stack.x, y = stack.y, w = stack.w, h = stack.h;
 
         // Panel background
-        ctx.fillStyle = isDark ? '#0B1220' : '#F8FAFC';
+        ctx.fillStyle = innerBg;
         this.roundRect(ctx, x, y, w, h, 8);
         ctx.fill();
-        ctx.strokeStyle = isDark ? '#334155' : '#CBD5E1';
+        ctx.strokeStyle = isDark ? t.muted : t.hairline;
         ctx.lineWidth = 1;
         this.roundRect(ctx, x, y, w, h, 8);
         ctx.stroke();
@@ -571,7 +588,7 @@ class Ch6Frameworks extends CanvasAnimation {
         const barY = y + h - 10;
         const barW = w - 16;
         const barH = 4;
-        ctx.fillStyle = isDark ? '#1E293B' : '#E2E8F0';
+        ctx.fillStyle = isDark ? t.surfaceDark : t.surfaceCard;
         this.roundRect(ctx, barX, barY, barW, barH, 2);
         ctx.fill();
         const fillW = Math.max(6, (fw.codeLines / maxLines) * barW);
@@ -637,7 +654,9 @@ class Ch6Frameworks extends CanvasAnimation {
             const ry = gridY + headerH + 4 + ri * rowH;
             // Row background (alternate)
             if (ri % 2 === 0) {
-                ctx.fillStyle = isDark ? 'rgba(148,163,184,0.06)' : 'rgba(100,116,139,0.05)';
+                ctx.fillStyle = isDark
+                    ? this._withAlpha(t.muted, 0.10)
+                    : this._withAlpha(t.muted, 0.08);
                 this.roundRect(ctx, gridX, ry, gridW, rowH - 2, 4);
                 ctx.fill();
             }
@@ -708,11 +727,12 @@ class Ch6Frameworks extends CanvasAnimation {
         if (ty + h > this.height - 28) ty = this.height - 28 - h;
         if (ty < 8) ty = 8;
 
+        const t = this.theme();
         const isDark = this.isDarkTheme();
-        const tipBg = isDark ? '#0B1220' : '#FFFFFF';
-        const tipBorder = isDark ? '#475569' : '#CBD5E1';
-        const textColor = isDark ? '#F1F5F9' : '#0F172A';
-        const subColor = isDark ? '#94A3B8' : '#475569';
+        const tipBg = isDark ? t.surfaceDark : t.canvas;
+        const tipBorder = isDark ? t.muted : t.hairline;
+        const textColor = t.ink;
+        const subColor = t.muted;
 
         // Background + border
         ctx.fillStyle = tipBg;
