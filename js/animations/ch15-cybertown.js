@@ -39,11 +39,13 @@ class Ch15Cybertown extends CanvasAnimation {
 
         // ---- NPC list ----
         // 4 个 NPC: 张三 / 李四 / 王五 + 学习者
+        // Per spec: t.ink / t.primary / t.accentTeal for the first three,
+        // and t.accentAmber for the 4th NPC (访客/学习者).
         this.npcs = [
             {
                 name: '张三', role: 'Python工程师',
                 personality: '严谨 · 热爱代码',
-                affinity: 12, color: '#6366F1',
+                affinity: 12, colorKey: 'ink',
                 quotes: [
                     '这个 bug 真是见鬼了,已经调试两小时了…',
                     '我刚给 SimpleAgent 重构了消息循环,跑通了!',
@@ -54,7 +56,7 @@ class Ch15Cybertown extends CanvasAnimation {
             {
                 name: '李四', role: '产品经理',
                 personality: '外向 · 注重用户',
-                affinity: 24, color: '#3B82F6',
+                affinity: 24, colorKey: 'primary',
                 quotes: [
                     '这个功能的优先级需要重新评估一下。',
                     '我们得先做用户调研,再排开发计划。',
@@ -65,18 +67,18 @@ class Ch15Cybertown extends CanvasAnimation {
             {
                 name: '王五', role: 'UI设计师',
                 personality: '温和 · 富有创意',
-                affinity: 8, color: '#10B981',
+                affinity: 8, colorKey: 'accentTeal',
                 quotes: [
                     '这杯咖啡的拉花真不错,灵感来了!',
                     '圆角再小一点,留白再多一点…',
-                    '今天主色定成这个 #6366F1,看着舒服。',
+                    '今天主色定成这个 coral,看着舒服。',
                     '我先把新版的对话气泡设计稿画出来。'
                 ]
             },
             {
                 name: '访客', role: '学习者',
                 personality: '好奇 · 正在成长',
-                affinity: 4, color: '#F59E0B',
+                affinity: 4, colorKey: 'accentAmber',
                 quotes: [
                     '我正在学 HelloAgents 框架,有点吃力…',
                     '请问 Agent 和普通 LLM 调用有啥区别?',
@@ -359,31 +361,48 @@ class Ch15Cybertown extends CanvasAnimation {
     _generateTown() {
         const w = this.width;
         const h = this.height;
+        const t = this.theme();
         const dark = this.isDarkTheme();
 
-        // Buildings
+        // Buildings: light vs dark palette driven by theme tokens
+        // (light) / a darker shade (dark) — per-building colorKey determines
+        // the family. _lighten / _darken of the resolved token does the rest.
         const bPositions = [
-            { x: 0.04, y: 0.30, w: 0.16, h: 0.18, color: dark ? '#334155' : '#6366F1', label: '研发部' },
-            { x: 0.24, y: 0.26, w: 0.17, h: 0.20, color: dark ? '#1E40AF' : '#3B82F6', label: '产品部' },
-            { x: 0.45, y: 0.30, w: 0.14, h: 0.17, color: dark ? '#065F46' : '#10B981', label: '设计部' },
-            { x: 0.06, y: 0.62, w: 0.13, h: 0.14, color: dark ? '#7C2D12' : '#F59E0B', label: '咖啡厅' },
-            { x: 0.24, y: 0.60, w: 0.13, h: 0.13, color: dark ? '#6B21A8' : '#8B5CF6', label: '会议室' },
-            { x: 0.42, y: 0.60, w: 0.13, h: 0.13, color: dark ? '#0F766E' : '#14B8A6', label: '休息区' }
+            { x: 0.04, y: 0.30, w: 0.16, h: 0.18, colorKey: 'ink',        label: '研发部' },
+            { x: 0.24, y: 0.26, w: 0.17, h: 0.20, colorKey: 'primary',    label: '产品部' },
+            { x: 0.45, y: 0.30, w: 0.14, h: 0.17, colorKey: 'accentTeal', label: '设计部' },
+            { x: 0.06, y: 0.62, w: 0.13, h: 0.14, colorKey: 'accentAmber',label: '咖啡厅' },
+            { x: 0.24, y: 0.60, w: 0.13, h: 0.13, colorKey: 'primary',    label: '会议室' },
+            { x: 0.42, y: 0.60, w: 0.13, h: 0.13, colorKey: 'accentTeal', label: '休息区' }
         ];
-        this.buildings = bPositions.map(p => ({
-            x: p.x * w, y: p.y * h, w: p.w * w, h: p.h * h,
-            color: p.color, label: p.label,
-            windows: this._generateWindows(p.x * w, p.y * h, p.w * w, p.h * h)
-        }));
+        this.buildings = bPositions.map(p => {
+            const base = t[p.colorKey];
+            const color = dark ? this._darken(base, 0.55) : this._lighten(base, 0.10);
+            return {
+                x: p.x * w, y: p.y * h, w: p.w * w, h: p.h * h,
+                color, label: p.label,
+                windows: this._generateWindows(p.x * w, p.y * h, p.w * w, p.h * h)
+            };
+        });
 
-        // Trees
+        // Trees — resolve trunk / leaf tokens once and place trees
+        const trunkDark  = t.body;
+        const trunkLight = t.accentAmber;
+        const leafDark   = t.success;
+        const leafDark2  = t.accentTeal;
+        const leafLight  = t.success;
+        const leafLight2 = t.accentTeal;
+
         const tPositions = [
             { x: 0.02, y: 0.50 }, { x: 0.06, y: 0.54 },
             { x: 0.21, y: 0.12 }, { x: 0.39, y: 0.11 },
             { x: 0.58, y: 0.50 }, { x: 0.59, y: 0.55 }
         ];
         this.trees = tPositions.map(p => ({
-            x: p.x * w, y: p.y * h, size: 8 + Math.random() * 6
+            x: p.x * w, y: p.y * h, size: 8 + Math.random() * 6,
+            trunkCol: dark ? trunkDark : trunkLight,
+            leafCol:  dark ? leafDark  : leafLight,
+            leafCol2: dark ? leafDark2 : leafLight2
         }));
     }
 
@@ -408,11 +427,12 @@ class Ch15Cybertown extends CanvasAnimation {
     //  affinity helpers
     // -----------------------------------------------------------------
     _affinityLevel(score) {
-        if (score <= 20) return { name: '陌生',   color: '#94A3B8' };
-        if (score <= 40) return { name: '熟悉',   color: '#86EFAC' };
-        if (score <= 60) return { name: '友好',   color: '#10B981' };
-        if (score <= 80) return { name: '亲密',   color: '#F59E0B' };
-        return                  { name: '挚友',   color: '#A855F7' };
+        const t = this.theme();
+        if (score <= 20) return { name: '陌生',   colorKey: 'mutedSoft' };
+        if (score <= 40) return { name: '熟悉',   colorKey: 'success' };
+        if (score <= 60) return { name: '友好',   colorKey: 'success' };
+        if (score <= 80) return { name: '亲密',   colorKey: 'accentAmber' };
+        return                  { name: '挚友',   colorKey: 'primary' };
     }
 
     _applyAffinity(idx, delta, actionLabel) {
@@ -503,14 +523,24 @@ class Ch15Cybertown extends CanvasAnimation {
         const ctx = this.ctx;
         const w = this.width;
         const h = this.height;
+        const t = this.theme();
         const dark = this.isDarkTheme();
 
         // Palette
-        const bg        = dark ? '#0F172A' : '#F8FAFC';
-        const textColor = dark ? '#F1F5F9' : '#0F172A';
-        const subColor  = dark ? '#94A3B8' : '#475569';
-        const borderCol = dark ? 'rgba(148,163,184,0.25)' : 'rgba(100,116,139,0.25)';
-        const panelBg   = dark ? 'rgba(30,41,59,0.6)' : 'rgba(241,245,249,0.85)';
+        const bg        = dark ? t.surfaceDarkSoft : t.canvas;
+        const textColor = t.ink;
+        const subColor  = t.muted;
+        const borderCol = this._withAlpha(t.muted, dark ? 0.25 : 0.25);
+        const panelBg   = dark
+            ? this._withAlpha(t.surfaceDark, 0.6)
+            : this._withAlpha(t.surfaceCard, 0.85);
+        // Resolve NPC + affinity level colors from theme tokens
+        for (let i = 0; i < this.npcs.length; i++) {
+            this.npcs[i].color = t[this.npcs[i].colorKey];
+        }
+        for (const lvl of ['mutedSoft', 'success', 'success', 'accentAmber', 'primary']) {
+            // levels cache lazily in _affinityLevel
+        }
 
         // Background
         ctx.clearRect(0, 0, w, h);
@@ -530,31 +560,33 @@ class Ch15Cybertown extends CanvasAnimation {
         const lay = this._layout();
 
         // ---- Town panel (left) ----
-        this._drawTown(ctx, lay.townX, lay.townY, lay.townW, lay.townH, textColor, subColor, borderCol, dark);
+        this._drawTown(ctx, lay.townX, lay.townY, lay.townW, lay.townH, textColor, subColor, borderCol, dark, t);
 
         // ---- Memory log (right) ----
-        this._drawMemoryLog(ctx, lay.sidebarX, lay.townY, lay.sidebarW, lay.townH, textColor, subColor, borderCol, panelBg, dark);
+        this._drawMemoryLog(ctx, lay.sidebarX, lay.townY, lay.sidebarW, lay.townH, textColor, subColor, borderCol, panelBg, dark, t);
 
         // ---- Footer ----
         this._drawFooter(ctx, w, h, subColor, textColor);
 
         // ---- Dialogue bubble (on top of everything) ----
         if (this._selectedIdx >= 0) {
-            this._drawBubble(ctx, textColor, subColor, borderCol, dark);
+            this._drawBubble(ctx, textColor, subColor, borderCol, dark, t);
         }
 
         // ---- Hover tooltip (very top layer) ----
         if (this._hoveringNpc >= 0 && this._selectedIdx < 0) {
-            this._drawNpcTooltip(ctx, this._hoveringNpc, textColor, subColor, borderCol, dark);
+            this._drawNpcTooltip(ctx, this._hoveringNpc, textColor, subColor, borderCol, dark, t);
         }
     }
 
     // -----------------------------------------------------------------
     //  town draw
     // -----------------------------------------------------------------
-    _drawTown(ctx, x, y, w, h, textColor, subColor, borderCol, dark) {
+    _drawTown(ctx, x, y, w, h, textColor, subColor, borderCol, dark, t) {
         // Panel background
-        ctx.fillStyle = dark ? 'rgba(30,41,59,0.40)' : 'rgba(241,245,249,0.55)';
+        ctx.fillStyle = dark
+            ? this._withAlpha(t.surfaceDark, 0.40)
+            : this._withAlpha(t.surfaceCard, 0.55);
         this.roundRect(ctx, x, y, w, h, 10);
         ctx.fill();
         ctx.strokeStyle = borderCol;
@@ -562,24 +594,26 @@ class Ch15Cybertown extends CanvasAnimation {
         this.roundRect(ctx, x, y, w, h, 10);
         ctx.stroke();
 
-        // Roads
+        // Roads — use t.hairline (light) / t.muted at 0.25 (dark)
         const roadY1 = y + h * 0.48;
         const roadY2 = y + h * 0.80;
-        ctx.fillStyle = dark ? 'rgba(148,163,184,0.25)' : 'rgba(226,232,240,0.7)';
+        ctx.fillStyle = dark
+            ? this._withAlpha(t.muted, 0.25)
+            : this._withAlpha(t.hairline, 0.7);
         ctx.fillRect(x + 4, roadY1, w - 8, 6);
         ctx.fillRect(x + 4, roadY2, w - 8, 6);
 
         // Trees
         for (const tree of this.trees) {
-            ctx.fillStyle = dark ? '#5D4037' : '#8D6E63';
+            ctx.fillStyle = tree.trunkCol;
             ctx.fillRect(tree.x - 2, tree.y - 2, 4, 8);
             ctx.beginPath();
             ctx.arc(tree.x, tree.y - 6, tree.size * 0.7, 0, Math.PI * 2);
-            ctx.fillStyle = dark ? '#2D6A4F' : '#4ADE80';
+            ctx.fillStyle = tree.leafCol;
             ctx.fill();
             ctx.beginPath();
             ctx.arc(tree.x - 4, tree.y - 4, tree.size * 0.5, 0, Math.PI * 2);
-            ctx.fillStyle = dark ? '#40916C' : '#86EFAC';
+            ctx.fillStyle = tree.leafCol2;
             ctx.fill();
         }
 
@@ -591,18 +625,20 @@ class Ch15Cybertown extends CanvasAnimation {
             this.roundRect(ctx, b.x, b.y, b.w, b.h, 6);
             ctx.fillStyle = grad;
             ctx.fill();
-            ctx.strokeStyle = dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.15)';
+            ctx.strokeStyle = dark
+                ? this._withAlpha(t.onDark, 0.10)
+                : this._withAlpha(t.ink, 0.15);
             ctx.lineWidth = 1.2;
             ctx.stroke();
             // Windows
             for (const win of b.windows) {
                 ctx.fillStyle = win.lit
-                    ? (dark ? '#FBBF24' : '#FEF08A')
-                    : (dark ? '#1E293B' : '#E2E8F0');
+                    ? t.accentAmber
+                    : (dark ? t.surfaceDark : t.hairline);
                 ctx.fillRect(win.x, win.y, 12, 9);
             }
             // Label
-            ctx.fillStyle = dark ? '#E2E8F0' : '#1E293B';
+            ctx.fillStyle = textColor;
             ctx.font = 'bold 10px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'top';
@@ -621,32 +657,35 @@ class Ch15Cybertown extends CanvasAnimation {
         }));
 
         // Draw NPCs (slight bobbing for life)
-        const t = performance.now() / 600;
+        const now = performance.now() / 600;
         this._npcRects = [];
         for (let i = 0; i < this.npcs.length; i++) {
             const npc = this.npcs[i];
             const p = positions[i];
-            const bob = Math.sin(t + i * 1.3) * 1.5;
+            const bob = Math.sin(now + i * 1.3) * 1.5;
             const r = 18;
             const cx = p.x;
             const cy = p.y + bob;
             const isSelected = i === this._selectedIdx;
             const isHover = i === this._hoveringNpc;
             const level = this._affinityLevel(npc.affinity);
+            const levelColor = t[level.colorKey];
 
             this._npcRects.push({ idx: i, x: cx, y: cy, r: r + 4 });
 
             // Shadow
             ctx.beginPath();
             ctx.ellipse(cx, cy + r + 1, r * 0.7, 3, 0, 0, Math.PI * 2);
-            ctx.fillStyle = dark ? 'rgba(0,0,0,0.35)' : 'rgba(0,0,0,0.12)';
+            ctx.fillStyle = dark
+                ? this._withAlpha(t.ink, 0.35)
+                : this._withAlpha(t.ink, 0.12);
             ctx.fill();
 
             // Halo on hover / selected
             if (isHover || isSelected) {
                 ctx.beginPath();
                 ctx.arc(cx, cy, r + 5, 0, Math.PI * 2);
-                ctx.fillStyle = npc.color + (isSelected ? '44' : '22');
+                ctx.fillStyle = this._withAlpha(npc.color, isSelected ? 0.27 : 0.13);
                 ctx.fill();
             }
 
@@ -658,22 +697,26 @@ class Ch15Cybertown extends CanvasAnimation {
             ctx.arc(cx, cy, r, 0, Math.PI * 2);
             ctx.fillStyle = grad;
             ctx.fill();
-            ctx.strokeStyle = isSelected ? '#FFFFFF' : (dark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.25)');
+            ctx.strokeStyle = isSelected
+                ? t.primaryActive
+                : (dark
+                    ? this._withAlpha(t.onDark, 0.25)
+                    : this._withAlpha(t.ink, 0.25));
             ctx.lineWidth = isSelected ? 2.5 : 1.5;
             ctx.stroke();
 
             // Face emoji
-            ctx.fillStyle = '#FFFFFF';
+            ctx.fillStyle = t.onDark;
             ctx.font = '12px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText('🤖', cx, cy - 1);
 
             // Affinity heart + number badge above the NPC
-            this._drawAffinityBadge(ctx, cx, cy - r - 12, npc.affinity, level);
+            this._drawAffinityBadge(ctx, cx, cy - r - 12, npc.affinity, levelColor, dark, t);
 
             // Name + role below the NPC
-            ctx.fillStyle = dark ? '#F1F5F9' : '#0F172A';
+            ctx.fillStyle = textColor;
             ctx.font = 'bold 10px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'top';
@@ -684,7 +727,7 @@ class Ch15Cybertown extends CanvasAnimation {
         }
     }
 
-    _drawAffinityBadge(ctx, cx, cy, score, level) {
+    _drawAffinityBadge(ctx, cx, cy, score, levelColor, dark, t) {
         const padX = 5;
         const text = `♥ ${score}`;
         ctx.font = 'bold 10px sans-serif';
@@ -695,17 +738,17 @@ class Ch15Cybertown extends CanvasAnimation {
         const by = cy - bh / 2;
 
         // Background pill (dark backdrop for legibility on any theme)
-        ctx.fillStyle = 'rgba(15,23,42,0.78)';
+        ctx.fillStyle = this._withAlpha(t.surfaceDark, 0.78);
         this.roundRect(ctx, bx, by, bw, bh, 8);
         ctx.fill();
         // Colored ring (matches the affinity level color)
-        ctx.strokeStyle = level.color;
+        ctx.strokeStyle = levelColor;
         ctx.lineWidth = 1.5;
         this.roundRect(ctx, bx, by, bw, bh, 8);
         ctx.stroke();
 
         // Heart + number
-        ctx.fillStyle = level.color;
+        ctx.fillStyle = levelColor;
         ctx.font = 'bold 10px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -715,20 +758,21 @@ class Ch15Cybertown extends CanvasAnimation {
     // -----------------------------------------------------------------
     //  dialogue bubble
     // -----------------------------------------------------------------
-    _drawBubble(ctx, textColor, subColor, borderCol, dark) {
+    _drawBubble(ctx, textColor, subColor, borderCol, dark, t) {
         const bub = this._bubbleRect();
         if (!bub) return;
         const npc = this.npcs[this._selectedIdx];
         if (!npc) return;
         const level = this._affinityLevel(npc.affinity);
+        const levelColor = t[level.colorKey];
 
         // Bubble shadow
-        ctx.fillStyle = 'rgba(0,0,0,0.20)';
+        ctx.fillStyle = this._withAlpha(t.ink, 0.20);
         this.roundRect(ctx, bub.x + 1, bub.y + 2, bub.w, bub.h, 10);
         ctx.fill();
 
         // Bubble body
-        ctx.fillStyle = dark ? '#1E293B' : '#FFFFFF';
+        ctx.fillStyle = dark ? t.surfaceDark : t.surfaceCard;
         this.roundRect(ctx, bub.x, bub.y, bub.w, bub.h, 10);
         ctx.fill();
         ctx.strokeStyle = npc.color;
@@ -745,7 +789,7 @@ class Ch15Cybertown extends CanvasAnimation {
         ctx.lineTo(triCx - 6, triY + triDir * 8);
         ctx.lineTo(triCx + 6, triY + triDir * 8);
         ctx.closePath();
-        ctx.fillStyle = dark ? '#1E293B' : '#FFFFFF';
+        ctx.fillStyle = dark ? t.surfaceDark : t.surfaceCard;
         ctx.fill();
         ctx.strokeStyle = npc.color;
         ctx.lineWidth = 1.5;
@@ -762,7 +806,7 @@ class Ch15Cybertown extends CanvasAnimation {
         ctx.fillStyle = npc.color;
         ctx.fillRect(bub.x, bub.y, bub.w, 22);
         ctx.restore();
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = t.onDark;
         ctx.font = 'bold 11px sans-serif';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'middle';
@@ -770,15 +814,15 @@ class Ch15Cybertown extends CanvasAnimation {
         // Level pill on the right
         ctx.font = 'bold 9px sans-serif';
         const lblW = ctx.measureText(level.name).width + 10;
-        ctx.fillStyle = 'rgba(255,255,255,0.25)';
+        ctx.fillStyle = this._withAlpha(t.onDark, 0.25);
         this.roundRect(ctx, bub.x + bub.w - lblW - 28, bub.y + 4, lblW, 14, 7);
         ctx.fill();
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = t.onDark;
         ctx.textAlign = 'center';
         ctx.fillText(level.name, bub.x + bub.w - lblW / 2 - 28, bub.y + 11);
 
         // Close (×) button
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = t.onDark;
         ctx.font = 'bold 12px sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('×', bub.x + bub.w - 14, bub.y + 11);
@@ -804,21 +848,21 @@ class Ch15Cybertown extends CanvasAnimation {
         const praiseX = bub.x + padX;
         const scoldX  = praiseX + btnW + padX;
 
-        // 夸他 (praise) — green
-        ctx.fillStyle = '#10B981';
+        // 夸他 (praise) — success
+        ctx.fillStyle = t.success;
         this.roundRect(ctx, praiseX, btnY, btnW, btnH, 6);
         ctx.fill();
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = t.onDark;
         ctx.font = 'bold 11px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText('👍 夸他  (+5)', praiseX + btnW / 2, btnY + btnH / 2 + 1);
 
-        // 怼他 (scold) — red
-        ctx.fillStyle = '#EF4444';
+        // 怼他 (scold) — error
+        ctx.fillStyle = t.error;
         this.roundRect(ctx, scoldX, btnY, btnW, btnH, 6);
         ctx.fill();
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = t.onDark;
         ctx.font = 'bold 11px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -834,7 +878,7 @@ class Ch15Cybertown extends CanvasAnimation {
     // -----------------------------------------------------------------
     //  memory log (right sidebar)
     // -----------------------------------------------------------------
-    _drawMemoryLog(ctx, x, y, w, h, textColor, subColor, borderCol, panelBg, dark) {
+    _drawMemoryLog(ctx, x, y, w, h, textColor, subColor, borderCol, panelBg, dark, t) {
         // Panel
         ctx.fillStyle = panelBg;
         this.roundRect(ctx, x, y, w, h, 10);
@@ -885,7 +929,7 @@ class Ch15Cybertown extends CanvasAnimation {
 
                 // Left color stripe
                 const positive = e.delta.startsWith('+');
-                const stripeCol = positive ? '#10B981' : '#EF4444';
+                const stripeCol = positive ? t.success : t.error;
                 ctx.fillStyle = stripeCol;
                 ctx.fillRect(x + padX, entryY + 2, 2, rowH - 6);
 
@@ -917,7 +961,7 @@ class Ch15Cybertown extends CanvasAnimation {
     // -----------------------------------------------------------------
     //  hover tooltip (NPC personality + role)
     // -----------------------------------------------------------------
-    _drawNpcTooltip(ctx, idx, textColor, subColor, borderCol, dark) {
+    _drawNpcTooltip(ctx, idx, textColor, subColor, borderCol, dark, t) {
         const npc = this.npcs[idx];
         if (!npc) return;
         const rect = this._npcRects[idx];
@@ -940,7 +984,9 @@ class Ch15Cybertown extends CanvasAnimation {
         if (tx + tw > this.width - 8) tx = this.width - tw - 8;
         if (ty < 8) ty = rect.y + rect.r + 8;
 
-        ctx.fillStyle = dark ? 'rgba(15,23,42,0.96)' : 'rgba(255,255,255,0.96)';
+        ctx.fillStyle = dark
+            ? this._withAlpha(t.surfaceDark, 0.96)
+            : this._withAlpha(t.surfaceCard, 0.96);
         this.roundRect(ctx, tx, ty, tw, th, 8);
         ctx.fill();
         ctx.strokeStyle = npc.color;
@@ -995,6 +1041,33 @@ class Ch15Cybertown extends CanvasAnimation {
     // -----------------------------------------------------------------
     //  color helpers
     // -----------------------------------------------------------------
+    _withAlpha(hex, alpha) {
+        if (typeof hex !== 'string' || hex[0] !== '#' || hex.length < 7) return hex;
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r},${g},${b},${alpha})`;
+    }
+    _hexToRgb(hex) {
+        const num = parseInt(hex.replace('#', ''), 16);
+        return { r: (num >> 16) & 0xff, g: (num >> 8) & 0xff, b: num & 0xff };
+    }
+    _darken(hex, amount) {
+        const { r, g, b } = this._hexToRgb(hex);
+        const t2 = 0;
+        const nr = Math.round((t2 - r) * amount + r);
+        const ng = Math.round((t2 - g) * amount + g);
+        const nb = Math.round((t2 - b) * amount + b);
+        return '#' + [nr, ng, nb].map(v => v.toString(16).padStart(2, '0')).join('');
+    }
+    _lighten(hex, amount) {
+        const { r, g, b } = this._hexToRgb(hex);
+        const t2 = 255;
+        const nr = Math.round((t2 - r) * amount + r);
+        const ng = Math.round((t2 - g) * amount + g);
+        const nb = Math.round((t2 - b) * amount + b);
+        return '#' + [nr, ng, nb].map(v => v.toString(16).padStart(2, '0')).join('');
+    }
     _lightenColor(hex, percent) {
         const num = parseInt(hex.replace('#', ''), 16);
         const amt = Math.round(2.55 * percent);
