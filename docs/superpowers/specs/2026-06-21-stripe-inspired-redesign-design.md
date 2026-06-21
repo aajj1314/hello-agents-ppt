@@ -1,5 +1,9 @@
 # Stripe-Inspired 前端彻底重设计文档
 
+> **Status: DEFERRED — superseded by 2026-06-21-claude-inspired-redesign-design.md**
+>
+> 保留此文档作为决策历史备查。不再实施。
+
 > 设计主题:把 hello-agents-ppt 整体换皮为 Stripe 风格的设计语言(electric indigo + cream mesh + 细体字 + flat hairline),保留 0 运行时依赖、纯静态部署、103 测试通过的核心约束。
 >
 > 创建日期:2026-06-21
