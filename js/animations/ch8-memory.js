@@ -47,19 +47,19 @@ class Ch8Memory extends CanvasAnimation {
         // 人类记忆三层 (自下而上: 感觉 → 工作 → 长期)
         this.memLayers = [
             {
-                key: 'sensory', title: '感觉记忆', color: '#F59E0B',
+                key: 'sensory', title: '感觉记忆', colorKey: 'accentAmber',
                 meta: '0.5-3 秒 · 容量巨大',
                 agent: '当前 query / 用户输入',
                 code: 'user_input = "注意力机制"'
             },
             {
-                key: 'working', title: '工作记忆', color: '#3B82F6',
+                key: 'working', title: '工作记忆', colorKey: 'accentTeal',
                 meta: '15-30 秒 · 7±2 项',
                 agent: 'messages[] 上下文窗口',
                 code: 'messages.append(\n  {"role":"user","content":q})'
             },
             {
-                key: 'longterm', title: '长期记忆', color: '#10B981',
+                key: 'longterm', title: '长期记忆', colorKey: 'success',
                 meta: '可持续终生 · 几乎无限',
                 agent: 'LLM 知识 + 长期 RAG 索引',
                 code: 'ltm.add(\n  item, importance=0.8)'
@@ -73,42 +73,42 @@ class Ch8Memory extends CanvasAnimation {
                 desc: '用户问题',
                 code: 'q = "什么是 RAG?"',
                 time: '~1 ms',
-                color: '#6366F1'
+                colorKey: 'ink'
             },
             {
                 key: 'embed', letter: 'E', title: 'Embedding',
                 desc: '向量化',
                 code: 'vec = embedder.encode(q)\n# shape=(1, 1024)',
                 time: '~80 ms',
-                color: '#8B5CF6'
+                colorKey: 'body'
             },
             {
                 key: 'retrieve', letter: 'R', title: '向量库检索',
                 desc: 'Top-K 召回',
                 code: 'hits = qdrant.search(\n  vec, top_k=20)',
                 time: '~30 ms',
-                color: '#0EA5E9'
+                colorKey: 'muted'
             },
             {
                 key: 'topk', letter: 'K', title: 'Top-K 片段',
                 desc: '重排序 / 截断',
                 code: 'topk = rerank(\n  hits, k=5)',
                 time: '~120 ms',
-                color: '#10B981'
+                colorKey: 'mutedSoft'
             },
             {
                 key: 'prompt', letter: 'P', title: '拼接 Prompt',
                 desc: '上下文 + 问题',
                 code: 'prompt = sys + ctx\n + "\\nQ: " + q',
                 time: '~2 ms',
-                color: '#F59E0B'
+                colorKey: 'accentTeal'
             },
             {
                 key: 'llm', letter: 'G', title: 'LLM 生成',
                 desc: '流式回答',
                 code: 'for tok in llm.stream(\n  prompt):\n  yield tok',
                 time: '~1.5 s',
-                color: '#EC4899'
+                colorKey: 'primary'
             }
         ];
 
@@ -257,7 +257,7 @@ class Ch8Memory extends CanvasAnimation {
             segIdx: 0,
             seg: 0,
             stepReached: -1,
-            color: '#6366F1'
+            colorKey: 'ink'
         });
     }
 
@@ -446,16 +446,25 @@ class Ch8Memory extends CanvasAnimation {
     // 绘制
     // ============================================================
     draw() {
-        const ctx = this.ctx;
-        const w = this.width;
-        const h = this.height;
+        const ctx = this.ctx, w = this.width, h = this.height;
+        const t = this.theme();
         const isDark = this.isDarkTheme();
-        const bg = isDark ? '#0F172A' : '#F8FAFC';
-        const textColor = isDark ? '#F1F5F9' : '#0F172A';
-        const subColor = isDark ? '#94A3B8' : '#475569';
-        const cardBg = isDark ? '#1E293B' : '#FFFFFF';
-        const cardBorder = isDark ? '#334155' : '#E2E8F0';
-        const innerBg = isDark ? '#0B1220' : '#F1F5F9';
+        const bg = isDark ? t.surfaceDarkSoft : t.canvas;
+        const textColor = t.ink;
+        const subColor = t.muted;
+        const cardBg = isDark ? t.surfaceDark : t.canvas;
+        const cardBorder = t.hairline;
+        const innerBg = isDark ? t.surfaceDarkSoft : t.surfaceCard;
+        // Resolve the layer / RAG step / particle color tokens
+        for (let i = 0; i < this.memLayers.length; i++) {
+            this.memLayers[i].color = t[this.memLayers[i].colorKey];
+        }
+        for (let i = 0; i < this.ragSteps.length; i++) {
+            this.ragSteps[i].color = t[this.ragSteps[i].colorKey];
+        }
+        for (let i = 0; i < this.particles.length; i++) {
+            this.particles[i].color = t[this.particles[i].colorKey];
+        }
 
         ctx.clearRect(0, 0, w, h);
         ctx.fillStyle = bg;
@@ -478,11 +487,11 @@ class Ch8Memory extends CanvasAnimation {
         ctx.fillText('人类记忆层次 (认知心理学)', layout.memRects[0].x, layout.memSectionY - 4);
         ctx.fillText('RAG 流水线 (重点)', layout.ragRects[0].x, layout.ragY - 4);
 
-        this._drawMemorySection(ctx, layout, { isDark, textColor, subColor, cardBg, cardBorder, innerBg });
-        this._drawRagSection(ctx, layout, { isDark, textColor, subColor, cardBg, cardBorder, innerBg });
+        this._drawMemorySection(ctx, layout, { isDark, textColor, subColor, cardBg, cardBorder, innerBg, t });
+        this._drawRagSection(ctx, layout, { isDark, textColor, subColor, cardBg, cardBorder, innerBg, t });
 
         // Tooltip
-        this._drawTooltip(ctx, layout, { isDark, textColor, subColor, cardBg, cardBorder, innerBg });
+        this._drawTooltip(ctx, layout, { isDark, textColor, subColor, cardBg, cardBorder, innerBg, t });
 
         // Footer
         this._drawFooter(ctx, w, h, subColor, textColor);
@@ -602,7 +611,7 @@ class Ch8Memory extends CanvasAnimation {
     }
 
     _drawReinforceArrow(ctx, arr, theme) {
-        const { isDark } = theme;
+        const { isDark, t } = theme;
         const fromPhase = this.phase;
         // 箭头在 phase >= 2 时显示"工作→长期"被强化
         // 箭头在 phase >= 1 时显示"感觉→工作"被强化
@@ -612,7 +621,7 @@ class Ch8Memory extends CanvasAnimation {
                     || fromPhase >= 3;
 
         ctx.save();
-        ctx.strokeStyle = active ? arr.color : (isDark ? '#475569' : '#CBD5E1');
+        ctx.strokeStyle = active ? arr.color : (isDark ? t.muted : t.hairline);
         ctx.lineWidth = active ? 2.2 : 1.4;
         ctx.setLineDash(active ? [] : [4, 4]);
 
@@ -669,7 +678,7 @@ class Ch8Memory extends CanvasAnimation {
             ctx.arc(x, y, 5, 0, Math.PI * 2);
             ctx.fillStyle = p.color;
             ctx.fill();
-            ctx.strokeStyle = '#FFFFFF';
+            ctx.strokeStyle = theme.t.onPrimary;
             ctx.lineWidth = 1.5;
             ctx.stroke();
             ctx.restore();
@@ -677,7 +686,7 @@ class Ch8Memory extends CanvasAnimation {
     }
 
     _drawRagSection(ctx, layout, theme) {
-        const { isDark, textColor, subColor, cardBg, cardBorder, innerBg } = theme;
+        const { isDark, textColor, subColor, cardBg, cardBorder, innerBg, t } = theme;
         const stepActive = Math.max(0, this.phase - 5);  // 0..3 in RAG phase
         // 每阶段激活 2 步: phase 1 -> 步骤 0-1, phase 2 -> 步骤 2-3, phase 3 -> 步骤 4-5
         const litSteps = (stepActive + 1) * 2;
@@ -694,7 +703,7 @@ class Ch8Memory extends CanvasAnimation {
             const y = a.y + a.h / 2;
             const lit = i + 1 < litSteps;
             ctx.save();
-            ctx.strokeStyle = lit ? a.data.color : (isDark ? '#475569' : '#CBD5E1');
+            ctx.strokeStyle = lit ? a.data.color : (isDark ? t.muted : t.hairline);
             ctx.lineWidth = lit ? 2 : 1.2;
             ctx.setLineDash(lit ? [] : [3, 3]);
             ctx.beginPath();
@@ -708,7 +717,7 @@ class Ch8Memory extends CanvasAnimation {
             ctx.lineTo(x2 - 6, y - 4);
             ctx.lineTo(x2 - 6, y + 4);
             ctx.closePath();
-            ctx.fillStyle = lit ? a.data.color : (isDark ? '#475569' : '#CBD5E1');
+            ctx.fillStyle = lit ? a.data.color : (isDark ? t.muted : t.hairline);
             ctx.fill();
             ctx.restore();
         }
@@ -756,7 +765,7 @@ class Ch8Memory extends CanvasAnimation {
         ctx.arc(iconX, iconY, iconR, 0, Math.PI * 2);
         ctx.fillStyle = r.data.color;
         ctx.fill();
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = theme.t.onPrimary;
         ctx.font = 'bold 14px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -791,7 +800,7 @@ class Ch8Memory extends CanvasAnimation {
         // 底部进度条
         const barY = r.y + r.h - 4;
         const barW = r.w - 12;
-        ctx.fillStyle = isDark ? '#1E293B' : '#E2E8F0';
+        ctx.fillStyle = isDark ? theme.t.surfaceDark : theme.t.surfaceCard;
         ctx.fillRect(r.x + 6, barY, barW, 2);
         if (lit) {
             ctx.fillStyle = r.data.color;
@@ -802,7 +811,7 @@ class Ch8Memory extends CanvasAnimation {
     }
 
     _drawRagParticles(ctx, layout, theme) {
-        const { isDark } = theme;
+        const { isDark, t } = theme;
         const stepActive = Math.max(0, this.phase - 5);
         for (const p of this.particles) {
             // 让粒子在"被激活"的步骤上高亮
@@ -810,9 +819,9 @@ class Ch8Memory extends CanvasAnimation {
             ctx.save();
             ctx.beginPath();
             ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
-            ctx.fillStyle = isActive ? p.color : (isDark ? '#475569' : '#94A3B8');
+            ctx.fillStyle = isActive ? p.color : (isDark ? t.muted : t.mutedSoft);
             ctx.fill();
-            ctx.strokeStyle = '#FFFFFF';
+            ctx.strokeStyle = t.onPrimary;
             ctx.lineWidth = 1.4;
             ctx.stroke();
             ctx.restore();
@@ -820,7 +829,7 @@ class Ch8Memory extends CanvasAnimation {
     }
 
     _drawTooltip(ctx, layout, theme) {
-        const { isDark, textColor, subColor, cardBg, cardBorder, innerBg } = theme;
+        const { isDark, textColor, subColor, cardBg, cardBorder, innerBg, t } = theme;
         if (this.hover.type === 'rag') {
             const r = layout.ragRects[this.hover.index];
             const step = this.ragSteps[this.hover.index];
@@ -834,7 +843,7 @@ class Ch8Memory extends CanvasAnimation {
             if (tx < 4) tx = 4;
 
             ctx.save();
-            ctx.fillStyle = isDark ? '#0B1220' : '#FFFFFF';
+            ctx.fillStyle = cardBg;
             this.roundRect(ctx, tx, ty, tipW, tipH, 8);
             ctx.fill();
             ctx.strokeStyle = step.color;
@@ -869,7 +878,7 @@ class Ch8Memory extends CanvasAnimation {
             if (ty + tipH > this.height - 30) ty = this.height - tipH - 30;
 
             ctx.save();
-            ctx.fillStyle = isDark ? '#0B1220' : '#FFFFFF';
+            ctx.fillStyle = cardBg;
             this.roundRect(ctx, tx, ty, tipW, tipH, 8);
             ctx.fill();
             ctx.strokeStyle = layer.color;
