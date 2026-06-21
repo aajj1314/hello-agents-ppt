@@ -333,33 +333,25 @@ class Ch3Attention extends CanvasAnimation {
      *  Color helpers
      * -------------------------------------------------------------- */
 
-    /** Heatmap cell color: indigo gradient (light -> deep). */
-    _heatColor(v, dark) {
-        const t = Math.max(0, Math.min(1, v));
-        if (dark) {
-            const r = Math.round(30 + t * 70);
-            const g = Math.round(40 + t * 70);
-            const b = Math.round(90 + t * 165);
-            return `rgba(${r}, ${g}, ${b}, ${0.35 + t * 0.6})`;
-        }
-        const r = Math.round(225 - t * 175);
-        const g = Math.round(230 - t * 160);
-        const b = Math.round(245 - t * 30);
-        return `rgba(${r}, ${g}, ${b}, ${0.4 + t * 0.55})`;
+    _withAlpha(hex, alpha) {
+        if (typeof hex !== 'string' || hex[0] !== '#' || hex.length < 7) return hex;
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     }
 
-    /** Bar chart bar color: violet -> indigo gradient stops. */
-    _barColor(t, dark) {
-        if (dark) {
-            const r = Math.round(99 + t * 60);
-            const g = Math.round(102 + t * 50);
-            const b = Math.round(241 - t * 50);
-            return `rgb(${r}, ${g}, ${b})`;
-        }
-        const r = Math.round(124 - t * 30);
-        const g = Math.round(58 + t * 30);
-        const b = Math.round(237 - t * 50);
-        return `rgb(${r}, ${g}, ${b})`;
+    /** Heatmap cell color: deep-tint gradient using t.primary as the anchor. */
+    _heatColor(v, dark, t) {
+        const v01 = Math.max(0, Math.min(1, v));
+        const alpha = (dark ? 0.25 : 0.35) + v01 * (dark ? 0.6 : 0.55);
+        return this._withAlpha(t.primary, alpha);
+    }
+
+    /** Bar chart bar color: t.primary with vertical alpha gradient. */
+    _barColor(t01, dark, t) {
+        // The gradient stop alpha is a bit higher on top to feel "lit"
+        return this._withAlpha(t.primary, dark ? (0.55 + t01 * 0.35) : (0.65 + t01 * 0.3));
     }
 
     /* ----------------------------------------------------------------
@@ -368,14 +360,15 @@ class Ch3Attention extends CanvasAnimation {
 
     draw() {
         const ctx = this.ctx, w = this.width, h = this.height;
+        const t = this.theme();
         const dark = this.isDarkTheme();
-        const bg = dark ? '#0F172A' : '#F8FAFC';
-        const textColor = dark ? '#F1F5F9' : '#0F172A';
-        const subColor = dark ? '#94A3B8' : '#475569';
-        const cardBg = dark ? '#1E293B' : '#FFFFFF';
-        const border = dark ? '#334155' : '#E2E8F0';
-        const highlight = dark ? '#A78BFA' : '#7C3AED';
-        const gridLine = dark ? 'rgba(148,163,184,0.18)' : 'rgba(100,116,139,0.18)';
+        const bg = dark ? t.surfaceDarkSoft : t.canvas;
+        const textColor = t.ink;
+        const subColor = t.muted;
+        const cardBg = dark ? t.surfaceDark : t.canvas;
+        const border = t.hairline;
+        const highlight = t.primary;
+        const gridLine = this._withAlpha(t.muted, dark ? 0.22 : 0.25);
 
         ctx.clearRect(0, 0, w, h);
         ctx.fillStyle = bg;
@@ -448,8 +441,8 @@ class Ch3Attention extends CanvasAnimation {
 
                 // Per-cell linear gradient (light at top -> deep at bottom)
                 const grad = ctx.createLinearGradient(cx, cy, cx, cy + L.cellSize);
-                grad.addColorStop(0, this._heatColor(Math.min(1, v * 1.05), dark));
-                grad.addColorStop(1, this._heatColor(v * 0.85, dark));
+                grad.addColorStop(0, this._heatColor(Math.min(1, v * 1.05), dark, t));
+                grad.addColorStop(1, this._heatColor(v * 0.85, dark, t));
                 ctx.fillStyle = grad;
                 this.roundRect(ctx, cx, cy, L.cellSize, L.cellSize, 3);
                 ctx.fill();
@@ -469,7 +462,7 @@ class Ch3Attention extends CanvasAnimation {
 
                 // Value text in cell
                 if (L.cellSize >= 26) {
-                    ctx.fillStyle = (v > 0.45) ? '#FFFFFF' : textColor;
+                    ctx.fillStyle = (v > 0.45) ? t.onPrimary : textColor;
                     ctx.font = '9px sans-serif';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
@@ -539,10 +532,10 @@ class Ch3Attention extends CanvasAnimation {
             ctx.font = '10px sans-serif';
             const tw = ctx.measureText(label).width;
             const boxX = Math.min(w - tw - 16, Math.max(8, tipX - tw / 2 - 6));
-            ctx.fillStyle = dark ? '#0B1220' : '#0F172A';
+            ctx.fillStyle = dark ? t.surfaceDark : t.ink;
             this.roundRect(ctx, boxX, tipY - 4, tw + 12, 18, 4);
             ctx.fill();
-            ctx.fillStyle = '#FFFFFF';
+            ctx.fillStyle = t.onDark;
             ctx.textAlign = 'left';
             ctx.textBaseline = 'middle';
             ctx.fillText(label, boxX + 6, tipY + 4);
@@ -605,8 +598,8 @@ class Ch3Attention extends CanvasAnimation {
             const by = innerY + innerH - barHeight;
             // gradient fill (top -> bottom)
             const grad = ctx.createLinearGradient(0, by, 0, by + barHeight);
-            grad.addColorStop(0, this._barColor(1.0, dark));
-            grad.addColorStop(1, this._barColor(0.35, dark));
+            grad.addColorStop(0, this._barColor(1.0, dark, t));
+            grad.addColorStop(1, this._barColor(0.35, dark, t));
             ctx.fillStyle = grad;
             this.roundRect(ctx, bx, by, bw, barHeight, 4);
             ctx.fill();
