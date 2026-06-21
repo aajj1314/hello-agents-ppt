@@ -498,6 +498,88 @@ h6 { font-size: 16px; font-family: var(--font-body); font-weight: 500; }
 }
 
 /* ============================================================
+ * Callout / CTA band / footer (Claude editorial)
+ * ============================================================ */
+.callout-card-coral {
+    background-color: var(--primary);
+    color: var(--on-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xxl);
+    max-width: 1200px;
+    margin: var(--space-section) auto;
+    text-align: center;
+}
+.callout-card-coral h2 {
+    color: var(--on-primary);
+    font-size: 28px;
+    margin-bottom: var(--space-md);
+}
+.callout-card-coral p {
+    color: var(--on-primary);
+    opacity: 0.9;
+    margin-bottom: var(--space-xl);
+}
+.cta-band-coral {
+    background-color: var(--primary);
+    color: var(--on-primary);
+    padding: 64px var(--space-xl);
+    text-align: center;
+    margin: var(--space-section) 0 0 0;
+}
+.cta-band-coral h2 {
+    color: var(--on-primary);
+    font-size: 28px;
+    margin-bottom: var(--space-md);
+    letter-spacing: -0.3px;
+}
+.cta-band-coral .btn-primary {
+    background-color: var(--canvas);
+    color: var(--primary);
+}
+.cta-band-coral .btn-primary:hover {
+    background-color: var(--canvas-soft);
+}
+
+footer.site-footer {
+    background-color: var(--surface-dark);
+    color: var(--on-dark-soft);
+    padding: 64px var(--space-xl);
+    font-size: 14px;
+}
+footer.site-footer .footer-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-xl);
+}
+@media (max-width: 768px) {
+    footer.site-footer .footer-grid { grid-template-columns: 1fr; }
+}
+footer.site-footer h4 {
+    color: var(--on-dark);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: var(--space-md);
+}
+footer.site-footer a {
+    color: var(--on-dark-soft);
+    text-decoration: none;
+    display: block;
+    padding: 4px 0;
+}
+footer.site-footer a:hover { color: var(--on-dark); }
+footer.site-footer .footer-brand {
+    font-family: var(--font-display);
+    color: var(--on-dark);
+    font-size: 18px;
+    margin-bottom: var(--space-sm);
+}
+
+/* ============================================================
  * Section heading
  * ============================================================ */
 .section-heading {

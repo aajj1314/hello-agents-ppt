@@ -109,27 +109,44 @@ while (true) {
 
         <main class="chapter-grid" id="chapterGrid" aria-label="章节列表"></main>
 
-        <footer class="app-footer">
-            <button class="btn btn-primary" id="btnStart" aria-label="开始学习第一章">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <polygon points="6 4 20 12 6 20 6 4" fill="currentColor"></polygon>
-                </svg>
-                <span>开始学习</span>
-            </button>
-            <button class="btn btn-secondary" id="btnContinue" aria-label="继续上次学习进度">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-                </svg>
-                <span>继续上次</span>
-            </button>
-            <button class="btn btn-danger" id="btnReset" aria-label="重置全部学习进度">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <polyline points="1 4 1 10 7 10"></polyline>
-                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
-                </svg>
-                <span>重置进度</span>
-            </button>
+        <!-- Progress callout (coral) -->
+        <section class="callout-card-coral reveal" aria-label="学习进度">
+            <h2>你的学习进度</h2>
+            <p>16 章系统化课程,边学边做。已完成的章节会自动同步到本地。</p>
+            <button class="btn-primary" id="btnContinueFooter" aria-label="继续上次学习进度">继续上次 →</button>
+        </section>
+
+        <!-- Pre-footer CTA band (coral) -->
+        <section class="cta-band-coral reveal" aria-label="开始学习">
+            <h2>准备好开始构建你的第一个 AI Agent 了吗?</h2>
+            <p>16 章交互式课程 · 338 张幻灯片 · 20 个 Canvas 动画</p>
+            <button class="btn-primary" aria-label="开始学习第一章">立即开始</button>
+        </section>
+
+        <footer class="site-footer">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-brand">Hello-Agents</div>
+                    <p>从零开始构建智能体 · Claude-inspired design.</p>
+                </div>
+                <div>
+                    <h4>学习</h4>
+                    <a href="#chapterGrid">章节导航</a>
+                    <a href="slides.html?chapter=ch1&slide=1">第一章</a>
+                    <a href="slides.html?chapter=ch16&slide=1">结业项目</a>
+                </div>
+                <div>
+                    <h4>工具</h4>
+                    <a href="#" onclick="alert('搜索: Ctrl + K'); return false;">搜索</a>
+                    <a href="#" onclick="alert('目录: T'); return false;">目录</a>
+                    <a href="#" onclick="alert('键盘: ?'); return false;">键盘帮助</a>
+                </div>
+                <div>
+                    <h4>项目</h4>
+                    <a href="https://github.com/anthropics/hello-agents" target="_blank" rel="noopener">GitHub</a>
+                    <a href="#" id="btnReset" aria-label="重置全部学习进度">重置进度</a>
+                </div>
+            </div>
         </footer>
     </div>
 
