@@ -187,19 +187,15 @@ h6 { font-size: 16px; font-family: var(--font-body); font-weight: 500; }
  * ============================================================ */
 .sticky-nav {
     position: sticky;
-    top: 1rem;
-    z-index: 40;
-    margin-bottom: 2rem;
-    background: var(--bg-glass-strong);
-    border: 1px solid var(--border-glass);
-    border-radius: var(--radius-2xl);
-    padding: 0.65rem 0.85rem;
-    box-shadow: var(--shadow-md);
-    transition: box-shadow var(--t-base), background-color var(--t-base), border-color var(--t-base);
-}
-.sticky-nav.is-scrolled {
-    box-shadow: var(--shadow-lg);
-    border-color: var(--border-soft);
+    top: 0;
+    z-index: 100;
+    background-color: var(--canvas);
+    border-bottom: 1px solid var(--hairline);
+    height: 64px;
+    padding: 0 var(--space-xl);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 .sticky-nav__inner {
     display: flex;
@@ -387,36 +383,25 @@ h6 { font-size: 16px; font-family: var(--font-body); font-weight: 500; }
     margin: 0 0 1.75rem;
 }
 .stat-tile {
-    background: var(--bg-glass);
-    border: 1px solid var(--border-glass);
-    border-radius: var(--radius-xl);
-    padding: 1rem 0.85rem;
+    background-color: var(--canvas);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
     text-align: center;
-    transition: transform var(--t-base), background-color var(--t-base), border-color var(--t-base), box-shadow var(--t-base);
 }
-.stat-tile:hover {
-    transform: translateY(-3px);
-    background: rgba(255, 255, 255, 0.25);
-    border-color: rgba(255, 255, 255, 0.40);
-    box-shadow: var(--glow-cyan);
+.stat-tile .stat-number {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: 400;
+    color: var(--ink);
+    letter-spacing: -0.5px;
+    line-height: 1.15;
+    display: block;
 }
-.stat-tile__value {
-    font-family: 'Sora', sans-serif;
-    font-size: 1.85rem;
-    font-weight: 800;
-    line-height: 1;
-    margin-bottom: 0.35rem;
-    background: linear-gradient(135deg, #FFFFFF 0%, #67E8F9 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-variant-numeric: tabular-nums;
-}
-.stat-tile__label {
-    font-size: 0.78rem;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.85);
-    letter-spacing: 0.05em;
+.stat-tile .stat-label {
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: var(--space-sm);
 }
 
 /* Hero overall progress (glass pill) */
@@ -489,66 +474,30 @@ h6 { font-size: 16px; font-family: var(--font-body); font-weight: 500; }
     padding: 0.5rem 0 1.5rem;
 }
 
-/* === Chapter card (glassmorphic) === */
+/* === Chapter card (flat cream) === */
 .chapter-card {
-    --card-glow: var(--glow-violet);
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    overflow: hidden;
+    background-color: var(--surface-card);
+    border: none;
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    transition: background-color var(--t-fast);
     cursor: pointer;
-    background: var(--bg-glass);
-    border: 1px solid var(--border-glass);
-    border-radius: var(--radius-2xl);
-    box-shadow: var(--shadow-md);
-    transition:
-        transform var(--t-base),
-        background-color var(--t-base),
-        border-color var(--t-base),
-        box-shadow var(--t-base);
-    isolation: isolate;
+    text-decoration: none;
+    color: inherit;
+    display: block;
 }
-/* soft inner glow that brightens on hover */
-.chapter-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse 80% 60% at 0% 0%, rgba(124, 58, 237, 0.18) 0%, transparent 60%),
-                radial-gradient(ellipse 70% 60% at 100% 100%, rgba(6, 182, 212, 0.18) 0%, transparent 60%);
-    opacity: 0.6;
-    transition: opacity var(--t-base);
-    z-index: -1;
-    pointer-events: none;
+.chapter-card:hover {
+    background-color: var(--surface-cream-strong);
 }
-.chapter-card::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--violet-600) 0%, var(--cyan-500) 100%);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform var(--t-base);
+.chapter-card h3 {
+    margin: 0 0 var(--space-sm) 0;
+    color: var(--ink);
 }
-.chapter-card:hover,
-.chapter-card:focus-visible {
-    transform: translateY(-6px);
-    background: var(--bg-glass-strong);
-    border-color: rgba(124, 58, 237, 0.35);
-    box-shadow: var(--shadow-lg), var(--card-glow);
-}
-.chapter-card:hover::before { opacity: 1; }
-.chapter-card:hover::after,
-.chapter-card:focus-visible::after { transform: scaleX(1); }
-
-.chapter-card.completed {
-    --card-glow: var(--glow-cyan);
-    border-color: rgba(16, 185, 129, 0.32);
-}
-.chapter-card.completed::after {
-    background: linear-gradient(90deg, #10B981 0%, #06B6D4 100%);
-    transform: scaleX(1);
+.chapter-card p {
+    margin: 0;
+    color: var(--body);
+    font-size: 14px;
+    line-height: 1.55;
 }
 
 .card-header {
