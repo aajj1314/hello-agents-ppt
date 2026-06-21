@@ -3,9 +3,9 @@
  *
  * Two-pane interactive canvas:
  *   LEFT  (≈40%): three vertically-stacked platform cards
- *                 - Coze (蓝 #3B82F6): 零代码 + 一键发布飞书/抖音
- *                 - Dify (绿 #10B981): 开源 + 模型中立 + 私有化
- *                 - FastGPT (琥珀 #F59E0B): 知识库问答做到极致
+ *                 - Coze (凉色 t.accentTeal): 零代码 + 一键发布飞书/抖音
+ *                 - Dify (中性 t.success):   开源 + 模型中立 + 私有化
+ *                 - FastGPT (暖色 t.accentAmber): 知识库问答做到极致
  *                 - Each card: gradient letter logo + tagline + feature chips + scenario
  *                 - Hover: card lifts + glows with the platform color
  *                 - Click: toggles a "expanded" state that shows strengths/limits
@@ -47,8 +47,8 @@ class Ch5Lowcode extends CanvasAnimation {
                 key: 'coze',
                 letter: 'C',
                 name: 'Coze 扣子',
-                color: '#3B82F6',
-                colorSoft: '#93C5FD',
+                colorKey: 'accentTeal',
+                colorSoftKey: 'mutedSoft',
                 tagline: '零代码 + 一键发布飞书/抖音',
                 features: ['拖拽搭建', '插件商店', '官方模板', '5 分钟 Bot'],
                 scenario: '场景: 客服 / 运营 / C 端工具',
@@ -59,8 +59,8 @@ class Ch5Lowcode extends CanvasAnimation {
                 key: 'dify',
                 letter: 'D',
                 name: 'Dify',
-                color: '#10B981',
-                colorSoft: '#6EE7B7',
+                colorKey: 'success',
+                colorSoftKey: 'mutedSoft',
                 tagline: '开源 + 模型中立 + 私有化',
                 features: ['模型可换', 'Docker 部署', '插件 8000+', 'LLMOps'],
                 scenario: '场景: 企业 RAG / API 嵌入业务',
@@ -71,8 +71,8 @@ class Ch5Lowcode extends CanvasAnimation {
                 key: 'fastgpt',
                 letter: 'F',
                 name: 'FastGPT',
-                color: '#F59E0B',
-                colorSoft: '#FCD34D',
+                colorKey: 'accentAmber',
+                colorSoftKey: 'mutedSoft',
                 tagline: '知识库问答做到极致',
                 features: ['混合检索', 'QA 拆分', '重排序', '评测系统'],
                 scenario: '场景: 客服 / 文档检索 / 培训',
@@ -410,10 +410,18 @@ class Ch5Lowcode extends CanvasAnimation {
         const ctx = this.ctx;
         const w = this.width;
         const h = this.height;
+        const t = this.theme();
         const dark = this.isDarkTheme();
-        const bg = dark ? '#0F172A' : '#F8FAFC';
-        const textColor = dark ? '#F1F5F9' : '#0F172A';
-        const subColor = dark ? '#94A3B8' : '#475569';
+        const bg = dark ? t.surfaceDarkSoft : t.canvas;
+        const textColor = t.ink;
+        const subColor = t.muted;
+        // Resolve the platform color/soft to actual hex (recomputed every draw,
+        // so theme switches re-render correctly).
+        for (let i = 0; i < this.platforms.length; i++) {
+            const p = this.platforms[i];
+            p.color = t[p.colorKey];
+            p.colorSoft = t[p.colorSoftKey] || t.hairline;
+        }
 
         ctx.clearRect(0, 0, w, h);
         ctx.fillStyle = bg;
@@ -444,16 +452,17 @@ class Ch5Lowcode extends CanvasAnimation {
         ctx.fillText('▎选型决策树', this._rightPanel.x, this._titleH);
 
         // Tree first (edges under nodes, behind cards)
-        this._drawTreeEdges(ctx, dark, subColor);
-        this._drawTreeNodes(ctx, dark, textColor, subColor);
-        this._drawSelectedReason(ctx, dark, textColor, subColor);
+        this._drawTreeEdges(ctx, dark, subColor, t);
+        this._drawTreeNodes(ctx, dark, textColor, subColor, t);
+        this._drawSelectedReason(ctx, dark, textColor, subColor, t);
 
         // Platform cards on top (left side)
-        this._drawPlatformCards(ctx, dark, textColor, subColor);
+        this._drawPlatformCards(ctx, dark, textColor, subColor, t);
     }
 
-    _drawTreeEdges(ctx, dark, subColor) {
-        const gridColor = dark ? 'rgba(148,163,184,0.30)' : 'rgba(100,116,139,0.30)';
+    _drawTreeEdges(ctx, dark, subColor, t) {
+        const gridColor = this._withAlpha(t.muted, dark ? 0.35 : 0.4);
+        const activeColor = t.primary;
         for (const edge of this.treeEdges) {
             const from = this.treeNodes[edge.from];
             const to = this.treeNodes[edge.to];
@@ -468,7 +477,7 @@ class Ch5Lowcode extends CanvasAnimation {
             ctx.moveTo(from.x, from.y);
             ctx.lineTo(to.x, to.y);
             if (isActive) {
-                ctx.strokeStyle = '#3B82F6';
+                ctx.strokeStyle = activeColor;
                 ctx.lineWidth = 3;
             } else {
                 ctx.strokeStyle = gridColor;
@@ -491,7 +500,7 @@ class Ch5Lowcode extends CanvasAnimation {
                 ctx.lineTo(ex - headLen * Math.cos(angle + Math.PI / 6),
                            ey - headLen * Math.sin(angle + Math.PI / 6));
                 ctx.closePath();
-                ctx.fillStyle = '#3B82F6';
+                ctx.fillStyle = activeColor;
                 ctx.fill();
             }
 
@@ -515,13 +524,13 @@ class Ch5Lowcode extends CanvasAnimation {
             const labelH = 14;
             const lx0 = lx - labelW / 2;
             const ly0 = ly - labelH / 2;
-            ctx.fillStyle = isActive ? '#3B82F6' : (dark ? '#1E293B' : '#FFFFFF');
+            ctx.fillStyle = isActive ? t.primary : (dark ? t.surfaceDark : t.canvas);
             this.roundRect(ctx, lx0, ly0, labelW, labelH, 7);
             ctx.fill();
-            ctx.strokeStyle = isActive ? '#3B82F6' : (fromActive && toActive ? '#3B82F6' : gridColor);
+            ctx.strokeStyle = isActive ? t.primary : (fromActive && toActive ? t.primary : gridColor);
             ctx.lineWidth = 1;
             ctx.stroke();
-            ctx.fillStyle = isActive ? '#FFFFFF' : subColor;
+            ctx.fillStyle = isActive ? t.onPrimary : subColor;
             ctx.font = 'bold 10px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -529,7 +538,7 @@ class Ch5Lowcode extends CanvasAnimation {
         }
     }
 
-    _drawTreeNodes(ctx, dark, textColor, subColor) {
+    _drawTreeNodes(ctx, dark, textColor, subColor, t) {
         // Draw decision diamonds first (so leaves sit on top at the same level)
         for (const id in this.treeNodes) {
             const node = this.treeNodes[id];
@@ -538,26 +547,27 @@ class Ch5Lowcode extends CanvasAnimation {
             const isHover = this._hoverNode === id;
             const isSelected = this._selectedNode === id;
             if (node.type === 'decision') {
-                this._drawDecisionDiamond(ctx, node, isActive, isHover, dark, textColor);
+                this._drawDecisionDiamond(ctx, node, isActive, isHover, dark, textColor, t);
             } else {
-                this._drawLeafNode(ctx, node, isActive, isHover, isSelected, dark, textColor, subColor);
+                this._drawLeafNode(ctx, node, isActive, isHover, isSelected, dark, textColor, subColor, t);
             }
         }
     }
 
-    _drawDecisionDiamond(ctx, node, isActive, isHover, dark, textColor) {
+    _drawDecisionDiamond(ctx, node, isActive, isHover, dark, textColor, t) {
         const w = 70, h = 26;
         const x = node.x, y = node.y;
-        const fill = dark ? '#1E293B' : '#FFFFFF';
-        const stroke = isActive ? '#3B82F6' : (dark ? '#64748B' : '#94A3B8');
+        const fill = dark ? t.surfaceDark : t.canvas;
+        const stroke = isActive ? t.primary : (dark ? t.muted : t.hairline);
+        const activeAccent = t.primary;
 
         // Glow halo when active
         if (isActive || isHover) {
             ctx.save();
             const glow = isActive ? 0.22 : 0.10;
-            ctx.shadowColor = isActive ? 'rgba(59,130,246,0.55)' : 'rgba(59,130,246,0.25)';
+            ctx.shadowColor = this._withAlpha(activeAccent, isActive ? 0.55 : 0.25);
             ctx.shadowBlur = isActive ? 18 : 10;
-            ctx.fillStyle = `rgba(59,130,246,${glow})`;
+            ctx.fillStyle = this._withAlpha(activeAccent, glow);
             ctx.beginPath();
             ctx.moveTo(x, y - h - 4);
             ctx.lineTo(x + w + 4, y);
@@ -590,12 +600,12 @@ class Ch5Lowcode extends CanvasAnimation {
         ctx.lineTo(x - w + 2, y);
         ctx.closePath();
         ctx.clip();
-        ctx.fillStyle = isActive ? '#3B82F6' : (dark ? '#475569' : '#CBD5E1');
+        ctx.fillStyle = isActive ? t.primary : (dark ? t.muted : t.hairline);
         ctx.fillRect(x - w, y - 2, 4, 4);
         ctx.restore();
 
         // Question text — wrap inside the diamond (max effective width ~ w * 1.4)
-        ctx.fillStyle = isActive ? '#3B82F6' : textColor;
+        ctx.fillStyle = isActive ? t.primary : textColor;
         ctx.font = 'bold 10px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -609,7 +619,7 @@ class Ch5Lowcode extends CanvasAnimation {
         }
     }
 
-    _drawLeafNode(ctx, node, isActive, isHover, isSelected, dark, textColor, subColor) {
+    _drawLeafNode(ctx, node, isActive, isHover, isSelected, dark, textColor, subColor, t) {
         const platform = this.platforms.find(p => p.key === node.platform);
         if (!platform) return;
         const w = 100, h = 34;
@@ -647,12 +657,12 @@ class Ch5Lowcode extends CanvasAnimation {
         // Border
         ctx.beginPath();
         this.roundRect(ctx, x - w / 2, y - h / 2, w, h, 8);
-        ctx.strokeStyle = isSelected ? '#0F172A' : this._shade(color, -0.25);
+        ctx.strokeStyle = isSelected ? t.ink : this._shade(color, -0.25);
         ctx.lineWidth = isSelected ? 2.5 : 1;
         ctx.stroke();
 
         // Name
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = t.onPrimary;
         ctx.font = 'bold 13px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -662,34 +672,34 @@ class Ch5Lowcode extends CanvasAnimation {
         if (isSelected) {
             const bx = x + w / 2 - 7;
             const by = y - h / 2 - 3;
-            ctx.fillStyle = '#0F172A';
+            ctx.fillStyle = t.ink;
             ctx.beginPath();
             ctx.arc(bx, by, 7, 0, Math.PI * 2);
             ctx.fill();
-            ctx.fillStyle = '#FFFFFF';
+            ctx.fillStyle = t.onDark;
             ctx.font = 'bold 9px sans-serif';
             ctx.fillText('✓', bx, by + 0.5);
         }
     }
 
-    _drawPlatformCards(ctx, dark, textColor, subColor) {
+    _drawPlatformCards(ctx, dark, textColor, subColor, t) {
         for (let i = 0; i < this.platforms.length; i++) {
             const platform = this.platforms[i];
             const card = this._cardBoxes[i];
             const isHover = this._hoverPlatform === i;
             const isSelected = this._selectedPlatform === i;
-            this._drawPlatformCard(ctx, card, platform, isHover, isSelected, dark, textColor, subColor);
+            this._drawPlatformCard(ctx, card, platform, isHover, isSelected, dark, textColor, subColor, t);
         }
     }
 
-    _drawPlatformCard(ctx, card, platform, isHover, isSelected, dark, textColor, subColor) {
+    _drawPlatformCard(ctx, card, platform, isHover, isSelected, dark, textColor, subColor, t) {
         const x = card.x;
         const y = card.y + (isHover ? -3 : 0);
         const w = card.w;
         const h = card.h;
         const color = platform.color;
-        const cardBg = dark ? '#1E293B' : '#FFFFFF';
-        const borderColor = dark ? '#334155' : '#E2E8F0';
+        const cardBg = dark ? t.surfaceDark : t.canvas;
+        const borderColor = t.hairline;
 
         // Body with shadow
         ctx.save();
@@ -745,7 +755,7 @@ class Ch5Lowcode extends CanvasAnimation {
         ctx.lineWidth = 1;
         ctx.stroke();
         // Letter
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = t.onPrimary;
         ctx.font = 'bold ' + Math.round(logoR * 0.95) + 'px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -839,7 +849,7 @@ class Ch5Lowcode extends CanvasAnimation {
         ctx.shadowColor = this._withAlpha(platform.color, 0.4);
         ctx.shadowBlur = 10;
         ctx.shadowOffsetY = 2;
-        ctx.fillStyle = dark ? '#1E293B' : '#FFFFFF';
+        ctx.fillStyle = dark ? t.surfaceDark : t.canvas;
         this.roundRect(ctx, boxX, boxY, boxW, boxH, 8);
         ctx.fill();
         ctx.restore();
@@ -866,7 +876,7 @@ class Ch5Lowcode extends CanvasAnimation {
         ctx.fillStyle = platform.color;
         this.roundRect(ctx, tagX, tagY, 70, 14, 4);
         ctx.fill();
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = t.onPrimary;
         ctx.font = 'bold 9px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
