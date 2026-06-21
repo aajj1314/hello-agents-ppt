@@ -580,6 +580,16 @@ footer.site-footer .footer-brand {
 }
 
 /* ============================================================
+ * Presenter mode dark cards
+ * (Higher specificity than slides.css .presenter-timer / .presenter-next)
+ * ============================================================ */
+body .product-mockup-card-dark {
+    background-color: var(--surface-dark);
+    color: var(--on-dark);
+    font-family: var(--font-display);
+}
+
+/* ============================================================
  * Section heading
  * ============================================================ */
 .section-heading {
