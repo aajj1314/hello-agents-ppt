@@ -415,24 +415,32 @@ class Ch1AgentTypes extends CanvasAnimation {
         ctx.textAlign = 'left';
         ctx.textBaseline = 'middle';
 
-        // Color chip
+        // Vertical color bar (4 × 30) + padded number — replaces the
+        // previous 24×24 chip, where "13px bold" on a dark fill rendered
+        // as an almost-solid block (the 1/2 digit nearly filled it).
+        const barX = padX;
+        const barY = cursorY - 15;
+        const barW = 4;
+        const barH = 30;
         ctx.fillStyle = typeColor;
-        this.roundRect(ctx, padX, cursorY - 12, 24, 24, 6);
-        ctx.fill();
-        ctx.fillStyle = t.onPrimary;
-        ctx.font = 'bold 13px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(String(i + 1), padX + 12, cursorY);
+        ctx.fillRect(barX, barY, barW, barH);
 
-        // Name + English
+        ctx.fillStyle = subColor;
+        ctx.font = '13px sans-serif';
         ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        const numStr = String(i + 1).padStart(2, '0');
+        const numX = barX + barW + 8;          // 12px after bar start
+        ctx.fillText(numStr, numX, cursorY);
+
+        // Name + English — start after number with a small gap
+        const titleX = numX + ctx.measureText(numStr).width + 10;
         ctx.fillStyle = textColor;
         ctx.font = 'bold 18px sans-serif';
-        ctx.fillText(type.name, padX + 36, cursorY - 1);
+        ctx.fillText(type.name, titleX, cursorY - 1);
         ctx.fillStyle = subColor;
         ctx.font = '12px sans-serif';
-        ctx.fillText('· ' + type.nameEn + ' · ' + type.key, padX + 36 + ctx.measureText(type.name).width + 6, cursorY - 1);
+        ctx.fillText('· ' + type.nameEn + ' · ' + type.key, titleX + ctx.measureText(type.name).width + 6, cursorY - 1);
 
         // Two-column body: left = PEAS 2x2, right = example + relation
         const bodyTopY = cursorY + 22;
@@ -506,17 +514,41 @@ class Ch1AgentTypes extends CanvasAnimation {
 
     _drawRightPanel(ctx, x, y, w, h, type, textColor, subColor, t, isDark) {
         // Two stacked sections: 生活例子 / 和我有什么关系
-        const sectionH = (h - 10) / 2;
+        // Pre-measure each section's text to know its actual height, so the
+        // gray background shrinks to fit the content (no big empty gray
+        // block when text is only 1-2 lines).
+        const lineH = 18;
+        ctx.font = '12px sans-serif';
+        const maxW = w - 24;
+        const exLines = this.wrapText(ctx, type.example, 0, 0, maxW, lineH);
+        const reLines = this.wrapText(ctx, type.relation, 0, 0, maxW, lineH);
+        // Each section needs: 12 (top pad) + 18 (chip) + 8 (gap) + N*18 (text) + 12 (bottom pad)
+        const sectContentH = (n) => 12 + 18 + 8 + n * lineH + 12;
+        const exH = sectContentH(Math.max(1, exLines.length));
+        const reH = sectContentH(Math.max(1, reLines.length));
+        const gap = 10;
+        // If both fit naturally, use their measured heights; otherwise
+        // clamp each to an even share.
+        const totalNeeded = exH + reH + gap;
+        let firstH, secondH;
+        if (totalNeeded <= h) {
+            firstH = exH;
+            secondH = reH;
+        } else {
+            const each = Math.max(40, (h - gap) / 2);
+            firstH = each;
+            secondH = each;
+        }
 
         // 生活例子
-        this._drawSection(ctx, x, y, w, sectionH, {
+        this._drawSection(ctx, x, y, w, firstH, {
             label: '生活例子',
             icon: 'EX',
             text: type.example
         }, textColor, subColor, isDark, t[type.colorKey], t);
 
         // 和我有什么关系
-        this._drawSection(ctx, x, y + sectionH + 10, w, sectionH, {
+        this._drawSection(ctx, x, y + firstH + gap, w, secondH, {
             label: '和我有什么关系',
             icon: 'ME',
             text: type.relation

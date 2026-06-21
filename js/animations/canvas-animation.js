@@ -71,12 +71,25 @@ export class CanvasAnimation {
         if (!this.canvas) return;
         const container = this.canvas.parentElement;
         const dpr = window.devicePixelRatio || 1;
-        const w = container.clientWidth || 800;
-        const h = container.clientHeight || 420;
+        const cs = getComputedStyle(container);
+        // parseFloat returns NaN for empty strings (e.g. jsdom without
+        // explicit padding in the inline style); default to 0.
+        const pl = parseFloat(cs.paddingLeft) || 0;
+        const pr = parseFloat(cs.paddingRight) || 0;
+        const pt = parseFloat(cs.paddingTop) || 0;
+        const pb = parseFloat(cs.paddingBottom) || 0;
+        // clientWidth/clientHeight = content + padding (excludes border,
+        // scrollbar, margin). Subtract padding to size the canvas to the
+        // wrapper's content box — matches what flex layout actually gave
+        // it. Without this, ch1's topY and the detail card's cardH get
+        // computed against a buffer that is ~36px taller than the
+        // visible area, clipping the bottom of the card.
+        const w = Math.max(100, (container.clientWidth || 0) - pl - pr);
+        const h = Math.max(100, (container.clientHeight || 0) - pt - pb);
         this.canvas.style.width = w + 'px';
         this.canvas.style.height = h + 'px';
-        this.canvas.width = w * dpr;
-        this.canvas.height = h * dpr;
+        this.canvas.width = Math.round(w * dpr);
+        this.canvas.height = Math.round(h * dpr);
         this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         this.width = w;
         this.height = h;
