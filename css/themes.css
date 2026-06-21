@@ -5,74 +5,59 @@
  * ============================================================ */
 
 [data-theme="dark"] .slide {
-    background: var(--bg-soft);
-    border-color: var(--border-soft);
+    background: var(--surface-card);
+    border-color: var(--hairline);
 }
 
 [data-theme="dark"] pre {
-    background: #1E1E1E !important;
+    background: var(--surface-dark) !important;
 }
 
 [data-theme="dark"] code {
-    color: #D4D4D4 !important;
+    color: var(--on-dark) !important;
 }
 
 [data-theme="dark"] .quiz-option {
-    background: var(--bg-soft);
-    border-color: var(--border-soft);
+    background: var(--surface-card);
+    border-color: var(--hairline);
 }
 
 [data-theme="dark"] .quiz-option:hover {
-    border-color: var(--violet-400);
+    border-color: var(--primary);
 }
 
 [data-theme="dark"] .animation-controls {
-    background: var(--bg-soft);
-    border-color: var(--border-soft);
+    background: var(--surface-card);
+    border-color: var(--hairline);
 }
 
-/* === Light-mode glass contrast parity ===
-   In light mode the glass surface must remain legible:
-   stronger text color, slightly stronger border. */
-[data-theme="light"] {
-    --text-primary: #1E1B4B;
-    --text-secondary: #3730A3;
-}
+/* === Light-mode surface overrides ===
+   In light mode the surfaces remain legible on the cream canvas. */
 [data-theme="light"] .sticky-nav {
-    background: rgba(255, 255, 255, 0.72);
-    border-color: rgba(124, 58, 237, 0.20);
+    background: var(--canvas);
+    border-color: var(--hairline);
 }
 [data-theme="light"] .chapter-card {
-    background: rgba(255, 255, 255, 0.62);
-    border-color: rgba(255, 255, 255, 0.80);
-    box-shadow: 0 8px 24px -10px rgba(67, 56, 202, 0.18), 0 2px 6px rgba(30, 27, 75, 0.04);
+    background: var(--surface-card);
+    border-color: var(--hairline);
+    box-shadow: var(--shadow-1);
 }
 [data-theme="light"] .chapter-card:hover {
-    background: rgba(255, 255, 255, 0.80);
+    background: var(--surface-card);
 }
 [data-theme="light"] .stat-tile {
-    background: rgba(255, 255, 255, 0.25);
-    border-color: rgba(255, 255, 255, 0.45);
+    background: var(--surface-card);
+    border-color: var(--hairline);
 }
 [data-theme="light"] .btn-secondary {
-    background: rgba(255, 255, 255, 0.78);
-    border-color: rgba(124, 58, 237, 0.22);
+    background: var(--surface-card);
+    border-color: var(--hairline);
 }
 [data-theme="light"] .btn-danger {
-    background: rgba(255, 255, 255, 0.78);
+    background: var(--surface-card);
 }
 [data-theme="light"] .theme-toggle {
-    background: rgba(255, 255, 255, 0.78);
-    border-color: rgba(124, 58, 237, 0.22);
-    color: #1E1B4B;
-}
-
-/* Aurora background is stronger in dark mode to keep glass surfaces readable */
-[data-theme="dark"] body::before {
-    background:
-        radial-gradient(ellipse 60% 50% at 12% 10%, rgba(124, 58, 237, 0.55) 0%, transparent 60%),
-        radial-gradient(ellipse 55% 50% at 90% 18%, rgba(6, 182, 212, 0.50) 0%, transparent 60%),
-        radial-gradient(ellipse 70% 60% at 75% 95%, rgba(236, 72, 153, 0.35) 0%, transparent 65%),
-        radial-gradient(ellipse 60% 50% at 8% 85%, rgba(67, 56, 202, 0.60) 0%, transparent 65%),
-        #0B0A2A;
+    background: var(--surface-card);
+    border-color: var(--hairline);
+    color: var(--ink);
 }
